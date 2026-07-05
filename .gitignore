@@ -1,0 +1,72 @@
+### Node / Package files
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnp.*
+
+### Next.js
+.next/
+out/
+.output/
+.next/cache/
+
+### Build outputs
+dist/
+build/
+.vercel/
+.vercel_build/
+.now/
+.parcel-cache/
+
+### Caches
+.cache/
+.turbo/
+.cache-loader/
+.sass-cache/
+.parcel-cache/
+
+### Tailwind / PostCSS
+# Tailwind itself doesn't generate special files, but some build setups create caches
+.tailwind/
+
+### TypeScript
+*.tsbuildinfo
+
+### Environment
+.env
+.env.local
+.env.*.local
+
+### Logs
+logs/
+*.log
+npm-debug.log*
+
+### OS files
+.DS_Store
+Thumbs.db
+
+### IDEs
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+### Testing / coverage
+coverage/
+.nyc_output/
+jest/
+
+### Storybook
+.storybook/
+storybook-static/
+
+### Misc
+.eslintcache
+.pnp.js
+.pnp.cjs
+/.cache/
+
+# Keep lockfiles (package-lock.json, yarn.lock, pnpm-lock.yaml) committed by default
