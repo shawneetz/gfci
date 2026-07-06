@@ -18,7 +18,7 @@ export default function GivingPage() {
           <p className="text-ink-muted mb-6">
             Giving form / payment options go here.
           </p>
-          <ButtonLink href="#" variant="primary">
+          <ButtonLink href="#">
             Give Now →
           </ButtonLink>
         </Container>

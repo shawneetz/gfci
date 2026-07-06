@@ -136,7 +136,6 @@ export function Header() {
 
           <ButtonLink
             href={siteConfig.primaryCta.href}
-            variant={scrolled ? "primary" : "outlined"}
           >
             {siteConfig.primaryCta.label}
           </ButtonLink>
@@ -166,7 +165,6 @@ export function Header() {
 
           <ButtonLink
             href={siteConfig.primaryCta.href}
-            variant="primary"
             className="mt-6 w-full"
           >
             {siteConfig.primaryCta.label}
