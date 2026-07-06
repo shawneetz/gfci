@@ -1,72 +1,55 @@
 @import "tailwindcss";
 
 @theme {
-  /* ===========================
-     COLORS
-  =========================== */
 
-  --color-primary: #074e40;
-  --color-primary-50: #e6f2ef;
-  --color-primary-100: #cce5df;
-  --color-primary-200: #99cbbf;
-  --color-primary-300: #66b19f;
-  --color-primary-400: #33977f;
-  --color-primary-500: #074e40;
-  --color-primary-600: #063f34;
-  --color-primary-700: #052f27;
-  --color-primary-800: #03201a;
-  --color-primary-900: #02100d;
+  /* SURFACES */
+  --color-surface: #FFFFFF;          /* default page & card background */
+  --color-surface-alt: #F7F5F2;      /* alternating section background */
+  --color-surface-inverse: #121212;  /* dark sections: hero, footer, page headers, live */
 
-  --color-secondary: #ffffff;
-  --color-tertiary: #f4f7f6;
+  /* TEXT (INK) */
+  --color-ink: #111111;                    /* headings, primary body text */
+  --color-ink-secondary: #444444;          /* secondary body copy */
+  --color-ink-muted: #666666;              /* meta info, captions, dates */
+  --color-ink-inverse: #FFFFFF;            /* text on dark surfaces */
+  --color-ink-inverse-secondary: #D7D7D7;  /* faded text on dark surfaces */
 
-  --color-neutral: #1a1a1a;
-  --color-neutral-50: #f5f5f5;
-  --color-neutral-100: #e6e6e6;
-  --color-neutral-200: #cccccc;
-  --color-neutral-300: #b3b3b3;
-  --color-neutral-400: #999999;
-  --color-neutral-500: #666666;
-  --color-neutral-600: #4d4d4d;
-  --color-neutral-700: #333333;
-  --color-neutral-800: #262626;
-  --color-neutral-900: #1a1a1a;
+  /* BORDERS */
+  --color-border: #D8D3CD;
 
-  /* ===========================
-     FONTS
-  =========================== */
+  /* BRAND */
+  --color-brand: #  ;
+  --color-brand-hover: #2A2A2A;
+  --color-brand-active: #000000;
+  --color-brand-subtle: #F3F1EE;
 
-  --font-headline: var(--font-montserrat), sans-serif;
-  --font-body: var(--font-inter), sans-serif;
+  /* FONTS */
+  --font-headline: var(--font-big-shoulders), "Arial Narrow", sans-serif;
+  --font-body: var(--font-archivo), "Helvetica Neue", sans-serif;
 
-  /* ===========================
-     LAYOUT
-  =========================== */
-
+  /* LAYOUT */
   --container-container: 1280px;
 
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 16px;
 
-  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.08);
+  --shadow-card: 0 2px 16px rgba(0, 0, 0, 0.06);
 }
 
 :root {
   --header-height: 64px;
 }
 
-/* 
-   BASE
- */
+/* BASE */
 
 * {
   scroll-behavior: smooth;
 }
 
 body {
-  background: var(--color-secondary);
-  color: var(--color-neutral);
+  background: var(--color-surface);
+  color: var(--color-ink);
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -79,13 +62,15 @@ h4,
 h5,
 h6 {
   font-family: var(--font-headline);
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
 }
 
 a:focus-visible,
 button:focus-visible,
 input:focus-visible,
 textarea:focus-visible {
-  outline: 2px solid var(--color-primary);
+  outline: 2px solid var(--color-brand);
   outline-offset: 2px;
 }
 
@@ -104,52 +89,52 @@ textarea:focus-visible {
 
 .text-display {
   font-family: var(--font-headline);
-  font-size: 3rem; /* 48 */
-  line-height: 1.1;
+  font-size: 3rem;
+  line-height: 1;
   font-weight: 800;
 }
 
 .text-section-title {
   font-family: var(--font-headline);
-  font-size: 2rem; /* 32 */
-  line-height: 1.2;
-  font-weight: 700;
+  font-size: 2rem;
+  line-height: 1.1;
+  font-weight: 800;
 }
 
 .text-card-title {
   font-family: var(--font-headline);
-  font-size: 1.5rem; /* 24 */
-  line-height: 1.3;
+  font-size: 1.5rem;
+  line-height: 1.15;
   font-weight: 700;
 }
 
 .text-subtitle {
   font-family: var(--font-headline);
-  font-size: 1.25rem; /* 20 */
-  line-height: 1.4;
+  font-size: 1.25rem;
+  line-height: 1.2;
   font-weight: 700;
 }
 
 .text-body-lg {
-  font-size: 1.125rem; /* 18 */
+  font-size: 1.125rem;
   line-height: 1.6;
   font-weight: 400;
 }
 
 .text-body {
-  font-size: 1rem; /* 16 */
+  font-size: 1rem;
   line-height: 1.6;
   font-weight: 400;
 }
 
 .text-body-sm {
-  font-size: 0.875rem; /* 14 */
+  font-size: 0.875rem;
   line-height: 1.6;
   font-weight: 400;
 }
 
 .text-label {
-  font-size: 0.875rem; /* 14 */
+  font-size: 0.875rem;
   line-height: 1;
   font-weight: 600;
   letter-spacing: 0.1em;
@@ -157,28 +142,26 @@ textarea:focus-visible {
 }
 
 .text-caption {
-  font-size: 0.75rem; /* 12 */
+  font-size: 0.75rem;
   line-height: 1.4;
   font-weight: 500;
 }
 
-/* Desktop Typography */
-
 @media (min-width: 768px) {
   .text-display {
-    font-size: 4rem; /* 64 */
+    font-size: 4rem;
   }
 
   .text-section-title {
-    font-size: 2.5rem; /* 40 */
+    font-size: 2.5rem;
   }
 
   .text-card-title {
-    font-size: 1.75rem; /* 28 */
+    font-size: 1.75rem;
   }
 
   .text-subtitle {
-    font-size: 1.5rem; /* 24 */
+    font-size: 1.5rem;
   }
 }
 
@@ -188,15 +171,15 @@ textarea:focus-visible {
  */
 
 .section {
-  padding-block: 4rem; /* 64 */
+  padding-block: 4rem;
 }
 
 .section-sm {
-  padding-block: 3rem; /* 48 */
+  padding-block: 3rem;
 }
 
 .section-lg {
-  padding-block: 6rem; /* 96 */
+  padding-block: 6rem;
 }
 
 @media (min-width: 768px) {
@@ -232,7 +215,7 @@ textarea:focus-visible {
   width: 8px;
   height: 8px;
   border-radius: 9999px;
-  background: var(--color-primary);
+  background: var(--color-brand);
 }
 
 @media (min-width: 768px) {

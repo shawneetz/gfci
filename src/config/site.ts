@@ -1,5 +1,5 @@
 export const siteConfig = {
-  name: "Golden Faith",
+  name: "GOLDEN FAITH",
   tagline: "Experience Faith in Motion",
   description:
     "A dynamic community where authentic faith meets everyday action.",

@@ -15,7 +15,7 @@ export function ImageCard({
   return (
     <Link
       href={href}
-      className="group relative block aspect-square overflow-hidden rounded-2xl"
+      className="group relative block aspect-square overflow-hidden rounded-none border-2 border-ink"
     >
       <Image
         src={image}
@@ -25,12 +25,10 @@ export function ImageCard({
         className="object-cover transition-transform duration-300 group-hover:scale-105"
       />
 
-      {/* Overlay */}
-      <div className="absolute inset-0 bg-linear-to-t from-black/60 via-black/10 to-transparent" />
+      <div className="absolute inset-0 bg-linear-to-t from-surface-inverse/70 via-surface-inverse/10 to-transparent" />
 
-      {/* Title */}
       <div className="absolute inset-x-0 bottom-0 p-2">
-        <h3 className="text-sm font-bold text-secondary">
+        <h3 className="text-sm font-bold text-ink-inverse">
           {title}
         </h3>
       </div>

@@ -1,65 +1,49 @@
 import { Container } from "@/components/ui/container";
-import { ButtonLink } from "@/components/ui/button";
+import { CtaCard } from "@/components/ui/cta-card";
 import { BookOpen, HandHeart } from "lucide-react";
 
 export function CtaSection() {
   return (
-    <section className="section bg-secondary">
+    <section className="section bg-surface">
       <Container>
         <div className="space-y-6">
           {/* Giving */}
-          <div className="rounded-lg bg-primary p-8 text-secondary md:p-10">
-            <div className="flex h-14 w-14 items-center justify-center rounded-lg bg-secondary/10">
-              <HandHeart size={24} />
-            </div>
-
-            <p className="mt-8 text-label text-secondary/80">Giving</p>
-
-            <h2 className="mt-3 text-section-title">
-              Partner With Us
-            </h2>
-
-            <p className="mt-4 max-w-md text-body text-secondary/85">
-              Make a difference in our church, our community, and beyond
-              through your generous giving.
-            </p>
-
-            <ButtonLink
-              href="/giving"
-              variant="secondary"
-              className="mt-8 w-full sm:w-auto"
-            >
-              Give Now
-            </ButtonLink>
-          </div>
+          <CtaCard
+            icon={<HandHeart size={24} />}
+            label="Giving"
+            title="Partner With Us"
+            description="Make a difference in our church, our community, and beyond through your generous giving."
+            buttonText="Give Now"
+            buttonHref="/giving"
+            fill="grey2"
+            text="inverse"
+            border="ink"
+            shadow="grey"
+            buttonFill="inverse"
+            buttonTextColor="ink"
+            buttonBorder="ink"
+            buttonShadow="grey"
+            radius="lg"
+          />
 
           {/* Prayer */}
-          <div className="rounded-lg border border-primary/15 bg-white p-8 md:p-10">
-            <div className="flex h-14 w-14 items-center justify-center rounded-lg bg-primary-50 text-primary">
-              <BookOpen size={24} />
-            </div>
-
-            <p className="mt-8 text-label text-primary">
-              Prayer
-            </p>
-
-            <h2 className="mt-3 text-section-title text-primary">
-              Let Us Pray For You
-            </h2>
-
-            <p className="mt-4 max-w-md text-body text-neutral-600">
-              Share your prayer intentions with us. Our prayer ministry
-              faithfully prays for every request received.
-            </p>
-
-            <ButtonLink
-              href="/prayer-requests"
-              variant="outlined"
-              className="mt-8 w-full border-primary text-primary hover:bg-primary/5 sm:w-auto"
-            >
-              Request Prayer
-            </ButtonLink>
-          </div>
+          <CtaCard
+            icon={<BookOpen size={24} />}
+            label="Prayer"
+            title="Let Us Pray For You"
+            description="Share your prayer intentions with us. Our prayer ministry faithfully prays for every request received."
+            buttonText="Request Prayer"
+            buttonHref="/prayer-requests"
+            fill="grey"
+            text="ink"
+            border="ink"
+            shadow="grey2"
+            buttonFill="ink"
+            buttonTextColor="inverse"
+            buttonBorder="inverse"
+            buttonShadow="grey2"
+            radius="lg"
+          />
         </div>
       </Container>
     </section>

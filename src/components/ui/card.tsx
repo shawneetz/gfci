@@ -5,7 +5,7 @@ export function Card({ className, ...props }: ComponentPropsWithoutRef<"div">) {
   return (
     <div
       className={cn(
-        "group rounded-md bg-secondary shadow-card overflow-hidden transition-transform duration-200 hover:-translate-y-1",
+        "group rounded-none border-2 border-ink bg-surface overflow-hidden transition-all duration-150 hover:-translate-y-1 hover:shadow-[6px_6px_0_0_var(--color-ink)]",
         className
       )}
       {...props}

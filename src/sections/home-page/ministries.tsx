@@ -27,14 +27,14 @@ const ministries = [
 
 export function Ministries() {
   return (
-    <section className="bg-primary py-16">
+    <section className="bg-surface-inverse py-16">
       <Container>
         <div className="max-w-xl">
-          <h2 className="text-section-title text-secondary">
+          <h2 className="text-section-title text-ink-inverse">
             Ministries
           </h2>
 
-          <p className="mt-6 text-body-lg leading-relaxed text-secondary/80">
+          <p className="mt-6 text-body-lg leading-relaxed text-ink-inverse-secondary">
             We believe growth happens in community.
             <br />
             Discover a ministry where you can belong and serve.
@@ -55,7 +55,10 @@ export function Ministries() {
         <div className="mt-10">
           <ButtonLink
             href="/ministries"
-            variant="outlined"
+            text="ink"
+            fill="inverse"
+            border="ink"
+            shadow="grey"
             className="w-full"
           >
             Explore All Ministries

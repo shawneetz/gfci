@@ -1,18 +1,36 @@
 import type { Metadata } from "next";
-import { Montserrat, Inter } from "next/font/google";
+import localFont from "next/font/local";
+import { Archivo } from "next/font/google";
 import "@/app/globals.css";
 import { siteConfig } from "@/config/site";
 
-const montserrat = Montserrat({
-  subsets: ["latin"],
-  variable: "--font-montserrat",
-  weight: ["500", "600", "700", "800"],
+const bigShouldersDisplay = localFont({
+  src: [
+    {
+      path: "./fonts/big-shoulders-display/big-shoulders-display.bold.ttf",
+      weight: "700",
+      style: "normal",
+    },
+    {
+      path: "./fonts/big-shoulders-display/big-shoulders-display.extrabold.ttf",
+      weight: "800",
+      style: "normal",
+    },
+    {
+      path: "./fonts/big-shoulders-display/big-shoulders-display.black.ttf",
+      weight: "900",
+      style: "normal",
+    },
+  ],
+  variable: "--font-big-shoulders",
+  display: "swap",
 });
 
-const inter = Inter({
+const archivo = Archivo({
   subsets: ["latin"],
-  variable: "--font-inter",
-  weight: ["400", "500", "600", "700"],
+  variable: "--font-archivo",
+  weight: ["400", "500", "700"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -26,7 +44,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${montserrat.variable} ${inter.variable}`}>
+    <html
+      lang="en"
+      className={`${bigShouldersDisplay.variable} ${archivo.variable}`}
+    >
       <body>{children}</body>
     </html>
   );

@@ -1,75 +1,89 @@
+// src/components/ui/button.tsx
 import Link from "next/link";
-import { ComponentPropsWithoutRef } from "react";
+import { ComponentPropsWithoutRef, CSSProperties } from "react";
 
 import { cn } from "@/lib/utils";
 
-type Variant =
-  | "primary"
-  | "secondary"
-  | "ghost"
-  | "tonal"
-  | "outlined"
-  | "inverted";
 
-const baseStyles =
-  "inline-flex items-center justify-center gap-2 rounded-sm px-6 py-3 text-sm font-semibold uppercase tracking-[0.12em] transition-colors duration-200 whitespace-nowrap";
+//   ink         = near-black  (#111111)
+//   inverse     = white       (#FFFFFF)
+//   grey        = light grey  (#D8D3CD)
+//   grey2       = darker grey (#666666)
+//   transparent = see-through
+export type Tone = "ink" | "inverse" | "grey" | "grey2" | "transparent";
 
-const variantStyles: Record<Variant, string> = {
-  // Filled green
-  primary:
-    "bg-primary text-secondary hover:bg-primary-600",
-
-  // White button with green border
-  secondary:
-    "border border-primary bg-secondary text-primary hover:bg-primary-50",
-
-  // Text only
-  ghost:
-    "bg-transparent text-primary hover:bg-primary-50",
-
-  // Light surface button for dark containers
-  tonal:
-    "bg-secondary text-primary hover:bg-neutral-100",
-
-  // Transparent button with white border/text
-  // Ideal for hero sections and image backgrounds
-  outlined:
-    "border border-secondary bg-transparent text-secondary hover:bg-secondary/10",
-
-  // Kept for backwards compatibility
-  inverted:
-    "bg-neutral text-secondary hover:bg-neutral-800",
+export const toneVar: Record<Tone, string> = {
+  ink: "var(--color-ink)",
+  inverse: "var(--color-ink-inverse)",
+  grey: "var(--color-border)",
+  grey2: "var(--color-ink-muted)",
+  transparent: "transparent",
 };
 
-interface ButtonProps extends ComponentPropsWithoutRef<"button"> {
-  variant?: Variant;
+
+const baseStyles =
+  "inline-flex items-center justify-center gap-2 rounded-none border-2 px-6 py-3 text-sm font-bold uppercase tracking-[0.14em] transition-all duration-150 whitespace-nowrap hover:translate-x-[4px] hover:translate-y-[4px] hover:shadow-none";
+
+
+interface ColorProps {
+  fill?: Tone;   // the button's background
+  text?: Tone;   // the label color
+  border?: Tone; // the 2px outline color
+  shadow?: Tone; // the hard offset shadow color
 }
 
+const defaultColors: Required<ColorProps> = {
+  fill: "ink",
+  text: "inverse",
+  border: "ink",
+  shadow: "ink",
+};
+
+function colorStyle({ fill, text, border, shadow }: Required<ColorProps>): CSSProperties {
+  return {
+    backgroundColor: toneVar[fill],
+    color: toneVar[text],
+    borderColor: toneVar[border],
+    boxShadow: `4px 4px 0 0 ${toneVar[shadow]}`,
+  };
+}
+
+
+interface ButtonProps extends ComponentPropsWithoutRef<"button">, ColorProps {}
+
 export function Button({
-  variant = "primary",
+  fill = defaultColors.fill,
+  text = defaultColors.text,
+  border = defaultColors.border,
+  shadow = defaultColors.shadow,
   className,
+  style,
   ...props
 }: ButtonProps) {
   return (
     <button
-      className={cn(baseStyles, variantStyles[variant], className)}
+      className={cn(baseStyles, className)}
+      style={{ ...colorStyle({ fill, text, border, shadow }), ...style }}
       {...props}
     />
   );
 }
 
-interface ButtonLinkProps extends ComponentPropsWithoutRef<typeof Link> {
-  variant?: Variant;
-}
+interface ButtonLinkProps extends ComponentPropsWithoutRef<typeof Link>, ColorProps {}
 
 export function ButtonLink({
-  variant = "primary",
+  fill = defaultColors.fill,
+  text = defaultColors.text,
+  border = defaultColors.border,
+  shadow = defaultColors.shadow,
   className,
+  style,
   ...props
 }: ButtonLinkProps) {
   return (
     <Link
-      className={cn(baseStyles, variantStyles[variant], className)}
+      className={cn(baseStyles, className)}
+      style={{ ...colorStyle({ fill, text, border, shadow }), ...style }}
       {...props}
     />
   );

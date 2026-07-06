@@ -1,4 +1,4 @@
-import { PageHero } from "@/sections/home-page/page-hero";
+import { PageHero } from "@/components/ui/page-hero";
 import { Container } from "@/components/ui/container";
 
 export default function ConnectPage() {

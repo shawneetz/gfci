@@ -5,9 +5,9 @@ import { upcomingEvents } from "@/data/events";
 
 export function UpcomingEvents() {
   return (
-    <section className="section bg-secondary">
+    <section className="section bg-surface">
       <Container>
-        <h2 className="text-section-title text-primary mb-8">
+        <h2 className="text-section-title text-ink mb-8">
           Upcoming Events
         </h2>
 
@@ -26,7 +26,7 @@ export function UpcomingEvents() {
         </div>
 
         <div className="mt-8">
-          <ButtonLink href="/events" variant="primary" className="w-full">
+          <ButtonLink href="/events" text="ink" fill="grey" shadow="ink" className="w-full">
             View All Events
           </ButtonLink>
         </div>

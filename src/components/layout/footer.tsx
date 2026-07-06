@@ -6,7 +6,7 @@ import { siteConfig } from "@/config/site";
 
 export function Footer() {
   return (
-    <footer className="bg-primary text-secondary">
+    <footer className="bg-surface-inverse text-ink-inverse">
       <Container className="py-14">
         {/* Follow Us */}
         <div className="flex flex-col items-center">
@@ -22,8 +22,8 @@ export function Footer() {
             >
               <Facebook size={20} fill="currentColor" />
             </a>
-
-            <a
+              <a
+            
               href={siteConfig.contact.instagram}
               target="_blank"
               rel="noopener noreferrer"
@@ -32,7 +32,6 @@ export function Footer() {
             >
               <Instagram size={20} />
             </a>
-
             <a
               href={siteConfig.contact.youtube}
               target="_blank"
@@ -55,17 +54,17 @@ export function Footer() {
               <div>
                 <h4 className="font-headline font-bold">Address:</h4>
 
-                <p className="mt-2 text-body-sm whitespace-pre-line text-secondary/70">
+                <p className="mt-2 text-body-sm whitespace-pre-line text-ink-inverse-secondary">
                   {siteConfig.contact.address}
                 </p>
               </div>
 
               <div>
                 <h4 className="font-headline font-bold">Contact:</h4>
-
                 <a
+                
                   href={`tel:${siteConfig.contact.phone}`}
-                  className="mt-2 block text-body-sm text-secondary/70 transition-colors hover:text-secondary"
+                  className="mt-2 block text-body-sm text-ink-inverse-secondary transition-colors hover:text-ink-inverse"
                 >
                   {siteConfig.contact.phone}
                 </a>
@@ -73,10 +72,10 @@ export function Footer() {
 
               <div>
                 <h4 className="font-headline font-bold">E-mail:</h4>
-
                 <a
+                
                   href={`mailto:${siteConfig.contact.email}`}
-                  className="mt-2 block break-all text-body-sm text-secondary/70 transition-colors hover:text-secondary"
+                  className="mt-2 block break-all text-body-sm text-ink-inverse-secondary transition-colors hover:text-ink-inverse"
                 >
                   {siteConfig.contact.email}
                 </a>
@@ -94,7 +93,7 @@ export function Footer() {
                   <li key={item.href}>
                     <Link
                       href={item.href}
-                      className="text-body text-secondary/70 transition-colors hover:text-secondary"
+                      className="text-body text-ink-inverse-secondary transition-colors hover:text-ink-inverse"
                     >
                       {item.label}
                     </Link>
@@ -106,8 +105,8 @@ export function Footer() {
         </div>
 
         {/* Copyright */}
-        <div className="mt-14 border-t border-white/10 pt-6 text-center">
-          <p className="text-body-sm text-secondary/60">
+        <div className="mt-14 border-t border-ink-inverse/10 pt-6 text-center">
+          <p className="text-body-sm text-ink-inverse-secondary">
             © {new Date().getFullYear()} {siteConfig.name}. All rights reserved.
           </p>
         </div>

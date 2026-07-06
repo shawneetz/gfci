@@ -10,9 +10,9 @@ import { formatDate } from "@/lib/utils";
 
 export function LatestSermon() {
   return (
-    <section className="section bg-tertiary">
+    <section className="section bg-surface-alt">
       <Container>
-        <h2 className="text-section-title text-primary mb-8">
+        <h2 className="text-section-title text-ink mb-8">
           Latest Message
         </h2>
 
@@ -30,27 +30,25 @@ export function LatestSermon() {
                 className="object-cover transition-transform duration-300 group-hover:scale-105"
               />
 
-              {/* Dark overlay */}
-              <div className="absolute inset-0 bg-black/25" />
+              <div className="absolute inset-0 bg-surface-inverse/25" />
 
-              {/* Play button */}
               <div className="absolute inset-0 flex items-center justify-center">
-                <span className="flex h-14 w-14 items-center justify-center rounded-full bg-white/90 text-primary shadow-card transition-transform duration-200 group-hover:scale-110">
+                <span className="flex h-14 w-14 items-center justify-center rounded-full bg-surface/90 text-brand shadow-card transition-transform duration-200 group-hover:scale-110">
                   <Play size={20} fill="currentColor" />
                 </span>
               </div>
             </div>
 
             <CardBody>
-              <span className="eyebrow mb-2 text-[11px] text-primary">
+              <span className="eyebrow mb-2 text-[11px] text-brand">
                 Series: {latestSermon.series}
               </span>
 
-              <h3 className="text-card-title text-neutral-900">
+              <h3 className="text-card-title text-ink">
                 {latestSermon.title}
               </h3>
 
-              <p className="mt-2 text-body text-neutral-500">
+              <p className="mt-2 text-body text-ink-muted">
                 {latestSermon.speaker} &middot;{" "}
                 {formatDate(latestSermon.date)}
               </p>
@@ -59,7 +57,7 @@ export function LatestSermon() {
         </Link>
 
         <div className="mt-8">
-          <ButtonLink href="/sermons" variant="secondary" className="w-full">
+          <ButtonLink href="/sermons" fill="inverse" text="ink" shadow="grey2" className="w-full">
             View All Sermons
           </ButtonLink>
         </div>

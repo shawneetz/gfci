@@ -17,12 +17,10 @@ export function Header() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
-  // Close mobile menu after navigation
   useEffect(() => {
     setOpen(false);
   }, [pathname]);
 
-  // Detect scroll
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
@@ -34,7 +32,6 @@ export function Header() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Prevent body scrolling while mobile menu is open
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
 
@@ -48,14 +45,13 @@ export function Header() {
       className={cn(
         "fixed inset-x-0 top-0 z-50 transition-all duration-300",
         scrolled
-          ? "border-b border-neutral-200 bg-secondary shadow-sm"
+          ? "border-b border-border bg-surface shadow-sm"
           : "bg-transparent"
       )}
     >
       <Container className="flex h-16 items-center justify-between">
         {/* ================= Mobile Header ================= */}
         <div className="flex w-full items-center lg:hidden">
-          {/* Logo */}
           <Link
             href="/"
             className="flex h-10 w-10 items-center justify-center"
@@ -70,22 +66,17 @@ export function Header() {
             />
           </Link>
 
-          {/* Centered Title */}
-          <Link
-            href="/"
-            className="flex-1 text-center"
-          >
+          <Link href="/" className="flex-1 text-center">
             <span
               className={cn(
                 "font-headline text-[32px] font-extrabold leading-none transition-colors duration-300",
-                scrolled ? "text-primary" : "text-white"
+                scrolled ? "text-ink" : "text-ink-inverse"
               )}
             >
               {siteConfig.name}
             </span>
           </Link>
 
-          {/* Menu */}
           <button
             type="button"
             aria-label={open ? "Close menu" : "Open menu"}
@@ -93,7 +84,7 @@ export function Header() {
             onClick={() => setOpen(!open)}
             className={cn(
               "flex h-10 w-10 items-center justify-center rounded-sm transition-colors",
-              scrolled ? "text-primary" : "text-white"
+              scrolled ? "text-ink" : "text-ink-inverse"
             )}
           >
             {open ? <X size={30} /> : <Menu size={30} />}
@@ -102,10 +93,7 @@ export function Header() {
 
         {/* ================= Desktop Header ================= */}
         <div className="hidden w-full items-center justify-between lg:flex">
-          <Link
-            href="/"
-            className="flex items-center gap-3"
-          >
+          <Link href="/" className="flex items-center gap-3">
             <Image
               src="/icons/gfci-logo-icon.svg"
               alt={`${siteConfig.name} Logo`}
@@ -118,7 +106,7 @@ export function Header() {
             <span
               className={cn(
                 "font-headline text-[32px] font-extrabold leading-none transition-colors duration-300",
-                scrolled ? "text-primary" : "text-white"
+                scrolled ? "text-ink" : "text-ink-inverse"
               )}
             >
               {siteConfig.name}
@@ -134,11 +122,11 @@ export function Header() {
                   "text-sm font-semibold tracking-wide transition-colors",
                   pathname === item.href
                     ? scrolled
-                      ? "text-primary"
-                      : "text-white"
+                      ? "text-ink"
+                      : "text-ink-inverse"
                     : scrolled
-                    ? "text-neutral-700 hover:text-primary"
-                    : "text-white/90 hover:text-white"
+                    ? "text-ink-secondary hover:text-brand"
+                    : "text-ink-inverse/90 hover:text-ink-inverse"
                 )}
               >
                 {item.label}
@@ -158,7 +146,7 @@ export function Header() {
       {/* ================= Mobile Navigation ================= */}
       <div
         className={cn(
-          "fixed inset-x-0 top-16 bottom-0 bg-secondary transition-transform duration-300 lg:hidden",
+          "fixed inset-x-0 top-16 bottom-0 bg-surface transition-transform duration-300 lg:hidden",
           open ? "translate-x-0" : "translate-x-full"
         )}
       >
@@ -168,10 +156,8 @@ export function Header() {
               key={item.href}
               href={item.href}
               className={cn(
-                "border-b border-neutral-200 py-4 text-base font-semibold",
-                pathname === item.href
-                  ? "text-primary"
-                  : "text-neutral-800"
+                "border-b border-border py-4 text-base font-semibold",
+                pathname === item.href ? "text-ink" : "text-ink-secondary"
               )}
             >
               {item.label}

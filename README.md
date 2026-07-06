@@ -4,7 +4,9 @@ A Next.js 15 (App Router) scaffold for the Golden Faith church website, built
 around the design tokens from the brand style guide:
 
 - **Colors:** Primary `#074E40`, Secondary `#FFFFFF`, Tertiary `#F4F7F6`, Neutral `#1A1A1A`
-- **Type:** Montserrat (headlines), Inter (body/labels)
+- **Type:** Big Shoulders Display (headlines), Archivo (body/labels)
+- **Feel:** retro-industrial, bold and condensed, with a hint of brutalism —
+  sharp corners, thick borders, and hard offset shadows instead of soft ones
 
 ## Getting started
 
@@ -57,6 +59,23 @@ src
   component, closes on route change, locks scroll while open).
 - **Footer** is standardized site-wide with nav, service times, and contact
   info pulled from `config/site.ts`.
+
+## Design direction
+
+The UI primitives (`Button`, `Card`, `EventCard`, `ImageCard`, `PageHero`)
+share one visual language on purpose:
+
+- **Sharp corners.** No rounded corners anywhere in `ui/` — `rounded-none` is
+  the default, matching the condensed, industrial headline type.
+- **2px borders instead of soft shadows.** Cards and buttons are defined by
+  a hard black border, not a blurred drop shadow.
+- **Hard offset shadow that collapses on interaction.** Buttons and cards
+  carry a flat, non-blurred shadow (`shadow-[4px_4px_0_0_var(--color-ink)]`);
+  on hover the element shifts into that shadow and it disappears, like a
+  physical button being pressed.
+
+Extend new components with this same pattern rather than reaching for
+`rounded-xl` or `shadow-sm` — that would clash with the rest of the site.
 
 ## Extending
 

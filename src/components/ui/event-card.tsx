@@ -20,30 +20,30 @@ export function EventCard({
   return (
     <Link
       href={`/events#${id}`}
-      className="block rounded-xl border border-neutral-200 bg-white p-6 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-md"
+      className="block rounded-none border-2 border-ink bg-surface p-6 transition-all duration-150 hover:-translate-y-1 hover:shadow-[6px_6px_0_0_var(--color-ink)]"
     >
       <div className="flex items-center gap-6">
         {/* Date */}
         <div className="flex w-20 shrink-0 flex-col items-center">
-          <span className="text-xs font-bold uppercase tracking-[0.2em] text-red-600">
+          <span className="text-xs font-bold uppercase tracking-[0.2em] text-ink-muted">
             {month}
           </span>
 
-          <span className="text-5xl font-extrabold leading-none text-primary">
+          <span className="font-headline text-5xl font-extrabold leading-none text-ink">
             {day}
           </span>
         </div>
 
         {/* Divider */}
-        <div className="h-20 w-px bg-neutral-300" />
+        <div className="h-20 w-1 bg-ink" />
 
         {/* Content */}
         <div className="flex-1">
-          <h3 className="text-xl font-bold text-neutral-900">
+          <h3 className="text-xl font-bold text-ink">
             {title}
           </h3>
 
-          <p className="mt-2 text-base text-neutral-600">
+          <p className="mt-2 text-base text-ink-secondary">
             {time} &bull; {location}
           </p>
         </div>

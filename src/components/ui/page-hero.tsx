@@ -18,10 +18,15 @@ export function PageHero({
   className,
 }: PageHeroProps) {
   return (
-    <section className={cn("bg-primary text-secondary pt-16 pb-14 md:pt-24 md:pb-20", className)}>
+    <section
+      className={cn(
+        "bg-surface-inverse text-ink-inverse pt-16 pb-14 md:pt-24 md:pb-20 border-b-2 border-ink-inverse",
+        className
+      )}
+    >
       <Container>
         {eyebrow && (
-          <span className="eyebrow text-secondary/90 mb-4 [&::before]:bg-secondary">
+          <span className="eyebrow text-ink-inverse-secondary mb-4">
             {eyebrow}
           </span>
         )}
@@ -29,7 +34,7 @@ export function PageHero({
           {title}
         </h1>
         {description && (
-          <p className="mt-4 max-w-xl text-body text-secondary/85">
+          <p className="mt-4 max-w-xl text-body text-ink-inverse-secondary">
             {description}
           </p>
         )}

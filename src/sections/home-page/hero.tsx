@@ -12,11 +12,11 @@ export function Hero() {
         min-h-dvh
         items-end
         overflow-hidden
-        bg-neutral
+        bg-surface-inverse
         bg-cover
         bg-center
         bg-fixed
-        text-secondary
+        text-ink-inverse
       "
       style={{
         backgroundImage: "url('/images/home-page/hero-img.jpg')",
@@ -29,18 +29,18 @@ export function Hero() {
           absolute
           inset-0
           bg-linear-to-t
-          from-primary/60
-          via-primary/25
+          from-surface-inverse/70
+          via-surface-inverse/30
           to-transparent
         "
       />
       {/* Content */}
       <Container className="relative z-10 w-full pb-14 pt-32 md:pb-20">
-        <span className="eyebrow mb-5 text-secondary/90 [&::before]:bg-primary-300">
+        <span className="eyebrow mb-5 text-ink-inverse-secondary">
           Sunday Services
         </span>
 
-        <h1 className="max-w-3xl whitespace-pre-line text-display text-secondary">
+        <h1 className="max-w-3xl whitespace-pre-line text-display text-ink-inverse">
           {`EXPERIENCE
             FAITH IN
             MOTION`}
@@ -49,14 +49,16 @@ export function Hero() {
         <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:gap-4">
           <ButtonLink
             href="/live"
-            variant="secondary"
+            fill="grey"
+            text="ink"
+            shadow="transparent"
             className="border-0"
           >
             <Play size={16} fill="currentColor" />
             Watch Live
           </ButtonLink>
 
-          <ButtonLink href="/connect" variant="outlined">
+          <ButtonLink href="/connect" fill="transparent" text="inverse" border="inverse" shadow="transparent">
             New Here?
           </ButtonLink>
         </div>
