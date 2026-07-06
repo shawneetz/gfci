@@ -18,7 +18,7 @@ export function CtaSection() {
             fill="grey2"
             text="inverse"
             border="ink"
-            shadow="grey"
+            shadow="ink"
             buttonFill="inverse"
             buttonTextColor="ink"
             buttonBorder="ink"
