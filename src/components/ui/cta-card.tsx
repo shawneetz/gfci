@@ -5,7 +5,10 @@ import { cn } from "@/lib/utils";
 import { ButtonLink } from "@/components/ui/button";
 import { Tone, toneVar } from "@/components/ui/button";
 
-// Controls how rounded the card's corners are.
+// Controls how rounded the card's corners are. Kept as an overridable prop
+// (rather than hardcoding rounded-none) so a future one-off exception has
+// somewhere to go — see design-notes.md's guidance on treating rounded
+// corners as an explicit exception, not a default.
 export type Radius = "none" | "sm" | "md" | "lg" | "xl" | "full";
 
 const radiusClass: Record<Radius, string> = {
@@ -30,7 +33,7 @@ interface CtaCardProps {
   text?: Tone;   // heading, description, and icon color
   border?: Tone; // card border color
   shadow?: Tone; // card's own hard offset shadow color ("transparent" = no shadow)
-  radius?: Radius; // card corner rounding
+  radius?: Radius; // card corner rounding — defaults to "none" per design-notes.md
 
   // Button colors — fully independent from the card.
   // If left unset, they default to an inverted version of the card's
@@ -54,7 +57,7 @@ export function CtaCard({
   text = "inverse",
   border = "ink",
   shadow = "transparent",
-  radius = "lg",
+  radius = "none",
   buttonFill,
   buttonTextColor,
   buttonBorder,

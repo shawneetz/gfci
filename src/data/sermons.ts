@@ -1,11 +1,12 @@
 import { Sermon } from "@/types";
+import { people } from "@/data/people";
 
 export const sermons: Sermon[] = [
   {
     slug: "building-on-solid-ground",
     title: "Building on Solid Ground",
     series: "Foundations",
-    speaker: "Bishop Noel Gonzales",
+    speaker: people.noelGonzales.displayName,
     date: "2026-07-05",
     thumbnail: "/images/home-page/latest-sermon-img.jpg",
     summary:
@@ -15,7 +16,7 @@ export const sermons: Sermon[] = [
     slug: "the-weight-of-grace",
     title: "The Weight of Grace",
     series: "Foundations",
-    speaker: "Pastor Anna Reyes",
+    speaker: people.annaReyes.displayName,
     date: "2026-06-28",
     thumbnail: "/images/home-page/sermon-2.jpg",
     summary: "Understanding grace not as a concept, but as a daily practice.",
@@ -24,7 +25,7 @@ export const sermons: Sermon[] = [
     slug: "faith-that-moves",
     title: "Faith That Moves",
     series: "Foundations",
-    speaker: "Bishop Noel Gonzales",
+    speaker: people.noelGonzales.displayName,
     date: "2026-06-21",
     thumbnail: "/images/sermon-3.jpg",
     summary: "Faith isn't static — it's meant to move us toward action.",

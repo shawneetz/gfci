@@ -9,20 +9,22 @@ import { cn } from "@/lib/utils";
 //   inverse     = white       (#FFFFFF)
 //   grey        = light grey  (#D8D3CD)
 //   grey2       = darker grey (#666666)
+//   brand       = accent green (#074E40)
 //   transparent = see-through
-export type Tone = "ink" | "inverse" | "grey" | "grey2" | "transparent";
+export type Tone = "ink" | "inverse" | "grey" | "grey2" | "brand" | "transparent";
 
 export const toneVar: Record<Tone, string> = {
   ink: "var(--color-ink)",
   inverse: "var(--color-ink-inverse)",
   grey: "var(--color-border)",
   grey2: "var(--color-ink-muted)",
+  brand: "var(--color-brand)",
   transparent: "transparent",
 };
 
 
 const baseStyles =
-  "inline-flex items-center justify-center gap-2 rounded-none border-2 px-6 py-3 text-sm font-bold uppercase tracking-[0.14em] transition-all duration-150 whitespace-nowrap hover:translate-x-[4px] hover:translate-y-[4px] hover:shadow-none";
+  "inline-flex items-center justify-center gap-2 rounded-none border-2 px-6 py-3 text-sm font-bold uppercase tracking-[0.14em] transition-all duration-150 whitespace-nowrap hover:translate-x-[4px] hover:translate-y-[4px] hover:shadow-none disabled:cursor-not-allowed disabled:opacity-60 disabled:pointer-events-none";
 
 
 interface ColorProps {

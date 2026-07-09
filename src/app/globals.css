@@ -18,11 +18,10 @@
   --color-border: #D8D3CD;
 
   /* BRAND */
-  --color-brand: #  ;
-  --color-brand-hover: #2A2A2A;
-  --color-brand-active: #000000;
-  --color-brand-subtle: #F3F1EE;
-
+  --color-brand: #342B25;
+  --color-brand-hover: #463831;
+  --color-brand-active: #241D19;
+  --color-brand-subtle: #F3F0ED;
   /* FONTS */
   --font-headline: var(--font-big-shoulders), "Arial Narrow", sans-serif;
   --font-body: var(--font-archivo), "Helvetica Neue", sans-serif;

@@ -23,7 +23,6 @@ export function CtaSection() {
             buttonTextColor="ink"
             buttonBorder="ink"
             buttonShadow="grey"
-            radius="lg"
           />
 
           {/* Prayer */}
@@ -42,7 +41,6 @@ export function CtaSection() {
             buttonTextColor="inverse"
             buttonBorder="inverse"
             buttonShadow="grey2"
-            radius="lg"
           />
         </div>
       </Container>

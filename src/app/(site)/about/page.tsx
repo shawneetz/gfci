@@ -1,22 +1,19 @@
 import { PageHero } from "@/components/ui/page-hero";
-import { Container } from "@/components/ui/container";
+import { MissionStatement } from "@/sections/about-page/mission-statement";
+import { CoreValues } from "@/sections/about-page/core-values";
+import { Leadership } from "@/sections/about-page/leadership";
 
 export default function AboutPage() {
   return (
     <>
       <PageHero
-        eyebrow="Our Story"
-        title="About Golden Faith"
-        description="Who we are, what we believe, and the people leading our community."
+        eyebrow="About Us"
+        title="Our Story"
+        description="We started with a simple belief: that faith should be active, community should be authentic, and worship should be a transformative experience. Welcome to a place where you belong before you believe."
       />
-      <section className="section bg-surface">
-        <Container>
-          <p className="text-ink-muted max-w-xl">
-            Poster section, Core Values, and Meet Our Leaders go here — built
-            with the same Card component used across the site.
-          </p>
-        </Container>
-      </section>
+      <MissionStatement />
+      <CoreValues />
+      <Leadership />
     </>
   );
 }

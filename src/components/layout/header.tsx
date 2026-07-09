@@ -2,14 +2,18 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
-import { Menu, X } from "lucide-react";
+import { ChevronDown, Menu, X } from "lucide-react";
 
 import { siteConfig } from "@/config/site";
 import { Container } from "@/components/ui/container";
 import { ButtonLink } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+
+// Matches the shape of `siteConfig.nav` exactly (rather than a hand-written
+// duplicate type), so the two can never drift apart.
+type NavItem = (typeof siteConfig.nav)[number];
 
 export function Header() {
   const pathname = usePathname();
@@ -62,7 +66,7 @@ export function Header() {
               width={30}
               height={30}
               priority
-              className="h-[30px] w-[30px]"
+              className="h-30px w-30px"
             />
           </Link>
 
@@ -100,7 +104,7 @@ export function Header() {
               width={30}
               height={30}
               priority
-              className="h-[30px] w-[30px]"
+              className="h-30px w-30px"
             />
 
             <span
@@ -115,28 +119,16 @@ export function Header() {
 
           <nav className="flex items-center gap-8">
             {siteConfig.nav.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={cn(
-                  "text-sm font-semibold tracking-wide transition-colors",
-                  pathname === item.href
-                    ? scrolled
-                      ? "text-ink"
-                      : "text-ink-inverse"
-                    : scrolled
-                    ? "text-ink-secondary hover:text-brand"
-                    : "text-ink-inverse/90 hover:text-ink-inverse"
-                )}
-              >
-                {item.label}
-              </Link>
+              <DesktopNavItem
+                key={item.label}
+                item={item}
+                pathname={pathname}
+                scrolled={scrolled}
+              />
             ))}
           </nav>
 
-          <ButtonLink
-            href={siteConfig.primaryCta.href}
-          >
+          <ButtonLink href={siteConfig.primaryCta.href}>
             {siteConfig.primaryCta.label}
           </ButtonLink>
         </div>
@@ -145,22 +137,13 @@ export function Header() {
       {/* ================= Mobile Navigation ================= */}
       <div
         className={cn(
-          "fixed inset-x-0 top-16 bottom-0 bg-surface transition-transform duration-300 lg:hidden",
+          "fixed inset-x-0 top-16 bottom-0 overflow-y-auto bg-surface transition-transform duration-300 lg:hidden",
           open ? "translate-x-0" : "translate-x-full"
         )}
       >
         <Container className="flex flex-col gap-1 pt-6">
           {siteConfig.nav.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                "border-b border-border py-4 text-base font-semibold",
-                pathname === item.href ? "text-ink" : "text-ink-secondary"
-              )}
-            >
-              {item.label}
-            </Link>
+            <MobileNavItem key={item.label} item={item} pathname={pathname} />
           ))}
 
           <ButtonLink
@@ -172,5 +155,175 @@ export function Header() {
         </Container>
       </div>
     </header>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Desktop: standalone links render directly; groups render as a click-to-open
+// dropdown (closes on outside click, Escape, or route change).
+// ---------------------------------------------------------------------------
+
+function DesktopNavItem({
+  item,
+  pathname,
+  scrolled,
+}: {
+  item: NavItem;
+  pathname: string;
+  scrolled: boolean;
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => setOpen(false), [pathname]);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (ref.current && !ref.current.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    }
+    function handleEscape(event: KeyboardEvent) {
+      if (event.key === "Escape") setOpen(false);
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleEscape);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, []);
+
+  const linkColor = (active: boolean) =>
+    cn(
+      "text-sm font-semibold tracking-wide transition-colors",
+      active
+        ? scrolled
+          ? "text-ink"
+          : "text-ink-inverse"
+        : scrolled
+        ? "text-ink-secondary hover:text-brand"
+        : "text-ink-inverse/90 hover:text-ink-inverse"
+    );
+
+  if (item.type === "link") {
+    return (
+      <Link href={item.href} className={linkColor(pathname === item.href)}>
+        {item.label}
+      </Link>
+    );
+  }
+
+  // item.type === "group"
+  const isActive = item.items.some((sub) => sub.href === pathname);
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        type="button"
+        aria-haspopup="true"
+        aria-expanded={open}
+        onClick={() => setOpen((value) => !value)}
+        className={cn(linkColor(isActive), "flex items-center gap-1")}
+      >
+        {item.label}
+        <ChevronDown
+          size={14}
+          className={cn("transition-transform duration-150", open && "rotate-180")}
+        />
+      </button>
+
+      {open && (
+        <div className="absolute left-0 top-full mt-3 min-w-200px rounded-none border-2 border-ink bg-surface py-2 shadow-[4px_4px_0_0_var(--color-ink)]">
+          {item.items.map((sub) => (
+            <Link
+              key={sub.href}
+              href={sub.href}
+              onClick={() => setOpen(false)}
+              className={cn(
+                "block px-4 py-2.5 text-sm font-semibold transition-colors",
+                pathname === sub.href
+                  ? "text-ink"
+                  : "text-ink-secondary hover:bg-surface-alt hover:text-ink"
+              )}
+            >
+              {sub.label}
+            </Link>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Mobile: standalone links render directly; groups render as an accordion
+// row that expands into an indented sub-list.
+// ---------------------------------------------------------------------------
+
+function MobileNavItem({
+  item,
+  pathname,
+}: {
+  item: NavItem;
+  pathname: string;
+}) {
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => setOpen(false), [pathname]);
+
+  if (item.type === "link") {
+    return (
+      <Link
+        href={item.href}
+        className={cn(
+          "border-b border-border py-4 text-base font-semibold",
+          pathname === item.href ? "text-ink" : "text-ink-secondary"
+        )}
+      >
+        {item.label}
+      </Link>
+    );
+  }
+
+  // item.type === "group"
+  const isActive = item.items.some((sub) => sub.href === pathname);
+
+  return (
+    <div className="border-b border-border">
+      <button
+        type="button"
+        aria-expanded={open}
+        onClick={() => setOpen((value) => !value)}
+        className={cn(
+          "flex w-full items-center justify-between py-4 text-base font-semibold",
+          isActive ? "text-ink" : "text-ink-secondary"
+        )}
+      >
+        {item.label}
+        <ChevronDown
+          size={18}
+          className={cn("transition-transform duration-150", open && "rotate-180")}
+        />
+      </button>
+
+      {open && (
+        <div className="flex flex-col gap-1 pb-4 pl-4">
+          {item.items.map((sub) => (
+            <Link
+              key={sub.href}
+              href={sub.href}
+              className={cn(
+                "py-2 text-sm font-semibold",
+                pathname === sub.href ? "text-ink" : "text-ink-muted"
+              )}
+            >
+              {sub.label}
+            </Link>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }

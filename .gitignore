@@ -70,3 +70,4 @@ storybook-static/
 /.cache/
 
 # Keep lockfiles (package-lock.json, yarn.lock, pnpm-lock.yaml) committed by default
+checklist-fix.md

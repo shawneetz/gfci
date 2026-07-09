@@ -2,6 +2,7 @@ import { Container } from "@/components/ui/container";
 import { ButtonLink } from "@/components/ui/button";
 import { EventCard } from "@/components/ui/event-card";
 import { upcomingEvents } from "@/data/events";
+import { formatMonthShort, formatDay } from "@/lib/utils";
 
 export function UpcomingEvents() {
   return (
@@ -16,8 +17,8 @@ export function UpcomingEvents() {
             <EventCard
               key={event.id}
               id={event.id}
-              month={event.month}
-              day={event.day}
+              month={formatMonthShort(event.date)}
+              day={formatDay(event.date)}
               title={event.title}
               time={event.time}
               location={event.location}

@@ -1,6 +1,9 @@
-import { PrayerRequest } from "@/types";
+// Prayer TEAMS someone can join to pray with/for others — not to be confused
+// with an individual's prayer request submitted via PrayerRequestForm.
+// Previously named `prayer-requests.ts`, which collided with that concept.
+import { PrayerTeam } from "@/types";
 
-export const prayerRequests: PrayerRequest[] = [
+export const prayerTeams: PrayerTeam[] = [
   {
     slug: "kids",
     name: "Kids Prayer Team",

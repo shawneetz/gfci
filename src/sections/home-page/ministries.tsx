@@ -1,29 +1,7 @@
 import { Container } from "@/components/ui/container";
 import { ButtonLink } from "@/components/ui/button";
 import { ImageCard } from "@/components/ui/image-card";
-
-const ministries = [
-  {
-    title: "Kids Ministry",
-    image: "/images/home-page/kids-ministry.jpg",
-    href: "/ministries/kids",
-  },
-  {
-    title: "Youth Assemble",
-    image: "/images/home-page/youth-assemble.jpg",
-    href: "/ministries/youth",
-  },
-  {
-    title: "Connect Groups",
-    image: "/images/home-page/connect-groups.jpg",
-    href: "/ministries/connect-groups",
-  },
-  {
-    title: "Outreach",
-    image: "/images/home-page/outreach.jpg",
-    href: "/ministries/outreach",
-  },
-];
+import { ministries } from "@/data/ministries";
 
 export function Ministries() {
   return (
@@ -41,13 +19,13 @@ export function Ministries() {
           </p>
         </div>
 
-        <div className="mt-10 grid grid-cols-2 gap-5">
+        <div className="mt-10 grid grid-cols-2 gap-5 sm:grid-cols-3">
           {ministries.map((ministry) => (
             <ImageCard
-              key={ministry.title}
+              key={ministry.slug}
               title={ministry.title}
               image={ministry.image}
-              href={ministry.href}
+              href={`/ministries/${ministry.slug}`}
             />
           ))}
         </div>

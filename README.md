@@ -1,92 +1,112 @@
 # Golden Faith — Church Website
 
-A Next.js 15 (App Router) scaffold for the Golden Faith church website, built
-around the design tokens from the brand style guide:
+This is the website for Golden Faith Church International. It's built with
+**Next.js** (a popular framework for building fast, modern websites),
+**TypeScript** (JavaScript with some extra safety nets), and **Tailwind CSS**
+(a way to style pages quickly without writing separate CSS files for
+everything).
 
-- **Colors:** Primary `#074E40`, Secondary `#FFFFFF`, Tertiary `#F4F7F6`, Neutral `#1A1A1A`
-- **Type:** Big Shoulders Display (headlines), Archivo (body/labels)
-- **Feel:** retro-industrial, bold and condensed, with a hint of brutalism —
-  sharp corners, thick borders, and hard offset shadows instead of soft ones
+## What's the look and feel?
+
+We're calling it "retro-industrial" — think old civic signage and vintage
+print design. In practice that means:
+
+- **Bold, condensed headlines** in all-caps (the font is called Big Shoulders
+  Display)
+- **Sharp corners everywhere** — no rounded buttons or cards
+- **Thick black borders** instead of soft drop shadows
+- **A "pressed button" effect** — buttons and cards have a hard shadow that
+  disappears when you hover, like the element is physically being pushed in
+
+Body text (paragraphs, labels, etc.) uses a font called Archivo.
+
+If you want the full breakdown of colors, spacing, and component rules,
+check out `design-notes.md` in this folder — that's the detailed style guide.
 
 ## Getting started
+
+You'll need [Node.js](https://nodejs.org) installed. Then, from this folder,
+run:
 
 ```bash
 npm install
 npm run dev
 ```
 
-Visit `http://localhost:3000`.
+Once that's running, open `http://localhost:3000` in your browser and you
+should see the site.
 
-## Structure
+## How the project is organized
 
-```
-src
-├── app
-│   ├── (site)              # public-facing route group (shares header/footer)
-│   │   ├── about/
-│   │   ├── connect/
-│   │   ├── events/
-│   │   ├── giving/
-│   │   ├── live/
-│   │   ├── ministries/
-│   │   ├── sermons/
-│   │   ├── layout.tsx      # injects Header + Footer
-│   │   └── page.tsx        # Home page (fully built out)
-│   ├── globals.css
-│   └── layout.tsx           # root layout, fonts
-├── components
-│   ├── layout/               # Header (sticky + hamburger), Footer
-│   ├── sections/              # Page-level building blocks (Hero, Mission, PageHero, etc.)
-│   └── ui/                    # Button, Container, Card — shared primitives
-├── config/
-│   └── site.ts                # nav links, service times, contact info
-├── data/                       # sermons, ministries, events, announcements
-├── lib/
-│   └── utils.ts                 # cn() class merger, formatDate()
-└── types/
-    └── index.ts                  # shared TS interfaces
-```
+Everything lives inside the `src` folder. Here's the short version of what's
+where:
 
-## What's built
+- **`app/`** — This is where the actual pages live (Home, About, Sermons,
+  Events, and so on). Next.js turns each folder in here into a page on the
+  site automatically.
+- **`components/`** — Reusable building blocks. `layout/` has the header and
+  footer that show up on every page. `ui/` has smaller pieces like buttons,
+  cards, and form fields that get reused all over the site.
+- **`sections/`** — Bigger chunks built from those smaller pieces, grouped by
+  which page they belong to (e.g. everything for the Events page lives in
+  `sections/events-page/`).
+- **`config/site.ts`** — One file that controls the navigation menu, footer
+  links, contact info, and service times. Change something here and it
+  updates everywhere it's used.
+- **`data/`** — This is where the actual content lives: sermons, ministries,
+  events, staff/leader names, prayer teams, and testimonies. Think of these
+  as simple lists you can edit without touching any page code.
+- **`lib/`** — Small helper functions, like formatting a date nicely or
+  handling what happens when someone submits a form.
+- **`types/`** — Defines the "shape" of the data (what fields a sermon or
+  event is supposed to have). Mostly useful for keeping things consistent
+  behind the scenes.
 
-- **Home page** is fully functional: Hero, Mission, Latest Sermon, Giving CTA,
-  Ministries preview, and Announcements — all wired to real (sample) data.
-- **Every other page** (About, Connect, Events, Giving, Live, Ministries,
-  Sermons) is scaffolded using the shared `PageHero` component and existing
-  `Card` primitive, so they already look consistent with Home. They contain
-  placeholder copy marking where to add real content.
-- **Header** is sticky, includes a working mobile hamburger menu (client
-  component, closes on route change, locks scroll while open).
-- **Footer** is standardized site-wide with nav, service times, and contact
-  info pulled from `config/site.ts`.
+## What pages exist right now
 
-## Design direction
+- **Home** — hero section, mission statement, latest sermon, upcoming events,
+  ministries preview, and a giving/prayer call-to-action
+- **About** — mission statement, core values, and leadership info
+- **Sermons** — a list of past messages, plus a dedicated page for each one
+- **Ministries** — a list of ministries (Kids, Youth, Connect Groups), plus a
+  dedicated page for each one
+- **Events** — upcoming events with filters, a featured event, and an
+  archive of past events
+- **Prayer Requests** — a form to submit a request, info on prayer teams you
+  can join, and answered-prayer testimonials
+- **Giving** — a donation form with preset amounts, fund selection, and
+  one-time/monthly options
+- **Connect** — a "plan your visit" page with separate sign-up forms for
+  kids, youth, and adults
+- **Live** — the live stream page, with sermon notes and chat alongside the
+  video
 
-The UI primitives (`Button`, `Card`, `EventCard`, `ImageCard`, `PageHero`)
-share one visual language on purpose:
+The header navigation groups some of these together — "Watch" covers Sermons
+and Live, and "Get Involved" covers Ministries, Events, Prayer Requests, and
+Connect — so the menu doesn't get too crowded.
 
-- **Sharp corners.** No rounded corners anywhere in `ui/` — `rounded-none` is
-  the default, matching the condensed, industrial headline type.
-- **2px borders instead of soft shadows.** Cards and buttons are defined by
-  a hard black border, not a blurred drop shadow.
-- **Hard offset shadow that collapses on interaction.** Buttons and cards
-  carry a flat, non-blurred shadow (`shadow-[4px_4px_0_0_var(--color-ink)]`);
-  on hover the element shifts into that shadow and it disappears, like a
-  physical button being pressed.
+## Making changes
 
-Extend new components with this same pattern rather than reaching for
-`rounded-xl` or `shadow-sm` — that would clash with the rest of the site.
+- **Want to update text, add a sermon, or add an event?** You probably just
+  need to edit a file in `src/data/`. No need to touch the page layouts.
+- **Want to change contact info, service times, or menu links?** That's all
+  in `src/config/site.ts`.
+- **Want to change how something looks?** Look in `src/components/ui/` first
+  — there's a good chance the button, card, or form style you want to change
+  already exists as a reusable piece there, and changing it once will update
+  it everywhere it's used.
 
-## Extending
+One thing worth knowing: the forms (Giving, Prayer Requests, Connect) don't
+actually send anything anywhere yet. They're fully working on the screen —
+you can type, submit, and see a success message — but behind the scenes
+they just log the submission instead of saving it or emailing anyone. That's
+intentional for now; when a real backend or email service is ready, there's
+one file (`src/lib/forms.ts`) where that gets wired up, so none of the forms
+themselves need to change.
 
-- Add new sermons/ministries/events/announcements by editing the files in
-  `src/data/`.
-- Update contact info, nav links, or service times in `src/config/site.ts`.
-- All cards, buttons, and section spacing come from the shared `ui/` and
-  `sections/` components — extend those rather than writing one-off styles
-  per page to keep the site visually unified.
-- Swap the CSS-gradient placeholders (Hero background, sermon/ministry/event
-  thumbnails) for real photography by dropping images into `public/images`
-  and updating the relevant component/data file.
-# gfci-website
-# gfci
+## A note on fonts and images
+
+The headline font (Big Shoulders Display) is loaded from font files sitting
+in `src/app/fonts/`, and the body font (Archivo) comes from Google Fonts
+automatically. Images used across the site live in `public/images/` — if
+you're swapping in real photos, that's where they go.

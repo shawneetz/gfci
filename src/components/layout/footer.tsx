@@ -22,13 +22,12 @@ export function Footer() {
             >
               <Facebook size={20} fill="currentColor" />
             </a>
-              <a
-            
+            <a
               href={siteConfig.contact.instagram}
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Instagram"
-              className="flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-br from-[#F58529] via-[#DD2A7B] to-[#8134AF] transition-transform hover:scale-105"
+              className="flex h-11 w-11 items-center justify-center rounded-full bg-linear-to-br from-[#F58529] via-[#DD2A7B] to-[#8134AF] transition-transform hover:scale-105"
             >
               <Instagram size={20} />
             </a>
@@ -45,9 +44,9 @@ export function Footer() {
         </div>
 
         {/* Main Footer */}
-        <div className="mt-14 grid grid-cols-2 gap-8 md:gap-16">
+        <div className="mt-14 grid grid-cols-2 gap-8 md:grid-cols-4 md:gap-16">
           {/* Contact */}
-          <div>
+          <div className="col-span-2 md:col-span-2">
             <h3 className="text-subtitle uppercase">Contact Us</h3>
 
             <div className="mt-6 space-y-6">
@@ -62,7 +61,6 @@ export function Footer() {
               <div>
                 <h4 className="font-headline font-bold">Contact:</h4>
                 <a
-                
                   href={`tel:${siteConfig.contact.phone}`}
                   className="mt-2 block text-body-sm text-ink-inverse-secondary transition-colors hover:text-ink-inverse"
                 >
@@ -73,7 +71,6 @@ export function Footer() {
               <div>
                 <h4 className="font-headline font-bold">E-mail:</h4>
                 <a
-                
                   href={`mailto:${siteConfig.contact.email}`}
                   className="mt-2 block break-all text-body-sm text-ink-inverse-secondary transition-colors hover:text-ink-inverse"
                 >
@@ -83,13 +80,33 @@ export function Footer() {
             </div>
           </div>
 
-          {/* Navigation */}
+          {/* Explore */}
           <div>
-            <h3 className="text-subtitle uppercase">Navigate</h3>
+            <h3 className="text-subtitle uppercase">Explore</h3>
 
             <nav className="mt-6">
               <ul className="space-y-4">
-                {siteConfig.nav.slice(0, 5).map((item) => (
+                {siteConfig.footerNav.explore.map((item) => (
+                  <li key={item.href}>
+                    <Link
+                      href={item.href}
+                      className="text-body text-ink-inverse-secondary transition-colors hover:text-ink-inverse"
+                    >
+                      {item.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          </div>
+
+          {/* Get Involved */}
+          <div>
+            <h3 className="text-subtitle uppercase">Get Involved</h3>
+
+            <nav className="mt-6">
+              <ul className="space-y-4">
+                {siteConfig.footerNav.getInvolved.map((item) => (
                   <li key={item.href}>
                     <Link
                       href={item.href}
