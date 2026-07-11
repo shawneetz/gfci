@@ -3,6 +3,7 @@ import { Container } from "@/components/ui/container";
 import { cn } from "@/lib/utils";
 import { FORM_PAGE_MAX_WIDTH } from "@/lib/layout";
 import { CARD_OVERLAY } from "@/lib/overlays";
+import { whyWeGive } from "@/content/giving";
 
 export function WhyWeGive() {
   return (
@@ -19,11 +20,8 @@ export function WhyWeGive() {
           <div className={cn("absolute inset-0", CARD_OVERLAY)} />
 
           <div className="absolute inset-x-0 bottom-0 p-6 md:p-8">
-            <h2 className="text-card-title text-ink-inverse">Why We Give</h2>
-            <p className="mt-2 max-w-sm text-body-sm text-ink-inverse-secondary">
-              Giving is an act of worship. It&apos;s how we partner together
-              to impact our city and world.
-            </p>
+            <h2 className="text-card-title text-ink-inverse">{whyWeGive.title}</h2>
+            <p className="mt-2 max-w-sm text-body-sm text-ink-inverse-secondary">{whyWeGive.body}</p>
           </div>
         </div>
       </Container>

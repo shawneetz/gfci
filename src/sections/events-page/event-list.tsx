@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { MonthNav, type MonthNavProps } from "@/components/ui/month-nav";
 import { EventListItem } from "@/sections/events-page/event-list-item";
 import { CONTENT_MAX_WIDTH } from "@/lib/layout";
+import { list } from "@/content/events";
 
 const PAGE_SIZE = 5;
 
@@ -18,12 +19,7 @@ interface EventListProps {
   nextMonthHref?: MonthNavProps["nextHref"];
 }
 
-export function EventList({
-  events,
-  monthLabel,
-  prevMonthHref,
-  nextMonthHref,
-}: EventListProps) {
+export function EventList({ events, monthLabel, prevMonthHref, nextMonthHref }: EventListProps) {
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
   const visibleEvents = events.slice(0, visibleCount);
@@ -36,13 +32,9 @@ export function EventList({
 
         <div className="mt-6">
           {visibleEvents.length > 0 ? (
-            visibleEvents.map((event) => (
-              <EventListItem key={event.id} event={event} />
-            ))
+            visibleEvents.map((event) => <EventListItem key={event.id} event={event} />)
           ) : (
-            <p className="py-10 text-center text-body text-ink-muted">
-              No events match these filters right now.
-            </p>
+            <p className="py-10 text-center text-body text-ink-muted">{list.emptyState}</p>
           )}
         </div>
 
@@ -56,7 +48,7 @@ export function EventList({
             shadow="grey"
             className="mt-8 w-full"
           >
-            Load More Events
+            {list.loadMoreLabel}
           </Button>
         )}
       </Container>

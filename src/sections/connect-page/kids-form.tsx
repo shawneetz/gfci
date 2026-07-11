@@ -9,6 +9,7 @@ import { FormStatusBanner } from "@/components/ui/form-status-banner";
 import { ministries } from "@/data/ministries";
 import { submitConnectRegistration, type SubmitStatus } from "@/lib/forms";
 import type { KidsConnectRegistration } from "@/types";
+import { messages } from "@/content/connect";
 
 const kidsMinistry = ministries.find((m) => m.slug === "golden-kids");
 
@@ -25,10 +26,7 @@ export function KidsForm() {
   const [form, setForm] = useState<KidsFormFields>(initialForm);
   const [status, setStatus] = useState<SubmitStatus>("idle");
 
-  function updateField<K extends keyof KidsFormFields>(
-    field: K,
-    value: KidsFormFields[K]
-  ) {
+  function updateField<K extends keyof KidsFormFields>(field: K, value: KidsFormFields[K]) {
     setForm((prev) => ({ ...prev, [field]: value }));
   }
 
@@ -106,18 +104,10 @@ export function KidsForm() {
       </div>
 
       {status === "success" && (
-        <FormStatusBanner
-          status="success"
-          message="You're all set! We'll see your family this Sunday — look for the VIP Kids Check-in desk."
-          className="mt-6"
-        />
+        <FormStatusBanner status="success" message={messages.kids.success} className="mt-6" />
       )}
       {status === "error" && (
-        <FormStatusBanner
-          status="error"
-          message="Something went wrong submitting your registration. Please try again."
-          className="mt-6"
-        />
+        <FormStatusBanner status="error" message={messages.kids.error} className="mt-6" />
       )}
 
       <Button

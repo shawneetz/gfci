@@ -3,6 +3,7 @@ import { Container } from "@/components/ui/container";
 import { ButtonLink } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { HERO_OVERLAY } from "@/lib/overlays";
+import { hero } from "@/content/connect";
 
 export function ConnectHero() {
   return (
@@ -18,21 +19,16 @@ export function ConnectHero() {
       <div className={cn("pointer-events-none absolute inset-0", HERO_OVERLAY)} />
 
       <Container className="relative z-10">
-        <span className="eyebrow mb-4 text-ink-inverse-secondary">
-          Plan a Visit
-        </span>
-        <h1 className="max-w-2xl text-display">Welcome Home.</h1>
-        <p className="mt-4 max-w-xl text-body text-ink-inverse-secondary">
-          We can&apos;t wait to host you this weekend. Let us know
-          you&apos;re coming so we can roll out the red carpet.
-        </p>
+        <span className="eyebrow mb-4 text-ink-inverse-secondary">{hero.eyebrow}</span>
+        <h1 className="max-w-2xl text-display">{hero.title}</h1>
+        <p className="mt-4 max-w-xl text-body text-ink-inverse-secondary">{hero.description}</p>
 
         <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:gap-4">
           <ButtonLink href="#connect-form" fill="brand" text="inverse" border="brand" shadow="grey">
-            Get Connected
+            {hero.connectLabel}
           </ButtonLink>
           <ButtonLink href="#what-to-expect" fill="transparent" text="inverse" border="inverse" shadow="transparent">
-            What to Expect
+            {hero.expectLabel}
           </ButtonLink>
         </div>
       </Container>

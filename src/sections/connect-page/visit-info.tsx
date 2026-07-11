@@ -3,11 +3,10 @@ import { Container } from "@/components/ui/container";
 import { Panel } from "@/components/ui/panel";
 import { ArrowLink } from "@/components/ui/arrow-link";
 import { siteConfig } from "@/config/site";
+import { visitInfo } from "@/content/connect";
 
 export function VisitInfo() {
-  const mapQuery = encodeURIComponent(
-    siteConfig.contact.address.replace(/\s+/g, " ").trim()
-  );
+  const mapQuery = encodeURIComponent(siteConfig.contact.address.replace(/\s+/g, " ").trim());
 
   return (
     <section className="section bg-surface">
@@ -16,7 +15,7 @@ export function VisitInfo() {
           <Panel className="flex flex-col" shadow={false}>
             <div className="flex items-center gap-2 text-ink">
               <Clock size={20} className="text-brand" />
-              <h2 className="text-lg font-bold">Service Times</h2>
+              <h2 className="text-lg font-bold">{visitInfo.title}</h2>
             </div>
 
             <div className="mt-5 space-y-4">
@@ -25,20 +24,13 @@ export function VisitInfo() {
                   key={service.label}
                   className="flex items-center justify-between border-b border-border pb-4 last:border-b-0 last:pb-0"
                 >
-                  <span className="text-body-sm font-semibold text-ink">
-                    {service.label}
-                  </span>
-                  <span className="text-body-sm text-ink-muted">
-                    {service.time}
-                  </span>
+                  <span className="text-body-sm font-semibold text-ink">{service.label}</span>
+                  <span className="text-body-sm text-ink-muted">{service.time}</span>
                 </div>
               ))}
             </div>
 
-            <p className="mt-6 text-caption text-ink-muted">
-              Services typically last 75 minutes. Arrive 15 minutes early to
-              grab coffee and find a seat.
-            </p>
+            <p className="mt-6 text-caption text-ink-muted">{visitInfo.note}</p>
           </Panel>
 
           <div className="relative overflow-hidden border-2 border-ink">
@@ -56,7 +48,7 @@ export function VisitInfo() {
                 <MapPin size={18} className="mt-0.5 shrink-0 text-brand" />
                 <div>
                   <p className="text-sm font-bold text-ink">
-                    {siteConfig.name} Main Campus
+                    {siteConfig.name} {visitInfo.campusLabel}
                   </p>
                   <p className="mt-1 whitespace-pre-line text-caption text-ink-muted">
                     {siteConfig.contact.address}
@@ -67,7 +59,7 @@ export function VisitInfo() {
                     rel="noopener noreferrer"
                     className="mt-2"
                   >
-                    Get Directions →
+                    {visitInfo.directionsLabel}
                   </ArrowLink>
                 </div>
               </div>

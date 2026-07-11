@@ -8,18 +8,18 @@
     "start": "next start",
     "lint": "eslint",
     "lint:fix": "eslint --fix",
+    "postinstall": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:seed": "prisma db seed",
     "db:studio": "prisma studio"
   },
-  "prisma": {
-    "seed": "tsx prisma/seed.ts"
-  },
   "dependencies": {
-    "@prisma/client": "^6.3.0",
+    "@prisma/adapter-pg": "^7.8.0",
+    "@prisma/client": "^7.8.0",
     "clsx": "^2.1.1",
     "lucide-react": "^0.469.0",
     "next": "^16.2.10",
+    "pg": "^8.16.0",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "tailwind-merge": "^2.6.1"
@@ -28,14 +28,16 @@
     "@svgr/webpack": "^8.1.0",
     "@tailwindcss/postcss": "^4.3.2",
     "@types/node": "^22.10.5",
+    "@types/pg": "^8.11.0",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
+    "dotenv": "^16.6.1",
     "eslint": "^9.18.0",
     "eslint-config-next": "^16.2.10",
     "postcss": "^8.5.16",
-    "prisma": "^6.19.3",
+    "prisma": "^7.8.0",
     "tailwindcss": "^4.3.2",
-    "tsx": "^4.23.0",
+    "tsx": "^4.19.0",
     "typescript": "^5.9.3"
   }
 }

@@ -7,21 +7,9 @@ import { Container } from "@/components/ui/container";
 import { MetaRow } from "@/components/ui/meta-row";
 import { Tabs, type TabItem } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
+import { hero, stream, tabs, notes, chat } from "@/content/live";
 
 type LivePanel = "notes" | "chat";
-
-const TABS: TabItem[] = [
-  { value: "notes", label: "Notes" },
-  { value: "chat", label: "Chat" },
-];
-
-// Placeholder info for whichever service is currently live — swap these
-// three fields for real data once the stream is wired up to a schedule.
-const LIVE_STREAM = {
-  title: "Title Here",
-  date: "Sundays, 9:00 AM & 11:00 AM",
-  location: "Main Sanctuary",
-};
 
 export default function LivePage() {
   const [activePanel, setActivePanel] = useState<LivePanel>("notes");
@@ -30,25 +18,22 @@ export default function LivePage() {
   return (
     <section className="bg-surface-inverse pt-32 pb-14 text-ink-inverse md:pb-20 md:pt-40">
       <Container className="max-w-4xl">
-        <span className="eyebrow mb-4 text-ink-inverse-secondary">Live</span>
-        <h1 className="text-2xl max-w-2xl">{LIVE_STREAM.title}</h1>
+        <span className="eyebrow mb-4 text-ink-inverse-secondary">{hero.eyebrow}</span>
+        <h1 className="text-2xl max-w-2xl">{stream.title}</h1>
         <MetaRow
           className="mt-4 text-ink-inverse-secondary"
           items={[
-            { icon: CalendarDays, label: LIVE_STREAM.date },
-            { icon: MapPin, label: LIVE_STREAM.location },
+            { icon: CalendarDays, label: stream.date },
+            { icon: MapPin, label: stream.location },
           ]}
         />
 
-        {/* Video always shows — it's not tied to which tab is selected below it. */}
         <div className="mt-8 flex aspect-video items-center justify-center rounded-md bg-black">
-          <span className="text-sm text-ink-inverse-secondary">
-            Live stream player
-          </span>
+          <span className="text-sm text-ink-inverse-secondary">Live stream player</span>
         </div>
 
         <Tabs
-          items={TABS}
+          items={tabs as TabItem[]}
           value={activePanel}
           onChange={(value) => setActivePanel(value as LivePanel)}
           idPrefix={idPrefix}
@@ -62,11 +47,9 @@ export default function LivePage() {
           className={cn("mt-6", activePanel === "notes" ? "block" : "hidden")}
         >
           <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-ink-inverse-secondary">
-            Sermon Notes
+            {notes.title}
           </h2>
-          <p className="text-sm text-ink-inverse-secondary">
-            Outline / notes for today&apos;s message go here.
-          </p>
+          <p className="text-sm text-ink-inverse-secondary">{notes.placeholder}</p>
         </div>
 
         <div
@@ -76,11 +59,9 @@ export default function LivePage() {
           className={cn("mt-6", activePanel === "chat" ? "block" : "hidden")}
         >
           <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-ink-inverse-secondary">
-            Live Chat
+            {chat.title}
           </h2>
-          <p className="text-sm text-ink-inverse-secondary">
-            Chat panel goes here.
-          </p>
+          <p className="text-sm text-ink-inverse-secondary">{chat.placeholder}</p>
         </div>
       </Container>
     </section>

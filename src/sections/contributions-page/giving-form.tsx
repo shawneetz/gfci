@@ -15,22 +15,9 @@ import { FormStatusBanner } from "@/components/ui/form-status-banner";
 import { ministries } from "@/data/ministries";
 import { submitGivingIntent, type SubmitStatus } from "@/lib/forms";
 import { FORM_PAGE_MAX_WIDTH } from "@/lib/layout";
+import { form as givingForm } from "@/content/giving";
 
-const PRESET_AMOUNTS = [50, 100, 250];
-
-// General funds aren't tied to a specific ministry, so they stay hand-typed.
-const GENERAL_FUND_OPTIONS = [
-  "General Tithes & Offerings",
-  "Building Fund",
-  "Missions & Outreach",
-];
-
-// Per-ministry funds are derived from the ministries data instead of
-// hand-typed here.
-const FUND_OPTIONS = [
-  ...GENERAL_FUND_OPTIONS,
-  ...ministries.map((ministry) => ministry.title),
-];
+const FUND_OPTIONS = [...givingForm.generalFundOptions, ...ministries.map((m) => m.title)];
 
 export function GivingForm() {
   const [amount, setAmount] = useState(100);
@@ -46,7 +33,7 @@ export function GivingForm() {
 
   function typeCustomAmount(value: string) {
     setCustomAmount(value);
-    if (value) setAmount(0); // clears preset selection once a custom value is typed
+    if (value) setAmount(0);
   }
 
   const resolvedAmount = customAmount ? Number(customAmount) : amount;
@@ -60,16 +47,7 @@ export function GivingForm() {
     }
 
     setStatus("submitting");
-
-    // NOTE: this only records giving *intent* — no payment is actually
-    // processed yet. Swap in a real payment provider redirect/checkout once
-    // one is integrated; submitGivingIntent is the seam to do that from.
-    const result = await submitGivingIntent({
-      amount: resolvedAmount,
-      fund,
-      frequency,
-    });
-
+    const result = await submitGivingIntent({ amount: resolvedAmount, fund, frequency });
     setStatus(result.success ? "success" : "error");
   }
 
@@ -78,11 +56,10 @@ export function GivingForm() {
       <Container className={FORM_PAGE_MAX_WIDTH}>
         <form onSubmit={handleSubmit}>
           <Panel className="space-y-8">
-            {/* Amount */}
             <div>
               <FieldLabel>Select Amount</FieldLabel>
               <div className="flex gap-3">
-                {PRESET_AMOUNTS.map((value) => (
+                {givingForm.presetAmounts.map((value) => (
                   <AmountOption
                     key={value}
                     amount={value}
@@ -103,14 +80,9 @@ export function GivingForm() {
               />
             </div>
 
-            {/* Fund Designation */}
             <div>
               <FieldLabel>Fund Designation</FieldLabel>
-              <SelectField
-                value={fund}
-                onChange={(e) => setFund(e.target.value)}
-                disabled={status === "submitting"}
-              >
+              <SelectField value={fund} onChange={(e) => setFund(e.target.value)} disabled={status === "submitting"}>
                 {FUND_OPTIONS.map((option) => (
                   <option key={option} value={option}>
                     {option}
@@ -119,7 +91,6 @@ export function GivingForm() {
               </SelectField>
             </div>
 
-            {/* Frequency */}
             <div>
               <FieldLabel>Frequency</FieldLabel>
               <div className="flex gap-8">
@@ -141,16 +112,10 @@ export function GivingForm() {
             </div>
 
             {status === "success" && (
-              <FormStatusBanner
-                status="success"
-                message="Thank you! Real payment processing isn't wired up yet, but your giving intent was recorded."
-              />
+              <FormStatusBanner status="success" message={givingForm.messages.success} />
             )}
             {status === "error" && (
-              <FormStatusBanner
-                status="error"
-                message="Please select or enter an amount before continuing."
-              />
+              <FormStatusBanner status="error" message={givingForm.messages.error} />
             )}
 
             <Button
@@ -163,7 +128,7 @@ export function GivingForm() {
               disabled={status === "submitting"}
             >
               <Lock size={16} />
-              {status === "submitting" ? "Processing..." : "Continue to Secure Payment"}
+              {status === "submitting" ? "Processing..." : givingForm.submitLabel}
             </Button>
           </Panel>
         </form>

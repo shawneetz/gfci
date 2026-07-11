@@ -1,0 +1,233 @@
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─────────────────────────────────────────────────────────
+// Enums
+// ─────────────────────────────────────────────────────────
+
+// Matches EVENT_CATEGORIES in src/types/index.ts exactly.
+enum EventCategory {
+  Worship
+  Youth
+  Outreach
+}
+
+// Matches PRAYER_CATEGORIES in src/types/index.ts exactly.
+enum PrayerCategory {
+  Healing
+  Family
+  Guidance
+  Thanksgiving
+  Other
+}
+
+// Matches PrayerRequestSubmission.visibility ("private" | "public") in
+// src/types/index.ts.
+enum Visibility {
+  private
+  public
+}
+
+// Prisma enum values can't contain a hyphen, so the form's "one-time"
+// string is mapped to one_time at the Server Action boundary (Phase 5) —
+// see src/lib/forms.ts.
+enum GivingFrequency {
+  one_time
+  monthly
+}
+
+enum ConnectAudience {
+  kids
+  youth
+  adults
+}
+
+// ─────────────────────────────────────────────────────────
+// Content models
+// ─────────────────────────────────────────────────────────
+
+// Single source of truth for every staff/leader referenced across the
+// site — About > Leadership, sermon speakers, and ministry leaders all
+// point back here instead of hand-typing a name+title per page. Mirrors
+// the old src/data/people.ts shape, plus two new fields (isLeadershipTeam,
+// leadershipOrder) so which staff appear on the About page — and in what
+// order — is admin-editable instead of hardcoded in leadership.tsx.
+model Person {
+  id          String  @id @default(cuid())
+  name        String
+  title       String // role shown on its own, e.g. About page leader cards
+  displayName String // honorific + name, ready to drop into copy/speaker lines
+  email       String?
+  imageUrl    String?
+
+  isLeadershipTeam Boolean @default(false)
+  leadershipOrder  Int? // only meaningful when isLeadershipTeam is true
+
+  ministriesLed Ministry[]
+  sermons       Sermon[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([isLeadershipTeam])
+}
+
+model Ministry {
+  id           String @id @default(cuid())
+  slug         String @unique
+  title        String
+  tagline      String // short description shown on the card
+  overview     String // longer description shown on the detail page
+  image        String
+  imageAlt     String
+  audience     String // who it's for
+  schedule     String // when it meets
+  location     String // where it meets
+  contactEmail String
+  order        Int    @default(0) // display order across Ministries list, Giving fund options, etc.
+
+  leaderId String
+  leader   Person @relation(fields: [leaderId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([order])
+}
+
+model Sermon {
+  id        String    @id @default(cuid())
+  slug      String    @unique
+  title     String
+  series    String
+  date      DateTime
+  thumbnail String
+  videoUrl  String?
+  summary   String?
+
+  speakerId String
+  speaker   Person @relation(fields: [speakerId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([series])
+  @@index([date])
+}
+
+model Event {
+  id          String        @id @default(cuid())
+  title       String
+  date        DateTime
+  time        String
+  category    EventCategory
+  location    String
+  image       String
+  description String
+  featured    Boolean       @default(false) // only one should be true at a time — see FeaturedEvent
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([date])
+  @@index([category])
+}
+
+model PrayerTeam {
+  id       String @id @default(cuid())
+  slug     String @unique
+  name     String
+  details  String
+  image    String
+  schedule String
+  order    Int    @default(0)
+
+  @@index([order])
+}
+
+model AnsweredPrayer {
+  id       String         @id @default(cuid())
+  quote    String
+  name     String
+  category PrayerCategory
+
+  createdAt DateTime @default(now())
+}
+
+// Placeholder info for whichever service is currently live. Always a
+// single row, fetched/updated by the fixed id "singleton" — never a
+// second row. Replaces the hardcoded LIVE_STREAM object in
+// src/app/(site)/live/page.tsx.
+model LiveStream {
+  id       String @id @default("singleton")
+  title    String
+  schedule String
+  location String
+
+  updatedAt DateTime @updatedAt
+}
+
+// ─────────────────────────────────────────────────────────
+// Form submissions
+// ─────────────────────────────────────────────────────────
+
+model PrayerRequestSubmission {
+  id         String         @id @default(cuid())
+  name       String
+  email      String
+  category   PrayerCategory
+  message    String
+  visibility Visibility     @default(private)
+
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}
+
+model GivingIntent {
+  id        String          @id @default(cuid())
+  amount    Int
+  fund      String
+  frequency GivingFrequency
+
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}
+
+// The three Connect page registration forms (Kids/Youth/Adults) share one
+// table rather than three, since they only differ by a handful of
+// audience-specific fields. Fields not relevant to a given audience stay
+// null — see src/lib/forms.ts (Phase 5) for which fields get written per
+// audience.
+model ConnectRegistration {
+  id        String          @id @default(cuid())
+  audience  ConnectAudience
+  email     String
+  visitDate DateTime
+
+  // kids
+  parentName String?
+  children   String?
+
+  // youth
+  studentName String?
+  grade       String?
+
+  // adults & youth
+  fullName          String?
+  socialMedia       String?
+  additionalContact String?
+
+  createdAt DateTime @default(now())
+
+  @@index([audience])
+  @@index([createdAt])
+}

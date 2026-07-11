@@ -10,6 +10,7 @@ import { OptionalContactFields } from "@/sections/connect-page/optional-contact-
 import { ministries } from "@/data/ministries";
 import { submitConnectRegistration, type SubmitStatus } from "@/lib/forms";
 import type { YouthConnectRegistration } from "@/types";
+import { messages } from "@/content/connect";
 
 const youthMinistry = ministries.find((m) => m.slug === "faith-youth");
 
@@ -28,10 +29,7 @@ export function YouthForm() {
   const [form, setForm] = useState<YouthFormFields>(initialForm);
   const [status, setStatus] = useState<SubmitStatus>("idle");
 
-  function updateField<K extends keyof YouthFormFields>(
-    field: K,
-    value: YouthFormFields[K]
-  ) {
+  function updateField<K extends keyof YouthFormFields>(field: K, value: YouthFormFields[K]) {
     setForm((prev) => ({ ...prev, [field]: value }));
   }
 
@@ -116,18 +114,10 @@ export function YouthForm() {
       />
 
       {status === "success" && (
-        <FormStatusBanner
-          status="success"
-          message="Registration received! A leader will look out for your student this week."
-          className="mt-6"
-        />
+        <FormStatusBanner status="success" message={messages.youth.success} className="mt-6" />
       )}
       {status === "error" && (
-        <FormStatusBanner
-          status="error"
-          message="Something went wrong submitting your registration. Please try again."
-          className="mt-6"
-        />
+        <FormStatusBanner status="error" message={messages.youth.error} className="mt-6" />
       )}
 
       <Button

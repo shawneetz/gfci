@@ -1,29 +1,23 @@
+// src/sections/home-page/ministries.tsx
 import { Container } from "@/components/ui/container";
 import { ButtonLink } from "@/components/ui/button";
 import { ImageCard } from "@/components/ui/image-card";
-import { ministries } from "@/data/ministries";
+import { ministries as ministriesData } from "@/data/ministries";
+import { ministries } from "@/content/home";
 
 export function Ministries() {
   return (
-    // was `py-16` (a fixed 64px top/bottom) instead of the shared `section`
-    // class, so unlike every other Home section this one never got the
-    // 96px desktop bump — see design-notes.md's Layout & Spacing audit.
     <section className="section bg-surface-inverse">
       <Container>
         <div className="max-w-xl">
-          <h2 className="text-section-title text-ink-inverse">
-            Ministries
-          </h2>
-
-          <p className="mt-6 text-body-lg leading-relaxed text-ink-inverse-secondary">
-            We believe growth happens in community.
-            <br />
-            Discover a ministry where you can belong and serve.
+          <h2 className="text-section-title text-ink-inverse">{ministries.title}</h2>
+          <p className="mt-6 whitespace-pre-line text-body-lg leading-relaxed text-ink-inverse-secondary">
+            {ministries.body}
           </p>
         </div>
 
         <div className="mt-10 grid grid-cols-2 gap-5 sm:grid-cols-3">
-          {ministries.map((ministry) => (
+          {ministriesData.map((ministry) => (
             <ImageCard
               key={ministry.slug}
               title={ministry.title}
@@ -34,15 +28,8 @@ export function Ministries() {
         </div>
 
         <div className="mt-10">
-          <ButtonLink
-            href="/ministries"
-            text="ink"
-            fill="inverse"
-            border="ink"
-            shadow="grey"
-            className="w-full"
-          >
-            Explore All Ministries
+          <ButtonLink href="/ministries" text="ink" fill="inverse" border="ink" shadow="grey" className="w-full">
+            {ministries.ctaLabel}
           </ButtonLink>
         </div>
       </Container>
