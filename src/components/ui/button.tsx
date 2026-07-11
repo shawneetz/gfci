@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils";
 export type Tone = "ink" | "inverse" | "grey" | "grey2" | "brand" | "transparent";
 
 export const toneVar: Record<Tone, string> = {
-  ink: "var(--color-ink)",
+  ink: "var(--color-frame)", 
   inverse: "var(--color-ink-inverse)",
   grey: "var(--color-border)",
   grey2: "var(--color-ink-muted)",

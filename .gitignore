@@ -71,3 +71,7 @@ storybook-static/
 
 # Keep lockfiles (package-lock.json, yarn.lock, pnpm-lock.yaml) committed by default
 checklist-fix.md
+design-checklist.md
+src/app/fonts/
+cms-checklist.md
+/src/generated/prisma

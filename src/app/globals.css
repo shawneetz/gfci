@@ -22,9 +22,11 @@
   --color-brand-hover: #463831;
   --color-brand-active: #241D19;
   --color-brand-subtle: #F3F0ED;
-  /* FONTS */
-  --font-headline: var(--font-big-shoulders), "Arial Narrow", sans-serif;
-  --font-body: var(--font-archivo), "Helvetica Neue", sans-serif;
+
+  --color-frame: color-mix(in srgb, var(--color-ink) 78%, var(--color-brand) 22%);
+
+  --font-headline: var(--font-zodiak), Georgia, "Times New Roman", serif;
+  --font-body: var(--font-general-sans), "Helvetica Neue", Arial, sans-serif;
 
   /* LAYOUT */
   --container-container: 1280px;
@@ -61,7 +63,6 @@ h4,
 h5,
 h6 {
   font-family: var(--font-headline);
-  text-transform: uppercase;
   letter-spacing: -0.01em;
 }
 

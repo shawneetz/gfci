@@ -1,6 +1,8 @@
 import Image from "next/image";
 import { Container } from "@/components/ui/container";
 import { ButtonLink } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { HERO_OVERLAY } from "@/lib/overlays";
 
 export function ConnectHero() {
   return (
@@ -13,7 +15,7 @@ export function ConnectHero() {
         sizes="100vw"
         className="object-cover"
       />
-      <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-surface-inverse/80 via-surface-inverse/40 to-transparent" />
+      <div className={cn("pointer-events-none absolute inset-0", HERO_OVERLAY)} />
 
       <Container className="relative z-10">
         <span className="eyebrow mb-4 text-ink-inverse-secondary">

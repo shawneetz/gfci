@@ -7,6 +7,7 @@ import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
 import { MonthNav, type MonthNavProps } from "@/components/ui/month-nav";
 import { EventListItem } from "@/sections/events-page/event-list-item";
+import { CONTENT_MAX_WIDTH } from "@/lib/layout";
 
 const PAGE_SIZE = 5;
 
@@ -17,10 +18,6 @@ interface EventListProps {
   nextMonthHref?: MonthNavProps["nextHref"];
 }
 
-// Client component so "Load More" can incrementally reveal events without a
-// full page reload. The parent page passes a `key` that changes whenever the
-// active tab/category/month changes, so this remounts (and its pagination
-// resets) whenever the filtered event set changes — see events/page.tsx.
 export function EventList({
   events,
   monthLabel,
@@ -34,7 +31,7 @@ export function EventList({
 
   return (
     <section className="section bg-surface">
-      <Container className="max-w-2xl">
+      <Container className={CONTENT_MAX_WIDTH}>
         <MonthNav label={monthLabel} prevHref={prevMonthHref} nextHref={nextMonthHref} />
 
         <div className="mt-6">

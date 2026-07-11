@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { FormStatusBanner } from "@/components/ui/form-status-banner";
 import { ministries } from "@/data/ministries";
 import { submitGivingIntent, type SubmitStatus } from "@/lib/forms";
+import { FORM_PAGE_MAX_WIDTH } from "@/lib/layout";
 
 const PRESET_AMOUNTS = [50, 100, 250];
 
@@ -74,7 +75,7 @@ export function GivingForm() {
 
   return (
     <section className="section bg-surface">
-      <Container className="max-w-xl">
+      <Container className={FORM_PAGE_MAX_WIDTH}>
         <form onSubmit={handleSubmit}>
           <Panel className="space-y-8">
             {/* Amount */}

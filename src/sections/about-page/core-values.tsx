@@ -1,6 +1,7 @@
 import { Heart, HandHeart, Users } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { FeatureItem } from "@/components/ui/feature-item";
+import { CONTENT_MAX_WIDTH } from "@/lib/layout";
 
 const coreValues = [
   {
@@ -26,7 +27,7 @@ const coreValues = [
 export function CoreValues() {
   return (
     <section className="section bg-surface">
-      <Container className="max-w-2xl">
+      <Container className={CONTENT_MAX_WIDTH}>
         <h2 className="mb-8 text-section-title text-ink">Core Values</h2>
         <div>
           {coreValues.map((value, index) => (

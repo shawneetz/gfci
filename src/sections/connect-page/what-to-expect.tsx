@@ -1,13 +1,13 @@
-import { Car, Shirt, Music } from "lucide-react";
+import { Users, Shirt, Music } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { Panel } from "@/components/ui/panel";
 
 const items = [
   {
-    icon: Car,
-    title: "VIP Parking",
+    icon: Users,
+    title: "Warm Community",
     description:
-      "Turn on your flashers when entering the lot. Our parking team will direct you to a reserved spot right up front just for first-time guests.",
+      "From the moment you walk in, our greeters and hosts are there to welcome you, answer questions, and help you feel right at home.",
   },
   {
     icon: Shirt,
@@ -39,7 +39,7 @@ export function WhatToExpect() {
         <div className="mt-10 grid gap-6 text-left sm:grid-cols-3">
           {items.map((item) => (
             <Panel key={item.title} shadow={false}>
-              <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-brand-subtle text-brand">
+              <div className="flex h-11 w-11 items-center justify-center rounded-none bg-brand-subtle text-brand">
                 <item.icon size={20} />
               </div>
               <h3 className="mt-5 text-lg font-bold text-ink">

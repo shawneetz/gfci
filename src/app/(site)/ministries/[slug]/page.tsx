@@ -40,7 +40,6 @@ export default async function MinistryPage({ params }: MinistryPageProps) {
   return (
     <>
       <PageHero
-        tone="light"
         eyebrow="Ministry"
         title={ministry.title}
         description={ministry.tagline}

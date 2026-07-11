@@ -8,7 +8,7 @@ export default function PrayerRequestsPage() {
   return (
     <>
       <PageHero
-        tone="light"
+        eyebrow="Prayer"
         title="Prayer Requests"
         description="Whatever you're carrying, you don't have to carry it alone. Share your request and our prayer team will stand with you in faith."
       />

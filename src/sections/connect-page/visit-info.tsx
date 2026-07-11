@@ -13,7 +13,7 @@ export function VisitInfo() {
     <section className="section bg-surface">
       <Container>
         <div className="grid gap-6 lg:grid-cols-[320px_1fr]">
-          <Panel className="flex flex-col">
+          <Panel className="flex flex-col" shadow={false}>
             <div className="flex items-center gap-2 text-ink">
               <Clock size={20} className="text-brand" />
               <h2 className="text-lg font-bold">Service Times</h2>

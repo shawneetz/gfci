@@ -17,7 +17,6 @@ export function AnsweredPrayers() {
               fill="inverse"
               text="ink"
               border="ink"
-              shadow="grey"
             />
           ))}
         </div>

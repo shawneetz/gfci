@@ -2,6 +2,8 @@ import { Play } from "lucide-react";
 
 import { Container } from "@/components/ui/container";
 import { ButtonLink } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { HERO_OVERLAY } from "@/lib/overlays";
 
 export function Hero() {
   return (
@@ -23,17 +25,8 @@ export function Hero() {
       }}
     >
       {/* Content Gradient Overlay */}
-      <div
-        className="
-          pointer-events-none
-          absolute
-          inset-0
-          bg-linear-to-t
-          from-surface-inverse/70
-          via-surface-inverse/30
-          to-transparent
-        "
-      />
+      <div className={cn("pointer-events-none absolute inset-0", HERO_OVERLAY)} />
+
       {/* Content */}
       <Container className="relative z-10 w-full pb-14 pt-32 md:pb-20">
         <span className="eyebrow mb-5 text-ink-inverse-secondary">

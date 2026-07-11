@@ -1,6 +1,7 @@
 import { LucideIcon } from "lucide-react";
 import { ReactNode } from "react";
 import { cn } from "@/lib/utils";
+import { ICON_SIZE } from "@/lib/icon-sizes";
 
 interface FeatureItemProps {
   icon: LucideIcon;
@@ -25,8 +26,8 @@ export function FeatureItem({
         className
       )}
     >
-      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-brand-subtle text-brand">
-        <Icon size={22} />
+      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-none bg-brand-subtle text-brand">
+        <Icon size={ICON_SIZE.feature} />
       </div>
       <div>
         <h3 className="text-lg font-bold text-ink">{title}</h3>

@@ -10,8 +10,7 @@ export function Footer() {
       <Container className="py-14">
         {/* Follow Us */}
         <div className="flex flex-col items-center">
-          <h2 className="text-subtitle uppercase">Follow Us</h2>
-
+        <h2 className="text-subtitle uppercase tracking-[0.02em]">Follow Us</h2>
           <div className="mt-6 flex items-center gap-5">
             <a
               href={siteConfig.contact.facebook}
@@ -47,8 +46,7 @@ export function Footer() {
         <div className="mt-14 grid grid-cols-2 gap-8 md:grid-cols-4 md:gap-16">
           {/* Contact */}
           <div className="col-span-2 md:col-span-2">
-            <h3 className="text-subtitle uppercase">Contact Us</h3>
-
+          <h3 className="text-subtitle uppercase tracking-[0.02em]">Contact Us</h3>
             <div className="mt-6 space-y-6">
               <div>
                 <h4 className="font-headline font-bold">Address:</h4>
@@ -82,8 +80,7 @@ export function Footer() {
 
           {/* Explore */}
           <div>
-            <h3 className="text-subtitle uppercase">Explore</h3>
-
+          <h3 className="text-subtitle uppercase tracking-[0.02em]">Explore</h3>
             <nav className="mt-6">
               <ul className="space-y-4">
                 {siteConfig.footerNav.explore.map((item) => (
@@ -102,8 +99,7 @@ export function Footer() {
 
           {/* Get Involved */}
           <div>
-            <h3 className="text-subtitle uppercase">Get Involved</h3>
-
+          <h3 className="text-subtitle uppercase tracking-[0.02em]">Get Involved</h3>
             <nav className="mt-6">
               <ul className="space-y-4">
                 {siteConfig.footerNav.getInvolved.map((item) => (

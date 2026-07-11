@@ -3,6 +3,7 @@
 import { useEffect, ReactNode } from "react";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ICON_SIZE } from "@/lib/icon-sizes";
 
 interface ModalProps {
   open: boolean;
@@ -46,19 +47,18 @@ export function Modal({ open, onClose, title, children, className }: ModalProps)
 
       <div
         className={cn(
-          "relative max-h-[90vh] w-full max-w-lg overflow-y-auto border-2 border-ink bg-surface shadow-[6px_6px_0_0_var(--color-ink)]",
+          "relative max-h-[90vh] w-full max-w-lg overflow-y-auto border-2 border-frame bg-surface shadow-[6px_6px_0_0_var(--color-frame)]",
           className
         )}
       >
-        <button
-          type="button"
-          onClick={onClose}
-          aria-label="Close"
-          className="absolute right-4 top-4 z-10 flex h-9 w-9 items-center justify-center border-2 border-ink bg-surface text-ink transition-colors hover:bg-surface-alt"
-        >
-          <X size={18} />
-        </button>
-
+      <button
+        type="button"
+        onClick={onClose}
+        aria-label="Close"
+        className="absolute right-4 top-4 z-10 flex h-9 w-9 items-center justify-center border-2 border-frame bg-surface text-ink transition-colors hover:bg-surface-alt"
+      >
+        <X size={ICON_SIZE.inline} />
+      </button>
         {children}
       </div>
     </div>

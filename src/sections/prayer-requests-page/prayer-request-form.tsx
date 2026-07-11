@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { FormStatusBanner } from "@/components/ui/form-status-banner";
 import { PRAYER_CATEGORIES, type PrayerRequestSubmission } from "@/types";
 import { submitPrayerRequest, type SubmitStatus } from "@/lib/forms";
+import { FORM_PAGE_MAX_WIDTH } from "@/lib/layout";
 
 const initialForm: PrayerRequestSubmission = {
   name: "",
@@ -50,7 +51,7 @@ export function PrayerRequestForm() {
 
   return (
     <section className="section bg-surface">
-      <Container className="max-w-xl">
+      <Container className={FORM_PAGE_MAX_WIDTH}>
         <form onSubmit={handleSubmit}>
           <Panel className="space-y-8">
             <div>

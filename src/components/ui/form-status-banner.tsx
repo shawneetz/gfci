@@ -1,5 +1,6 @@
 import { CheckCircle2, AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ICON_SIZE } from "@/lib/icon-sizes";
 
 interface FormStatusBannerProps {
   status: "success" | "error";
@@ -26,11 +27,10 @@ export function FormStatusBanner({
       )}
     >
       {isSuccess ? (
-        <CheckCircle2 size={20} className="mt-0.5 shrink-0" />
+        <CheckCircle2 size={ICON_SIZE.section} className="mt-0.5 shrink-0" />
       ) : (
-        <AlertCircle size={20} className="mt-0.5 shrink-0" />
-      )}
-      <p className="text-body-sm">{message}</p>
+        <AlertCircle size={ICON_SIZE.section} className="mt-0.5 shrink-0" />
+      )}      <p className="text-body-sm">{message}</p>
     </div>
   );
 }

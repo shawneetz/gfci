@@ -1,12 +1,13 @@
 import { ComponentPropsWithoutRef } from "react";
 import { cn } from "@/lib/utils";
 
-type PanelTone = "surface" | "surface-alt" | "surface-inverse";
+type PanelTone = "surface" | "surface-alt" | "surface-inverse" | "brand-subtle";
 
 const toneClass: Record<PanelTone, string> = {
   surface: "bg-surface text-ink",
   "surface-alt": "bg-surface-alt text-ink",
   "surface-inverse": "bg-surface-inverse text-ink-inverse",
+  "brand-subtle": "bg-brand-subtle text-ink",
 };
 
 interface PanelProps extends ComponentPropsWithoutRef<"div"> {
@@ -23,9 +24,9 @@ export function Panel({
   return (
     <div
       className={cn(
-        "rounded-none border-2 border-ink p-6 md:p-8",
+        "rounded-none border-2 border-frame p-6 md:p-8",
         toneClass[tone],
-        shadow && "shadow-[6px_6px_0_0_var(--color-ink)]",
+        shadow && "shadow-[6px_6px_0_0_var(--color-frame)]",
         className
       )}
       {...props}

@@ -2,6 +2,8 @@ import Image from "next/image";
 import { Container } from "@/components/ui/container";
 import { Pill } from "@/components/ui/pill";
 import { EVENT_CATEGORIES } from "@/types";
+import { cn } from "@/lib/utils";
+import { HERO_OVERLAY } from "@/lib/overlays";
 
 const TABS = [
   { value: "upcoming", label: "Upcoming" },
@@ -27,7 +29,7 @@ export function EventsHero({ activeTab, activeCategory }: EventsHeroProps) {
         sizes="100vw"
         className="object-cover"
       />
-      <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-surface-inverse/70 via-surface-inverse/30 to-transparent" />
+      <div className={cn("pointer-events-none absolute inset-0", HERO_OVERLAY)} />
 
       <Container className="relative z-10">
         <h1 className="text-display">Events</h1>

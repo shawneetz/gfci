@@ -5,7 +5,10 @@ import { ministries } from "@/data/ministries";
 
 export function Ministries() {
   return (
-    <section className="bg-surface-inverse py-16">
+    // was `py-16` (a fixed 64px top/bottom) instead of the shared `section`
+    // class, so unlike every other Home section this one never got the
+    // 96px desktop bump — see design-notes.md's Layout & Spacing audit.
+    <section className="section bg-surface-inverse">
       <Container>
         <div className="max-w-xl">
           <h2 className="text-section-title text-ink-inverse">

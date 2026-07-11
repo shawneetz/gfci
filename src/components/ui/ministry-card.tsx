@@ -3,6 +3,7 @@ import { ArrowRight } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { ButtonLink, type Tone } from "@/components/ui/button";
+import { CARD_OVERLAY } from "@/lib/overlays";
 
 type MinistryCardAspect = "portrait" | "video" | "square";
 
@@ -22,7 +23,6 @@ interface MinistryCardProps {
 
   buttonLabel?: string;
 
-  // Button design props — independent from the card itself.
   buttonFill?: Tone;
   buttonText?: Tone;
   buttonBorder?: Tone;
@@ -61,7 +61,7 @@ export function MinistryCard({
         className="object-cover transition-transform duration-300 group-hover:scale-105"
       />
 
-      <div className="absolute inset-0 bg-linear-to-t from-surface-inverse/90 via-surface-inverse/30 to-transparent" />
+      <div className={cn("absolute inset-0", CARD_OVERLAY)} />
 
       <div className="absolute inset-x-0 bottom-0 p-6 md:p-7">
         <h3 className="text-card-title text-ink-inverse">{title}</h3>

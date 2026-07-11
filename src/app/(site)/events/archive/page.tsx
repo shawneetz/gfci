@@ -4,6 +4,7 @@ import { ArrowLink } from "@/components/ui/arrow-link";
 import { EventListItem } from "@/sections/events-page/event-list-item";
 import { events } from "@/data/events";
 import { getMonthKey, formatMonthLabel } from "@/lib/utils";
+import { CONTENT_MAX_WIDTH } from "@/lib/layout";
 
 export const metadata = {
   title: "Events Archive",
@@ -24,14 +25,13 @@ export default function EventsArchivePage() {
   return (
     <>
       <PageHero
-        tone="light"
         eyebrow="Look Back"
         title="Events Archive"
         description="A record of what we've done together, month by month."
       />
 
       <section className="section bg-surface">
-        <Container className="max-w-2xl">
+        <Container className={CONTENT_MAX_WIDTH}>
           {monthKeys.length > 0 ? (
             monthKeys.map((monthKey) => {
               const monthEvents = pastEvents.filter(

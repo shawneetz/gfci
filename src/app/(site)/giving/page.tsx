@@ -7,7 +7,7 @@ export default function GivingPage() {
   return (
     <>
       <PageHero
-        tone="light"
+        eyebrow="Give"
         title="Contributions"
         description="Your generosity fuels our mission to bring light and hope to the community."
       />

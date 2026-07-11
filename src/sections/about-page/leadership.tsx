@@ -6,6 +6,7 @@ import { PersonCard } from "@/components/ui/person-card";
 import { ButtonLink } from "@/components/ui/button";
 import { siteConfig } from "@/config/site";
 import { people } from "@/data/people";
+import { CONTENT_MAX_WIDTH } from "@/lib/layout";
 
 interface Leader {
   name: string;
@@ -13,19 +14,15 @@ interface Leader {
   image?: string;
 }
 
-// Sourced from the shared `people` record so names/titles here always match
-// how the same person appears elsewhere (ministry leaders, sermon speakers).
 const leaders: Leader[] = [
   { name: people.sarahJenkins.displayName, role: people.sarahJenkins.title },
   { name: people.davidChen.displayName, role: people.davidChen.title },
-  // add `image: "/images/about-page/..."` once real photos are ready —
-  // PersonCard falls back to a placeholder icon until then
 ];
 
 export function Leadership() {
   return (
     <section className="section bg-surface-alt">
-      <Container className="max-w-2xl">
+      <Container className={CONTENT_MAX_WIDTH}>
         <h2 className="mb-8 text-section-title text-ink">Meet Our Leaders</h2>
 
         <div className="grid grid-cols-2 gap-6">
@@ -39,7 +36,7 @@ export function Leadership() {
           ))}
         </div>
 
-        <Panel className="mt-12">
+        <Panel className="mt-12" shadow={false}>
           <div className="space-y-6">
             <IconInfoRow icon={MapPin} title="Our Campus">
               <p className="whitespace-pre-line">

@@ -2,6 +2,7 @@ import { Baby, Users, HeartHandshake } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { FeatureItem } from "@/components/ui/feature-item";
 import { prayerTeams } from "@/data/prayer-teams";
+import { CONTENT_MAX_WIDTH } from "@/lib/layout";
 
 // Maps each team's slug to an icon. Falls back to Users for anything new.
 const iconBySlug = {
@@ -13,7 +14,7 @@ const iconBySlug = {
 export function PrayerTeams() {
   return (
     <section className="section bg-surface-alt">
-      <Container className="max-w-2xl">
+      <Container className={CONTENT_MAX_WIDTH}>
         <h2 className="mb-8 text-section-title text-ink">
           Join a Prayer Team
         </h2>
