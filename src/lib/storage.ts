@@ -1,15 +1,3 @@
-// Single reusable upload helper for admin image uploads (Phase 15) and
-// the one-off backfill script (scripts/backfill-images.ts). Every place
-// that needs to store an image goes through uploadImage() instead of
-// talking to a storage SDK directly, so swapping providers later means
-// editing this one file, not every admin form.
-//
-// Provider: Vercel Blob — chosen for the simplest possible setup (one
-// package, one env var, nothing extra to provision). Requires
-// BLOB_READ_WRITE_TOKEN in the environment; `vercel env pull` sets this
-// automatically for projects deployed on Vercel.
-
-import "server-only";
 import { put } from "@vercel/blob";
 
 export interface UploadImageOptions {
