@@ -20,4 +20,4 @@
 -- that by deleting the index — regenerate the migration by hand instead.
 CREATE UNIQUE INDEX "Event_only_one_featured"
   ON "Event" ("featured")
-  WHERE "featured" = true;`
+  WHERE "featured" = true;

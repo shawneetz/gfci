@@ -81,6 +81,7 @@ async function main() {
   });
 
   console.log("Seeded 6 people.");
+
   await prisma.ministry.upsert({
     where: { slug: "golden-kids" },
     update: {},
@@ -345,6 +346,92 @@ async function main() {
   });
 
   console.log("Seeded 3 answered prayers.");
+
+  // Core Values (About page) — see schema.prisma's CoreValue model for
+  // why this moved out of src/content/about.ts.
+  await prisma.coreValue.upsert({
+    where: { id: "core-value-authentic-faith" },
+    update: {},
+    create: {
+      id: "core-value-authentic-faith",
+      icon: "Heart",
+      title: "Authentic Faith",
+      description:
+        "We don't pretend to have it all together. We embrace honest questions, real struggles, and a genuine pursuit of truth in our daily walk.",
+      order: 0,
+    },
+  });
+
+  await prisma.coreValue.upsert({
+    where: { id: "core-value-bold-love" },
+    update: {},
+    create: {
+      id: "core-value-bold-love",
+      icon: "HandHeart",
+      title: "Bold Love",
+      description:
+        "Love is an action verb. We strive to love fiercely, inclusively, and without condition, reflecting the heart of our Creator to our city.",
+      order: 1,
+    },
+  });
+
+  await prisma.coreValue.upsert({
+    where: { id: "core-value-active-service" },
+    update: {},
+    create: {
+      id: "core-value-active-service",
+      icon: "Users",
+      title: "Active Service",
+      description:
+        "Faith without works is dead. We are mobilized to serve our neighbors, care for the vulnerable, and bring tangible hope to the world.",
+      order: 2,
+    },
+  });
+
+  console.log("Seeded 3 core values.");
+
+  // Expectation Items (Connect page) — see schema.prisma's
+  // ExpectationItem model for why this moved out of src/content/connect.ts.
+  await prisma.expectationItem.upsert({
+    where: { id: "expectation-warm-community" },
+    update: {},
+    create: {
+      id: "expectation-warm-community",
+      icon: "Users",
+      title: "Warm Community",
+      description:
+        "From the moment you walk in, our greeters and hosts are there to welcome you, answer questions, and help you feel right at home.",
+      order: 0,
+    },
+  });
+
+  await prisma.expectationItem.upsert({
+    where: { id: "expectation-come-as-you-are" },
+    update: {},
+    create: {
+      id: "expectation-come-as-you-are",
+      icon: "Shirt",
+      title: "Come As You Are",
+      description:
+        "You'll find everything from jeans and t-shirts to suits and ties. Wear whatever makes you comfortable — you belong here.",
+      order: 1,
+    },
+  });
+
+  await prisma.expectationItem.upsert({
+    where: { id: "expectation-engaging-service" },
+    update: {},
+    create: {
+      id: "expectation-engaging-service",
+      icon: "Music",
+      title: "Engaging Service",
+      description:
+        "Expect a 75-minute service with high-energy worship music and a practical, inspiring message based on the Bible.",
+      order: 2,
+    },
+  });
+
+  console.log("Seeded 3 expectation items.");
 
   await prisma.liveStream.upsert({
     where: { id: "singleton" },

@@ -1,6 +1,5 @@
 // src/content/about.ts
-import { Heart, HandHeart, Users } from "lucide-react";
-import type { FeatureCopy, PageHeroCopy } from "@/content/types";
+import type { PageHeroCopy } from "@/content/types";
 
 export const hero: PageHeroCopy = {
   eyebrow: "About Us",
@@ -15,28 +14,12 @@ export const mission = {
     "To cultivate a dynamic community where authentic faith meets everyday action. We are committed to spreading hope, fostering deep connections, and experiencing the transformative power of God's love together.",
 };
 
-export const coreValues: { title: string; values: FeatureCopy[] } = {
+// The row data (icon/title/description per value) now lives in the
+// CoreValue table — see src/server/queries/core-values.ts — per the
+// Phase 11 content-governance audit. Only the fixed section heading
+// stays here, since that doesn't vary per row.
+export const coreValuesSection = {
   title: "Core Values",
-  values: [
-    {
-      icon: Heart,
-      title: "Authentic Faith",
-      description:
-        "We don't pretend to have it all together. We embrace honest questions, real struggles, and a genuine pursuit of truth in our daily walk.",
-    },
-    {
-      icon: HandHeart,
-      title: "Bold Love",
-      description:
-        "Love is an action verb. We strive to love fiercely, inclusively, and without condition, reflecting the heart of our Creator to our city.",
-    },
-    {
-      icon: Users,
-      title: "Active Service",
-      description:
-        "Faith without works is dead. We are mobilized to serve our neighbors, care for the vulnerable, and bring tangible hope to the world.",
-    },
-  ],
 };
 
 export const leadership = {

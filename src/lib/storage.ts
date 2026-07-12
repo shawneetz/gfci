@@ -1,0 +1,40 @@
+// Single reusable upload helper for admin image uploads (Phase 15) and
+// the one-off backfill script (scripts/backfill-images.ts). Every place
+// that needs to store an image goes through uploadImage() instead of
+// talking to a storage SDK directly, so swapping providers later means
+// editing this one file, not every admin form.
+//
+// Provider: Vercel Blob — chosen for the simplest possible setup (one
+// package, one env var, nothing extra to provision). Requires
+// BLOB_READ_WRITE_TOKEN in the environment; `vercel env pull` sets this
+// automatically for projects deployed on Vercel.
+
+import "server-only";
+import { put } from "@vercel/blob";
+
+export interface UploadImageOptions {
+  // Folder-style prefix so uploads stay organized in the Blob dashboard,
+  // e.g. "sermons", "events", "ministries". Optional — defaults to a
+  // flat "uploads" prefix.
+  folder?: string;
+}
+
+// Accepts anything the browser or a Server Action can hand it — a File
+// from a form upload, or a Buffer for the backfill script reading local
+// files off disk. Returns the public URL to store on the model
+// (Ministry.image, Sermon.thumbnail, Event.image, PrayerTeam.image, etc.).
+export async function uploadImage(
+  file: File | Buffer,
+  filename: string,
+  { folder = "uploads" }: UploadImageOptions = {}
+): Promise<string> {
+  const blob = await put(`${folder}/${filename}`, file, {
+    access: "public",
+    // Adds a random suffix so re-uploading a file with the same name
+    // (e.g. re-running the backfill script) never overwrites or
+    // collides with an existing blob.
+    addRandomSuffix: true,
+  });
+
+  return blob.url;
+}

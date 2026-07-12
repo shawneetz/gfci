@@ -4,10 +4,13 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "prebuild": "npm run check:enums",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
     "lint:fix": "eslint --fix",
+    "check:enums": "tsx scripts/check-enum-parity.ts",
+    "backfill:images": "tsx scripts/backfill-images.ts",
     "postinstall": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:seed": "prisma db seed",
@@ -16,6 +19,7 @@
   "dependencies": {
     "@prisma/adapter-pg": "^7.8.0",
     "@prisma/client": "^7.8.0",
+    "@vercel/blob": "^1.0.0",
     "clsx": "^2.1.1",
     "lucide-react": "^0.469.0",
     "next": "^16.2.10",

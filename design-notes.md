@@ -901,6 +901,86 @@ hiding content outright with `hidden lg:block` — mobile visitors should
 still be able to reach every feature, just one view at a time instead of
 three side-by-side.
 
+
+# Content Governance
+
+*Added 2026-07-12 — Phase 11 audit, tracked in `design-checklist.md`.*
+
+Every page reads from Postgres via Prisma as of Phase 9, and `src/content/*.ts`
+holds fixed UI copy alongside it. As both grow, new copy needs an obvious
+home so it doesn't land in the wrong one by default.
+
+**The rule:**
+
+- Belongs in the **database** (a Prisma model, read through
+  `src/server/queries/*`) if it's expected to change without a deploy
+  (sermon titles, event descriptions, leader bios), if it has more than one
+  instance that grows over time (ministries, prayer teams, testimonies), or
+  if a non-engineer should reasonably be able to edit it.
+- Belongs in **`src/content/*.ts`** if it's fixed UI chrome: button labels,
+  section eyebrows/titles that don't vary per row, form success/error
+  strings, empty-state copy.
+
+**Audit findings (2026-07-12):**
+
+Two spots in `src/content/*.ts` hold row-shaped, growable content that the
+rule above says belongs in the database, not static TS:
+
+- `src/content/about.ts` → `coreValues.values` — three `{ icon, title,
+  description }` cards, the same shape as `PrayerTeam`.
+- `src/content/connect.ts` → `whatToExpect.items` — three `{ icon, title,
+  description }` cards, same shape again.
+
+Everything else currently in `content/` (button labels, eyebrows, form
+messages, hero titles) matches the rule and stays put.
+
+Migrating these two into real models (`CoreValue`, `ExpectationItem`) is
+scoped to **Phase 12**, alongside that phase's other schema work — Phase 11
+is the rule and the audit, not the migration.
+
+
+# Asset Pipeline
+
+*Added 2026-07-12 — Phase 12, tracked in `design-checklist.md`.*
+
+Images for Ministries, Sermons, Events, and Prayer Teams are stored as a
+plain URL string on each model (`Ministry.image`, `Sermon.thumbnail`,
+`Event.image`, `PrayerTeam.image`) — no schema change was needed for
+Phase 12, only *what* populates those columns changed.
+
+**Provider:** Vercel Blob, via the single `uploadImage()` helper in
+`src/lib/storage.ts`. Chosen over Supabase Storage for the simplest
+possible setup (one package, one env var, nothing extra to provision).
+Every upload — the Phase 15 admin forms, and the one-off
+`scripts/backfill-images.ts` — goes through that one helper, so switching
+providers later means editing one file, not every call site. Requires
+`BLOB_READ_WRITE_TOKEN` in the environment (`vercel env pull` sets this
+automatically for projects deployed on Vercel).
+
+**Upload size policy:** admin uploads are resized client-side to a max of
+1600px on the longest side and re-encoded as JPEG at 85% quality before
+upload, via `src/lib/resize-image.ts`. This runs in the browser (canvas +
+`createImageBitmap`), so a staffer uploading a full-resolution phone photo
+doesn't quietly regress page weight. Not wired into any form yet — the
+Phase 15 admin upload forms call it as a first step before calling
+`uploadImage()`.
+
+`public/images/` remains the fallback/seed source for now — it'll be
+called out as legacy seed assets in `README.md` once the Phase 15 admin
+UI ships and becomes the actual way images get added.
+
+## Icon-backed content rows
+
+`CoreValue` and `ExpectationItem` (added this phase, closing the Phase 11
+content-governance audit) store their icon as a **string key**, not a
+component — e.g. `"Heart"`, not the `Heart` import from `lucide-react`.
+`src/lib/icon-map.ts` is the single fixed lookup translating a stored key
+into the actual icon to render, the same pattern `prayer-teams.tsx`
+already used for `iconBySlug`. The Phase 15 admin form for these two
+models should offer exactly the keys in `ICON_MAP` as a dropdown, not a
+free-text field — a typo'd icon name should fail obviously in the admin
+form, not silently fall back on the public site.
+
 ---
 
 # Development Guidelines

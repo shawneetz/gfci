@@ -30,9 +30,14 @@ export async function getAllEvents(): Promise<ChurchEvent[]> {
   return rows.map(toChurchEvent);
 }
 
-// The single featured event shown above the Events list. At most one row
-// should have featured: true — enforced by convention (see the comment
-// on Event.featured in prisma/schema.prisma), not a DB constraint.
+// The single featured event shown above the Events list. Only one row
+// can have featured: true — as of the
+// 20260712140000_event_featured_unique_index migration, this is now a
+// real DB constraint (a partial unique index on featured = true), not
+// just a convention. Any future write path that tries to feature a
+// second event will fail with a Postgres unique-violation (surfaced by
+// Prisma as error code P2002) rather than silently succeeding and
+// leaving findFirst() to pick one arbitrarily.
 export async function getFeaturedEvent(): Promise<ChurchEvent | null> {
   const row = await prisma.event.findFirst({ where: { featured: true } });
   return row ? toChurchEvent(row) : null;

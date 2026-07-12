@@ -1,4 +1,3 @@
-
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
@@ -11,6 +10,16 @@ datasource db {
 // ─────────────────────────────────────────────────────────
 // Enums
 // ─────────────────────────────────────────────────────────
+//
+// EventCategory and PrayerCategory below must stay in sync with
+// EVENT_CATEGORIES / PRAYER_CATEGORIES in src/types/index.ts. That
+// parity isn't enforced by the type system (the TS side is a hand-
+// written `as const` tuple, kept that way deliberately — see the
+// comment in scripts/check-enum-parity.ts for why). Instead it's
+// enforced by scripts/check-enum-parity.ts, which runs automatically
+// before every `npm run build` (see the `prebuild` script in
+// package.json) and can be run standalone via `npm run check:enums`.
+// Adding a value to one side without the other will fail the next build.
 
 // Matches EVENT_CATEGORIES in src/types/index.ts exactly.
 enum EventCategory {
@@ -131,7 +140,16 @@ model Event {
   location    String
   image       String
   description String
-  featured    Boolean       @default(false) // only one should be true at a time — see FeaturedEvent
+  // Only one Event should have featured: true at a time. As of the
+  // 20260712140000_event_featured_unique_index migration this is a real
+  // DB constraint — a partial unique index on (featured) WHERE
+  // featured = true — not just app-level convention. There is
+  // deliberately no `@@unique` here: Prisma's schema DSL can't express
+  // a *partial* unique index, so the constraint lives only in that
+  // migration file. Don't add `@@unique([featured])` here — a plain
+  // unique index would also forbid having more than one
+  // featured: false row, which is the normal case.
+  featured    Boolean       @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -149,6 +167,12 @@ model PrayerTeam {
   schedule String
   order    Int    @default(0)
 
+  // No updatedAt: decided 2026-07-12 (Phase 10 data-integrity audit).
+  // Prayer teams are staff-curated and change rarely; nothing in the UI
+  // currently surfaces "last edited," so the column would be dead
+  // weight. Add it if/when the Phase 15 admin UI wants to show edit
+  // history for this table specifically.
+
   @@index([order])
 }
 
@@ -159,6 +183,48 @@ model AnsweredPrayer {
   category PrayerCategory
 
   createdAt DateTime @default(now())
+  // No updatedAt — same reasoning as PrayerTeam above: these are
+  // effectively append-only testimonies, not edited in place once
+  // published.
+}
+
+// A single "here are a few things" card — icon + title + description.
+// Added 2026-07-12 (Phase 12), closing the Phase 11 content-governance
+// audit: this row shape previously lived as a hardcoded array in
+// src/content/about.ts (coreValues.values), which the audit flagged as
+// belonging in the database — it's a growable list a non-engineer should
+// be able to edit, same shape as PrayerTeam above.
+model CoreValue {
+  id String @id @default(cuid())
+
+  // Key into the fixed lookup in src/lib/icon-map.ts (e.g. "Heart"), not
+  // a Lucide component — the DB only ever stores which named icon to
+  // render. Same pattern PrayerTeam's `slug` already drives via
+  // `iconBySlug` in prayer-teams.tsx.
+  icon        String
+  title       String
+  description String
+  order       Int    @default(0)
+
+  // No updatedAt — same reasoning as PrayerTeam: a short, staff-curated
+  // list that changes rarely and isn't tracked for "last edited" anywhere.
+
+  @@index([order])
+}
+
+// Same shape as CoreValue, for Connect's "What to Expect" section — kept
+// as its own table rather than one shared polymorphic table, since the
+// two lists have independent ordering and belong to different pages;
+// splitting them keeps each query a plain `orderBy: { order: "asc" }`
+// with nothing else to filter on.
+model ExpectationItem {
+  id          String @id @default(cuid())
+  icon        String
+  title       String
+  description String
+  order       Int    @default(0)
+
+  @@index([order])
 }
 
 // Placeholder info for whichever service is currently live. Always a
@@ -207,6 +273,17 @@ model GivingIntent {
 // audience-specific fields. Fields not relevant to a given audience stay
 // null — see src/lib/forms.ts (Phase 5) for which fields get written per
 // audience.
+//
+// Data-integrity note (Phase 10, decided 2026-07-12): there is no DB
+// CHECK constraint tying `audience` to which of the nullable fields
+// below may be set (e.g. preventing a "kids" row from also having
+// studentName populated). That's deliberate: the only writer is
+// submitConnectRegistration() in src/lib/forms.ts, which already
+// switches on payload.audience and only ever populates the fields for
+// that branch — a matching SQL CHECK would duplicate that logic for a
+// table with exactly one trusted write path. Revisit this decision if a
+// second write path (e.g. an admin edit form in Phase 15) is ever added
+// without routing through the same Server Action.
 model ConnectRegistration {
   id        String          @id @default(cuid())
   audience  ConnectAudience

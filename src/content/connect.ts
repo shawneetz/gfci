@@ -1,5 +1,4 @@
-import { Users, Shirt, Music } from "lucide-react";
-import type { FeatureCopy, FormMessages, PageHeroCopy } from "@/content/types";
+import type { FormMessages, PageHeroCopy } from "@/content/types";
 
 export const hero: PageHeroCopy & { connectLabel: string; expectLabel: string } = {
   eyebrow: "Plan a Visit",
@@ -17,30 +16,14 @@ export const visitInfo = {
   directionsLabel: "Get Directions →",
 };
 
-export const whatToExpect: { title: string; description: string; items: FeatureCopy[] } = {
+// The row data (icon/title/description per item) now lives in the
+// ExpectationItem table — see src/server/queries/expectation-items.ts —
+// per the Phase 11 content-governance audit. Only the fixed section
+// heading and intro copy stay here.
+export const whatToExpectSection = {
   title: "What to Expect",
   description:
     "We want you to feel comfortable and at home from the moment you pull into the parking lot.",
-  items: [
-    {
-      icon: Users,
-      title: "Warm Community",
-      description:
-        "From the moment you walk in, our greeters and hosts are there to welcome you, answer questions, and help you feel right at home.",
-    },
-    {
-      icon: Shirt,
-      title: "Come As You Are",
-      description:
-        "You'll find everything from jeans and t-shirts to suits and ties. Wear whatever makes you comfortable — you belong here.",
-    },
-    {
-      icon: Music,
-      title: "Engaging Service",
-      description:
-        "Expect a 75-minute service with high-energy worship music and a practical, inspiring message based on the Bible.",
-    },
-  ],
 };
 
 export const form = {
