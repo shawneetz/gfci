@@ -20,9 +20,17 @@ export function Header() {
   const [scrolled, setScrolled] = useState(false);
   const solid = scrolled || open;
 
-  useEffect(() => {
+  // Close the mobile menu on route change. This adjusts state during
+  // render (comparing against the last-seen pathname) instead of doing it
+  // in a useEffect — calling setState synchronously inside an effect body
+  // causes an extra commit-then-rerender cascade, which is exactly what
+  // react-hooks/set-state-in-effect warns about. See:
+  // https://react.dev/learn/you-might-not-need-an-effect#adjusting-some-state-when-a-prop-changes
+  const [prevPathname, setPrevPathname] = useState(pathname);
+  if (pathname !== prevPathname) {
+    setPrevPathname(pathname);
     setOpen(false);
-  }, [pathname]);
+  }
 
   useEffect(() => {
     const handleScroll = () => {
@@ -174,7 +182,13 @@ function DesktopNavItem({
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
-  useEffect(() => setOpen(false), [pathname]);
+  // Same render-time adjustment as Header above — closes the dropdown on
+  // route change without setState-in-effect.
+  const [prevPathname, setPrevPathname] = useState(pathname);
+  if (pathname !== prevPathname) {
+    setPrevPathname(pathname);
+    setOpen(false);
+  }
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -270,7 +284,13 @@ function MobileNavItem({
 }) {
   const [open, setOpen] = useState(false);
 
-  useEffect(() => setOpen(false), [pathname]);
+  // Same render-time adjustment as Header/DesktopNavItem above — closes
+  // the accordion on route change without setState-in-effect.
+  const [prevPathname, setPrevPathname] = useState(pathname);
+  if (pathname !== prevPathname) {
+    setPrevPathname(pathname);
+    setOpen(false);
+  }
 
   if (item.type === "link") {
     return (

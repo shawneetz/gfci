@@ -22,6 +22,7 @@
     "pg": "^8.16.0",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
+    "server-only": "^0.0.1",
     "tailwind-merge": "^2.6.1"
   },
   "devDependencies": {
@@ -38,6 +39,7 @@
     "prisma": "^7.8.0",
     "tailwindcss": "^4.3.2",
     "tsx": "^4.19.0",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "server-only": "^0.0.1"
   }
 }

@@ -1,7 +1,7 @@
 import { Baby, Users, HeartHandshake } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { FeatureItem } from "@/components/ui/feature-item";
-import { prayerTeams } from "@/data/prayer-teams";
+import { getPrayerTeams } from "@/server/queries/prayer-teams";
 import { CONTENT_MAX_WIDTH } from "@/lib/layout";
 import { teams } from "@/content/prayer-requests";
 
@@ -11,7 +11,9 @@ const iconBySlug = {
   adults: HeartHandshake,
 } as const;
 
-export function PrayerTeams() {
+export async function PrayerTeams() {
+  const prayerTeams = await getPrayerTeams();
+
   return (
     <section className="section bg-surface-alt">
       <Container className={CONTENT_MAX_WIDTH}>

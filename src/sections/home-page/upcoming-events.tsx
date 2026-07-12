@@ -1,12 +1,13 @@
-// src/sections/home-page/upcoming-events.tsx
 import { Container } from "@/components/ui/container";
 import { ButtonLink } from "@/components/ui/button";
 import { EventCard } from "@/components/ui/event-card";
-import { upcomingEvents as upcomingEventsData } from "@/data/events";
+import { getUpcomingEventsPreview } from "@/server/queries/events";
 import { formatMonthShort, formatDay } from "@/lib/utils";
 import { upcomingEvents } from "@/content/home";
 
-export function UpcomingEvents() {
+export async function UpcomingEvents() {
+  const upcomingEventsData = await getUpcomingEventsPreview();
+
   return (
     <section className="section bg-surface">
       <Container>

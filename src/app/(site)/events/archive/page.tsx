@@ -2,17 +2,20 @@ import { PageHero } from "@/components/ui/page-hero";
 import { Container } from "@/components/ui/container";
 import { ArrowLink } from "@/components/ui/arrow-link";
 import { EventListItem } from "@/sections/events-page/event-list-item";
-import { events } from "@/data/events";
+import { getAllEvents } from "@/server/queries/events";
 import { getMonthKey, formatMonthLabel } from "@/lib/utils";
 import { CONTENT_MAX_WIDTH } from "@/lib/layout";
 import { archive } from "@/content/events";
+
+export const dynamic = "force-dynamic";
 
 export const metadata = {
   title: "Events Archive",
   description: "Past events at Golden Faith, organized by month.",
 };
 
-export default function EventsArchivePage() {
+export default async function EventsArchivePage() {
+  const events = await getAllEvents();
   const today = new Date();
 
   const pastEvents = events

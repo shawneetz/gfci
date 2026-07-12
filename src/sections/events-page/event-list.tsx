@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { ChurchEvent } from "@/types";
+import type { ChurchEvent } from "@/server/queries/events";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
 import { MonthNav, type MonthNavProps } from "@/components/ui/month-nav";

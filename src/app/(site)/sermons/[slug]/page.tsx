@@ -7,34 +7,35 @@ import { Container } from "@/components/ui/container";
 import { Card, CardBody } from "@/components/ui/card";
 import { MetaRow } from "@/components/ui/meta-row";
 import { ArrowLink } from "@/components/ui/arrow-link";
-import { sermons } from "@/data/sermons";
+import { getSermonBySlug, getSermonSlugs, getMoreInSeries } from "@/server/queries/sermons";
 import { formatDate } from "@/lib/utils";
 import { detail } from "@/content/sermons";
+
+export const dynamic = "force-dynamic";
 
 interface SermonPageProps {
   params: Promise<{ slug: string }>;
 }
 
-export function generateStaticParams() {
-  return sermons.map((sermon) => ({ slug: sermon.slug }));
+export async function generateStaticParams() {
+  const slugs = await getSermonSlugs();
+  return slugs.map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({ params }: SermonPageProps) {
   const { slug } = await params;
-  const sermon = sermons.find((s) => s.slug === slug);
+  const sermon = await getSermonBySlug(slug);
   if (!sermon) return {};
   return { title: sermon.title, description: sermon.summary };
 }
 
 export default async function SermonPage({ params }: SermonPageProps) {
   const { slug } = await params;
-  const sermon = sermons.find((s) => s.slug === slug);
+  const sermon = await getSermonBySlug(slug);
 
   if (!sermon) notFound();
 
-  const moreInSeries = sermons.filter(
-    (item) => item.series === sermon.series && item.slug !== sermon.slug
-  );
+  const moreInSeries = await getMoreInSeries(sermon.series, sermon.slug);
 
   return (
     <>

@@ -2,12 +2,16 @@ import Link from "next/link";
 import { PageHero } from "@/components/ui/page-hero";
 import { Container } from "@/components/ui/container";
 import { Card, CardBody } from "@/components/ui/card";
-import { sermons } from "@/data/sermons";
+import { getAllSermons } from "@/server/queries/sermons";
 import { formatDate } from "@/lib/utils";
 import { Play } from "lucide-react";
 import { hero } from "@/content/sermons";
 
-export default function SermonsPage() {
+export const dynamic = "force-dynamic";
+
+export default async function SermonsPage() {
+  const sermons = await getAllSermons();
+
   return (
     <>
       <PageHero eyebrow={hero.eyebrow} title={hero.title} description={hero.description} />

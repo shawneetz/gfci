@@ -1,9 +1,11 @@
 import { Container } from "@/components/ui/container";
 import { QuoteCard } from "@/components/ui/quote-card";
-import { answeredPrayers } from "@/data/testimonies";
+import { getAnsweredPrayers } from "@/server/queries/testimonies";
 import { answered } from "@/content/prayer-requests";
 
-export function AnsweredPrayers() {
+export async function AnsweredPrayers() {
+  const answeredPrayers = await getAnsweredPrayers();
+
   return (
     <section className="section bg-surface">
       <Container>

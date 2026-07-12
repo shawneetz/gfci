@@ -1,11 +1,12 @@
-// src/sections/home-page/ministries.tsx
 import { Container } from "@/components/ui/container";
 import { ButtonLink } from "@/components/ui/button";
 import { ImageCard } from "@/components/ui/image-card";
-import { ministries as ministriesData } from "@/data/ministries";
+import { getAllMinistries } from "@/server/queries/ministries";
 import { ministries } from "@/content/home";
 
-export function Ministries() {
+export async function Ministries() {
+  const ministriesData = await getAllMinistries();
+
   return (
     <section className="section bg-surface-inverse">
       <Container>

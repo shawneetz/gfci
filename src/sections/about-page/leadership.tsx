@@ -5,22 +5,13 @@ import { IconInfoRow } from "@/components/ui/icon-info-row";
 import { PersonCard } from "@/components/ui/person-card";
 import { ButtonLink } from "@/components/ui/button";
 import { siteConfig } from "@/config/site";
-import { people } from "@/data/people";
+import { getLeadershipTeam } from "@/server/queries/people";
 import { CONTENT_MAX_WIDTH } from "@/lib/layout";
 import { leadership } from "@/content/about";
 
-interface Leader {
-  name: string;
-  role: string;
-  image?: string;
-}
+export async function Leadership() {
+  const leaders = await getLeadershipTeam();
 
-const leaders: Leader[] = [
-  { name: people.sarahJenkins.displayName, role: people.sarahJenkins.title },
-  { name: people.davidChen.displayName, role: people.davidChen.title },
-];
-
-export function Leadership() {
   return (
     <section className="section bg-surface-alt">
       <Container className={CONTENT_MAX_WIDTH}>
@@ -28,7 +19,12 @@ export function Leadership() {
 
         <div className="grid grid-cols-2 gap-6">
           {leaders.map((leader) => (
-            <PersonCard key={leader.name} name={leader.name} role={leader.role} image={leader.image} />
+            <PersonCard
+              key={leader.id}
+              name={leader.displayName}
+              role={leader.title}
+              image={leader.imageUrl ?? undefined}
+            />
           ))}
         </div>
 

@@ -11,6 +11,7 @@ import { KidsForm } from "@/sections/connect-page/kids-form";
 import { YouthForm } from "@/sections/connect-page/youth-form";
 import { AdultsForm } from "@/sections/connect-page/adults-form";
 import { siteConfig } from "@/config/site";
+import type { MinistryWithLeader } from "@/server/queries/ministries";
 import { form } from "@/content/connect";
 
 type Audience = "kids" | "youth" | "adults";
@@ -21,7 +22,11 @@ const TABS: TabItem[] = [
   { value: "adults", label: "Adults" },
 ];
 
-export function ConnectForm() {
+interface ConnectFormProps {
+  ministries: MinistryWithLeader[];
+}
+
+export function ConnectForm({ ministries }: ConnectFormProps) {
   const [audience, setAudience] = useState<Audience>("kids");
   const idPrefix = useId();
 
@@ -48,9 +53,9 @@ export function ConnectForm() {
               aria-labelledby={`${idPrefix}-tab-${audience}`}
               className="mt-6"
             >
-              {audience === "kids" && <KidsForm />}
-              {audience === "youth" && <YouthForm />}
-              {audience === "adults" && <AdultsForm />}
+              {audience === "kids" && <KidsForm ministries={ministries} />}
+              {audience === "youth" && <YouthForm ministries={ministries} />}
+              {audience === "adults" && <AdultsForm ministries={ministries} />}
             </div>
           </Panel>
 

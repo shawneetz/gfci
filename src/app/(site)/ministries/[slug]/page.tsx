@@ -7,31 +7,35 @@ import { Container } from "@/components/ui/container";
 import { IconInfoRow } from "@/components/ui/icon-info-row";
 import { ButtonLink } from "@/components/ui/button";
 import { ArrowLink } from "@/components/ui/arrow-link";
-import { ministries } from "@/data/ministries";
+import { getAllMinistries, getMinistryBySlug, getMinistrySlugs } from "@/server/queries/ministries";
 import { detail } from "@/content/ministries";
+
+export const dynamic = "force-dynamic";
 
 interface MinistryPageProps {
   params: Promise<{ slug: string }>;
 }
 
-export function generateStaticParams() {
-  return ministries.map((ministry) => ({ slug: ministry.slug }));
+export async function generateStaticParams() {
+  const slugs = await getMinistrySlugs();
+  return slugs.map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({ params }: MinistryPageProps) {
   const { slug } = await params;
-  const ministry = ministries.find((m) => m.slug === slug);
+  const ministry = await getMinistryBySlug(slug);
   if (!ministry) return {};
   return { title: ministry.title, description: ministry.tagline };
 }
 
 export default async function MinistryPage({ params }: MinistryPageProps) {
   const { slug } = await params;
-  const ministry = ministries.find((m) => m.slug === slug);
+  const ministry = await getMinistryBySlug(slug);
 
   if (!ministry) notFound();
 
-  const otherMinistries = ministries.filter((m) => m.slug !== ministry.slug);
+  const allMinistries = await getAllMinistries();
+  const otherMinistries = allMinistries.filter((m) => m.slug !== ministry.slug);
 
   return (
     <>

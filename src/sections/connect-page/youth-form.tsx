@@ -7,12 +7,10 @@ import { TextField } from "@/components/ui/text-field";
 import { Button } from "@/components/ui/button";
 import { FormStatusBanner } from "@/components/ui/form-status-banner";
 import { OptionalContactFields } from "@/sections/connect-page/optional-contact-fields";
-import { ministries } from "@/data/ministries";
+import type { MinistryWithLeader } from "@/server/queries/ministries";
 import { submitConnectRegistration, type SubmitStatus } from "@/lib/forms";
 import type { YouthConnectRegistration } from "@/types";
 import { messages } from "@/content/connect";
-
-const youthMinistry = ministries.find((m) => m.slug === "faith-youth");
 
 type YouthFormFields = Omit<YouthConnectRegistration, "audience">;
 
@@ -25,7 +23,13 @@ const initialForm: YouthFormFields = {
   additionalContact: "",
 };
 
-export function YouthForm() {
+interface YouthFormProps {
+  ministries: MinistryWithLeader[];
+}
+
+export function YouthForm({ ministries }: YouthFormProps) {
+  const youthMinistry = ministries.find((m) => m.slug === "faith-youth");
+
   const [form, setForm] = useState<YouthFormFields>(initialForm);
   const [status, setStatus] = useState<SubmitStatus>("idle");
 

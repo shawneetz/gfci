@@ -1,4 +1,3 @@
-// src/sections/home-page/latest-sermon.tsx
 import Image from "next/image";
 import Link from "next/link";
 import { Play } from "lucide-react";
@@ -6,11 +5,15 @@ import { Play } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { Card, CardBody } from "@/components/ui/card";
 import { ButtonLink } from "@/components/ui/button";
-import { latestSermon as latestSermonData } from "@/data/sermons";
+import { getLatestSermon } from "@/server/queries/sermons";
 import { formatDate } from "@/lib/utils";
 import { latestSermon } from "@/content/home";
 
-export function LatestSermon() {
+export async function LatestSermon() {
+  const latestSermonData = await getLatestSermon();
+
+  if (!latestSermonData) return null;
+
   return (
     <section className="section bg-surface-alt">
       <Container>

@@ -6,12 +6,10 @@ import { FieldLabel } from "@/components/ui/field-label";
 import { TextField } from "@/components/ui/text-field";
 import { Button } from "@/components/ui/button";
 import { FormStatusBanner } from "@/components/ui/form-status-banner";
-import { ministries } from "@/data/ministries";
+import type { MinistryWithLeader } from "@/server/queries/ministries";
 import { submitConnectRegistration, type SubmitStatus } from "@/lib/forms";
 import type { KidsConnectRegistration } from "@/types";
 import { messages } from "@/content/connect";
-
-const kidsMinistry = ministries.find((m) => m.slug === "golden-kids");
 
 type KidsFormFields = Omit<KidsConnectRegistration, "audience">;
 
@@ -22,7 +20,13 @@ const initialForm: KidsFormFields = {
   visitDate: "",
 };
 
-export function KidsForm() {
+interface KidsFormProps {
+  ministries: MinistryWithLeader[];
+}
+
+export function KidsForm({ ministries }: KidsFormProps) {
+  const kidsMinistry = ministries.find((m) => m.slug === "golden-kids");
+
   const [form, setForm] = useState<KidsFormFields>(initialForm);
   const [status, setStatus] = useState<SubmitStatus>("idle");
 

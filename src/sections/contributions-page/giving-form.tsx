@@ -12,17 +12,21 @@ import { SelectField } from "@/components/ui/select-field";
 import { RadioOption } from "@/components/ui/radio-option";
 import { Button } from "@/components/ui/button";
 import { FormStatusBanner } from "@/components/ui/form-status-banner";
-import { ministries } from "@/data/ministries";
+import type { MinistryWithLeader } from "@/server/queries/ministries";
 import { submitGivingIntent, type SubmitStatus } from "@/lib/forms";
 import { FORM_PAGE_MAX_WIDTH } from "@/lib/layout";
 import { form as givingForm } from "@/content/giving";
 
-const FUND_OPTIONS = [...givingForm.generalFundOptions, ...ministries.map((m) => m.title)];
+interface GivingFormProps {
+  ministries: MinistryWithLeader[];
+}
 
-export function GivingForm() {
+export function GivingForm({ ministries }: GivingFormProps) {
+  const fundOptions = [...givingForm.generalFundOptions, ...ministries.map((m) => m.title)];
+
   const [amount, setAmount] = useState(100);
   const [customAmount, setCustomAmount] = useState("");
-  const [fund, setFund] = useState(FUND_OPTIONS[0]);
+  const [fund, setFund] = useState(fundOptions[0]);
   const [frequency, setFrequency] = useState<"one-time" | "monthly">("one-time");
   const [status, setStatus] = useState<SubmitStatus>("idle");
 
@@ -83,7 +87,7 @@ export function GivingForm() {
             <div>
               <FieldLabel>Fund Designation</FieldLabel>
               <SelectField value={fund} onChange={(e) => setFund(e.target.value)} disabled={status === "submitting"}>
-                {FUND_OPTIONS.map((option) => (
+                {fundOptions.map((option) => (
                   <option key={option} value={option}>
                     {option}
                   </option>

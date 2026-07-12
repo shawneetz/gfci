@@ -18,61 +18,27 @@ export function isNavGroup(item: NavItem): item is NavGroup {
   return "items" in item;
 }
 
-export interface Sermon {
-  slug: string;
-  title: string;
-  series: string;
-  speaker: string;
-  date: string;
-  thumbnail: string;
-  videoUrl?: string;
-  summary?: string;
-}
-
-// A prayer TEAM someone can join (Kids/Youth/Adults prayer groups) — distinct
-// from a prayer request an individual submits via PrayerRequestForm. These
-// two concepts used to share the "PrayerRequest" name, which was confusing
-// since they're unrelated.
-export interface PrayerTeam {
-  slug: string;
-  name: string;
-  details: string;
-  image: string;
-  schedule: string;
-}
+// Content-model types (Sermon, Ministry, ChurchEvent, PrayerTeam,
+// AnsweredPrayer) used to live here as hand-typed interfaces mirroring
+// src/data/*.ts. Now that every page reads from the database, the real
+// shape of that data comes straight from Prisma instead, so importing it
+// here would just be a second copy that could quietly drift out of sync
+// with the schema. Import these from the query layer that already knows
+// the true shape:
+//
+//   Sermon        -> SermonWithSpeaker,  from "@/server/queries/sermons"
+//   Ministry       -> MinistryWithLeader, from "@/server/queries/ministries"
+//   ChurchEvent    -> ChurchEvent,        from "@/server/queries/events"
+//   PrayerTeam     -> PrayerTeam,         from "@/server/queries/prayer-teams"
+//   AnsweredPrayer -> AnsweredPrayer,     from "@/server/queries/testimonies"
+//
+// The last two are re-exports of the generated Prisma types (see those
+// files), the first three are Prisma types with a small shape adjustment
+// (e.g. a flattened `leader`/`speaker` string, or `date` as a plain
+// "YYYY-MM-DD" string instead of a `Date`).
 
 export const EVENT_CATEGORIES = ["Worship", "Youth", "Outreach"] as const;
 export type EventCategory = (typeof EVENT_CATEGORIES)[number];
-
-export interface ChurchEvent {
-  id: string;
-  title: string;
-  // ISO date (e.g. "2026-10-15") — the single source of truth for this
-  // event's date. Derive display formats (month, day, weekday) via the
-  // formatters in lib/utils.ts rather than storing them separately, so a
-  // date can never be updated in one place and left stale in another.
-  date: string;
-  time: string;
-  category: EventCategory;
-  location: string;
-  image: string;
-  description: string;
-  featured?: boolean;
-}
-
-export interface Ministry {
-  slug: string;
-  title: string;
-  tagline: string; // short description shown on the card
-  overview: string; // longer description shown in the modal
-  image: string;
-  imageAlt: string;
-  audience: string; // who it's for
-  schedule: string; // when it meets
-  location: string; // where it meets
-  leader: string; // point person
-  contactEmail: string;
-}
 
 export const PRAYER_CATEGORIES = [
   "Healing",
@@ -83,18 +49,10 @@ export const PRAYER_CATEGORIES = [
 ] as const;
 export type PrayerCategory = (typeof PRAYER_CATEGORIES)[number];
 
-export interface AnsweredPrayer {
-  id: string;
-  quote: string;
-  name: string;
-  category: PrayerCategory;
-}
-
 // A submitted prayer request captured by PrayerRequestForm — distinct from
-// PrayerTeam above (that's a group to join; this is an individual
-// submission). Mirrors the form's fields 1:1 so its state can be typed as
-// one object, and gives the submit functions in lib/forms.ts a concrete
-// shape to send.
+// a PrayerTeam (that's a group to join; this is an individual submission).
+// Mirrors the form's fields 1:1 so its state can be typed as one object,
+// and gives the submit functions in lib/forms.ts a concrete shape to send.
 export interface PrayerRequestSubmission {
   name: string;
   email: string;

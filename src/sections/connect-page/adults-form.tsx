@@ -7,12 +7,10 @@ import { TextField } from "@/components/ui/text-field";
 import { Button } from "@/components/ui/button";
 import { FormStatusBanner } from "@/components/ui/form-status-banner";
 import { OptionalContactFields } from "@/sections/connect-page/optional-contact-fields";
-import { ministries } from "@/data/ministries";
+import type { MinistryWithLeader } from "@/server/queries/ministries";
 import { submitConnectRegistration, type SubmitStatus } from "@/lib/forms";
 import type { AdultsConnectRegistration } from "@/types";
 import { messages } from "@/content/connect";
-
-const connectGroupsMinistry = ministries.find((m) => m.slug === "connect-groups");
 
 type AdultsFormFields = Omit<AdultsConnectRegistration, "audience">;
 
@@ -24,7 +22,13 @@ const initialForm: AdultsFormFields = {
   additionalContact: "",
 };
 
-export function AdultsForm() {
+interface AdultsFormProps {
+  ministries: MinistryWithLeader[];
+}
+
+export function AdultsForm({ ministries }: AdultsFormProps) {
+  const connectGroupsMinistry = ministries.find((m) => m.slug === "connect-groups");
+
   const [form, setForm] = useState<AdultsFormFields>(initialForm);
   const [status, setStatus] = useState<SubmitStatus>("idle");
 

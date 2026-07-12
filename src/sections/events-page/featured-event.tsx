@@ -5,7 +5,7 @@ import { Container } from "@/components/ui/container";
 import { Card, CardBody } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { MetaRow } from "@/components/ui/meta-row";
-import { ChurchEvent } from "@/types";
+import type { ChurchEvent } from "@/server/queries/events";
 import { featured } from "@/content/events";
 
 interface FeaturedEventProps {
