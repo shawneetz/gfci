@@ -308,3 +308,24 @@ model ConnectRegistration {
   @@index([audience])
   @@index([createdAt])
 }
+
+// ─────────────────────────────────────────────────────────
+// Admin
+// ─────────────────────────────────────────────────────────
+
+// Staff accounts for the /admin route tree (Phase 13). Deliberately
+// separate from Person — Person is public-facing content (sermon
+// speakers, ministry leaders); AdminUser is a login credential and
+// should never be conflated with "someone whose name appears on the
+// site." There is no public sign-up route — rows here are only ever
+// created via `npm run admin:create` (scripts/create-admin.ts) by
+// someone with direct database access.
+model AdminUser {
+  id           String @id @default(cuid())
+  email        String @unique
+  passwordHash String
+  name         String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

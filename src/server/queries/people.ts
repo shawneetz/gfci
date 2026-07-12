@@ -24,3 +24,7 @@ export function getLeadershipTeam(): Promise<Person[]> {
 export function getPersonById(id: string): Promise<Person | null> {
   return prisma.person.findUnique({ where: { id } });
 }
+
+export function getAllPeople(): Promise<Person[]> {
+  return prisma.person.findMany({ orderBy: { name: "asc" } });
+}

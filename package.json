@@ -10,7 +10,8 @@
     "lint": "eslint",
     "lint:fix": "eslint --fix",
     "check:enums": "tsx scripts/check-enum-parity.ts",
-    "backfill:images": "tsx scripts/backfill-images.ts",
+    "backfill:images": "tsx scripts/backfill-image.ts",
+    "admin:create": "tsx scripts/create-admin.ts",
     "postinstall": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:seed": "prisma db seed",
@@ -20,9 +21,11 @@
     "@prisma/adapter-pg": "^7.8.0",
     "@prisma/client": "^7.8.0",
     "@vercel/blob": "^1.0.0",
+    "bcryptjs": "^3.0.2",
     "clsx": "^2.1.1",
     "lucide-react": "^0.469.0",
     "next": "^16.2.10",
+    "next-auth": "^5.0.0-beta.29",
     "pg": "^8.16.0",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
@@ -43,7 +46,6 @@
     "prisma": "^7.8.0",
     "tailwindcss": "^4.3.2",
     "tsx": "^4.19.0",
-    "typescript": "^5.9.3",
-    "server-only": "^0.0.1"
+    "typescript": "^5.9.3"
   }
 }
