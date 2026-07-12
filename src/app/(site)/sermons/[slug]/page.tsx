@@ -7,38 +7,35 @@ import { Container } from "@/components/ui/container";
 import { Card, CardBody } from "@/components/ui/card";
 import { MetaRow } from "@/components/ui/meta-row";
 import { ArrowLink } from "@/components/ui/arrow-link";
-import { sermons } from "@/data/sermons";
+import { getSermonBySlug, getSermonSlugs, getMoreInSeries } from "@/server/queries/sermons";
 import { formatDate } from "@/lib/utils";
+import { detail } from "@/content/sermons";
+
+export const dynamic = "force-dynamic";
 
 interface SermonPageProps {
   params: Promise<{ slug: string }>;
 }
 
-export function generateStaticParams() {
-  return sermons.map((sermon) => ({ slug: sermon.slug }));
+export async function generateStaticParams() {
+  const slugs = await getSermonSlugs();
+  return slugs.map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({ params }: SermonPageProps) {
   const { slug } = await params;
-  const sermon = sermons.find((s) => s.slug === slug);
-
+  const sermon = await getSermonBySlug(slug);
   if (!sermon) return {};
-
-  return {
-    title: sermon.title,
-    description: sermon.summary,
-  };
+  return { title: sermon.title, description: sermon.summary };
 }
 
 export default async function SermonPage({ params }: SermonPageProps) {
   const { slug } = await params;
-  const sermon = sermons.find((s) => s.slug === slug);
+  const sermon = await getSermonBySlug(slug);
 
   if (!sermon) notFound();
 
-  const moreInSeries = sermons.filter(
-    (item) => item.series === sermon.series && item.slug !== sermon.slug
-  );
+  const moreInSeries = await getMoreInSeries(sermon.series, sermon.slug);
 
   return (
     <>
@@ -60,14 +57,10 @@ export default async function SermonPage({ params }: SermonPageProps) {
             </span>
           </div>
 
-          {sermon.summary && (
-            <p className="mt-8 text-body-lg text-ink-secondary">
-              {sermon.summary}
-            </p>
-          )}
+          {sermon.summary && <p className="mt-8 text-body-lg text-ink-secondary">{sermon.summary}</p>}
 
           <div className="mt-8">
-            <ArrowLink href="/sermons">← All Sermons</ArrowLink>
+            <ArrowLink href="/sermons">{detail.backLabel}</ArrowLink>
           </div>
         </Container>
       </section>
@@ -76,16 +69,12 @@ export default async function SermonPage({ params }: SermonPageProps) {
         <section className="section bg-surface-alt">
           <Container className="max-w-3xl">
             <h2 className="mb-6 text-section-title text-ink">
-              More from {sermon.series}
+              {detail.moreInSeriesPrefix} {sermon.series}
             </h2>
 
             <div className="grid gap-6 sm:grid-cols-2">
               {moreInSeries.map((item) => (
-                <Link
-                  key={item.slug}
-                  href={`/sermons/${item.slug}`}
-                  className="group block"
-                >
+                <Link key={item.slug} href={`/sermons/${item.slug}`} className="group block">
                   <Card>
                     <div className="relative aspect-video bg-surface-inverse flex items-center justify-center">
                       <span className="flex h-12 w-12 items-center justify-center rounded-full bg-surface/90 text-brand transition-transform duration-200 group-hover:scale-110">
@@ -93,9 +82,7 @@ export default async function SermonPage({ params }: SermonPageProps) {
                       </span>
                     </div>
                     <CardBody>
-                      <h3 className="text-lg font-bold text-ink">
-                        {item.title}
-                      </h3>
+                      <h3 className="text-lg font-bold text-ink">{item.title}</h3>
                       <p className="mt-2 text-sm text-ink-muted">
                         {item.speaker} &middot; {formatDate(item.date)}
                       </p>

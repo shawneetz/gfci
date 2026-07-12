@@ -1,5 +1,6 @@
 import { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ICON_SIZE } from "@/lib/icon-sizes";
 
 interface MetaRowItem {
   icon: LucideIcon;
@@ -21,7 +22,7 @@ export function MetaRow({ items, className }: MetaRowProps) {
     >
       {items.map((item) => (
         <span key={item.label} className="inline-flex items-center gap-1.5">
-          <item.icon size={14} />
+          <item.icon size={ICON_SIZE.inline} />
           {item.label}
         </span>
       ))}

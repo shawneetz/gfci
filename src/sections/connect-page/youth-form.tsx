@@ -7,11 +7,10 @@ import { TextField } from "@/components/ui/text-field";
 import { Button } from "@/components/ui/button";
 import { FormStatusBanner } from "@/components/ui/form-status-banner";
 import { OptionalContactFields } from "@/sections/connect-page/optional-contact-fields";
-import { ministries } from "@/data/ministries";
+import type { MinistryWithLeader } from "@/server/queries/ministries";
 import { submitConnectRegistration, type SubmitStatus } from "@/lib/forms";
 import type { YouthConnectRegistration } from "@/types";
-
-const youthMinistry = ministries.find((m) => m.slug === "faith-youth");
+import { messages } from "@/content/connect";
 
 type YouthFormFields = Omit<YouthConnectRegistration, "audience">;
 
@@ -24,14 +23,17 @@ const initialForm: YouthFormFields = {
   additionalContact: "",
 };
 
-export function YouthForm() {
+interface YouthFormProps {
+  ministries: MinistryWithLeader[];
+}
+
+export function YouthForm({ ministries }: YouthFormProps) {
+  const youthMinistry = ministries.find((m) => m.slug === "faith-youth");
+
   const [form, setForm] = useState<YouthFormFields>(initialForm);
   const [status, setStatus] = useState<SubmitStatus>("idle");
 
-  function updateField<K extends keyof YouthFormFields>(
-    field: K,
-    value: YouthFormFields[K]
-  ) {
+  function updateField<K extends keyof YouthFormFields>(field: K, value: YouthFormFields[K]) {
     setForm((prev) => ({ ...prev, [field]: value }));
   }
 
@@ -116,18 +118,10 @@ export function YouthForm() {
       />
 
       {status === "success" && (
-        <FormStatusBanner
-          status="success"
-          message="Registration received! A leader will look out for your student this week."
-          className="mt-6"
-        />
+        <FormStatusBanner status="success" message={messages.youth.success} className="mt-6" />
       )}
       {status === "error" && (
-        <FormStatusBanner
-          status="error"
-          message="Something went wrong submitting your registration. Please try again."
-          className="mt-6"
-        />
+        <FormStatusBanner status="error" message={messages.youth.error} className="mt-6" />
       )}
 
       <Button

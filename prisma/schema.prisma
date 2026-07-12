@@ -1,0 +1,331 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─────────────────────────────────────────────────────────
+// Enums
+// ─────────────────────────────────────────────────────────
+//
+// EventCategory and PrayerCategory below must stay in sync with
+// EVENT_CATEGORIES / PRAYER_CATEGORIES in src/types/index.ts. That
+// parity isn't enforced by the type system (the TS side is a hand-
+// written `as const` tuple, kept that way deliberately — see the
+// comment in scripts/check-enum-parity.ts for why). Instead it's
+// enforced by scripts/check-enum-parity.ts, which runs automatically
+// before every `npm run build` (see the `prebuild` script in
+// package.json) and can be run standalone via `npm run check:enums`.
+// Adding a value to one side without the other will fail the next build.
+
+// Matches EVENT_CATEGORIES in src/types/index.ts exactly.
+enum EventCategory {
+  Worship
+  Youth
+  Outreach
+}
+
+// Matches PRAYER_CATEGORIES in src/types/index.ts exactly.
+enum PrayerCategory {
+  Healing
+  Family
+  Guidance
+  Thanksgiving
+  Other
+}
+
+// Matches PrayerRequestSubmission.visibility ("private" | "public") in
+// src/types/index.ts.
+enum Visibility {
+  private
+  public
+}
+
+// Prisma enum values can't contain a hyphen, so the form's "one-time"
+// string is mapped to one_time at the Server Action boundary (Phase 5) —
+// see src/lib/forms.ts.
+enum GivingFrequency {
+  one_time
+  monthly
+}
+
+enum ConnectAudience {
+  kids
+  youth
+  adults
+}
+
+// ─────────────────────────────────────────────────────────
+// Content models
+// ─────────────────────────────────────────────────────────
+
+// Single source of truth for every staff/leader referenced across the
+// site — About > Leadership, sermon speakers, and ministry leaders all
+// point back here instead of hand-typing a name+title per page. Mirrors
+// the old src/data/people.ts shape, plus two new fields (isLeadershipTeam,
+// leadershipOrder) so which staff appear on the About page — and in what
+// order — is admin-editable instead of hardcoded in leadership.tsx.
+model Person {
+  id          String  @id @default(cuid())
+  name        String
+  title       String // role shown on its own, e.g. About page leader cards
+  displayName String // honorific + name, ready to drop into copy/speaker lines
+  email       String?
+  imageUrl    String?
+
+  isLeadershipTeam Boolean @default(false)
+  leadershipOrder  Int? // only meaningful when isLeadershipTeam is true
+
+  ministriesLed Ministry[]
+  sermons       Sermon[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([isLeadershipTeam])
+}
+
+model Ministry {
+  id           String @id @default(cuid())
+  slug         String @unique
+  title        String
+  tagline      String // short description shown on the card
+  overview     String // longer description shown on the detail page
+  image        String
+  imageAlt     String
+  audience     String // who it's for
+  schedule     String // when it meets
+  location     String // where it meets
+  contactEmail String
+  order        Int    @default(0) // display order across Ministries list, Giving fund options, etc.
+
+  leaderId String
+  leader   Person @relation(fields: [leaderId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([order])
+}
+
+model Sermon {
+  id        String    @id @default(cuid())
+  slug      String    @unique
+  title     String
+  series    String
+  date      DateTime
+  thumbnail String
+  videoUrl  String?
+  summary   String?
+
+  speakerId String
+  speaker   Person @relation(fields: [speakerId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([series])
+  @@index([date])
+}
+
+model Event {
+  id          String        @id @default(cuid())
+  title       String
+  date        DateTime
+  time        String
+  category    EventCategory
+  location    String
+  image       String
+  description String
+  // Only one Event should have featured: true at a time. As of the
+  // 20260712140000_event_featured_unique_index migration this is a real
+  // DB constraint — a partial unique index on (featured) WHERE
+  // featured = true — not just app-level convention. There is
+  // deliberately no `@@unique` here: Prisma's schema DSL can't express
+  // a *partial* unique index, so the constraint lives only in that
+  // migration file. Don't add `@@unique([featured])` here — a plain
+  // unique index would also forbid having more than one
+  // featured: false row, which is the normal case.
+  featured    Boolean       @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([date])
+  @@index([category])
+}
+
+model PrayerTeam {
+  id       String @id @default(cuid())
+  slug     String @unique
+  name     String
+  details  String
+  image    String
+  schedule String
+  order    Int    @default(0)
+
+  // No updatedAt: decided 2026-07-12 (Phase 10 data-integrity audit).
+  // Prayer teams are staff-curated and change rarely; nothing in the UI
+  // currently surfaces "last edited," so the column would be dead
+  // weight. Add it if/when the Phase 15 admin UI wants to show edit
+  // history for this table specifically.
+
+  @@index([order])
+}
+
+model AnsweredPrayer {
+  id       String         @id @default(cuid())
+  quote    String
+  name     String
+  category PrayerCategory
+
+  createdAt DateTime @default(now())
+  // No updatedAt — same reasoning as PrayerTeam above: these are
+  // effectively append-only testimonies, not edited in place once
+  // published.
+}
+
+// A single "here are a few things" card — icon + title + description.
+// Added 2026-07-12 (Phase 12), closing the Phase 11 content-governance
+// audit: this row shape previously lived as a hardcoded array in
+// src/content/about.ts (coreValues.values), which the audit flagged as
+// belonging in the database — it's a growable list a non-engineer should
+// be able to edit, same shape as PrayerTeam above.
+model CoreValue {
+  id String @id @default(cuid())
+
+  // Key into the fixed lookup in src/lib/icon-map.ts (e.g. "Heart"), not
+  // a Lucide component — the DB only ever stores which named icon to
+  // render. Same pattern PrayerTeam's `slug` already drives via
+  // `iconBySlug` in prayer-teams.tsx.
+  icon        String
+  title       String
+  description String
+  order       Int    @default(0)
+
+  // No updatedAt — same reasoning as PrayerTeam: a short, staff-curated
+  // list that changes rarely and isn't tracked for "last edited" anywhere.
+
+  @@index([order])
+}
+
+// Same shape as CoreValue, for Connect's "What to Expect" section — kept
+// as its own table rather than one shared polymorphic table, since the
+// two lists have independent ordering and belong to different pages;
+// splitting them keeps each query a plain `orderBy: { order: "asc" }`
+// with nothing else to filter on.
+model ExpectationItem {
+  id          String @id @default(cuid())
+  icon        String
+  title       String
+  description String
+  order       Int    @default(0)
+
+  @@index([order])
+}
+
+// Placeholder info for whichever service is currently live. Always a
+// single row, fetched/updated by the fixed id "singleton" — never a
+// second row. Replaces the hardcoded LIVE_STREAM object in
+// src/app/(site)/live/page.tsx.
+model LiveStream {
+  id       String @id @default("singleton")
+  title    String
+  schedule String
+  location String
+
+  updatedAt DateTime @updatedAt
+}
+
+// ─────────────────────────────────────────────────────────
+// Form submissions
+// ─────────────────────────────────────────────────────────
+
+model PrayerRequestSubmission {
+  id         String         @id @default(cuid())
+  name       String
+  email      String
+  category   PrayerCategory
+  message    String
+  visibility Visibility     @default(private)
+
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}
+
+model GivingIntent {
+  id        String          @id @default(cuid())
+  amount    Int
+  fund      String
+  frequency GivingFrequency
+
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}
+
+// The three Connect page registration forms (Kids/Youth/Adults) share one
+// table rather than three, since they only differ by a handful of
+// audience-specific fields. Fields not relevant to a given audience stay
+// null — see src/lib/forms.ts (Phase 5) for which fields get written per
+// audience.
+//
+// Data-integrity note (Phase 10, decided 2026-07-12): there is no DB
+// CHECK constraint tying `audience` to which of the nullable fields
+// below may be set (e.g. preventing a "kids" row from also having
+// studentName populated). That's deliberate: the only writer is
+// submitConnectRegistration() in src/lib/forms.ts, which already
+// switches on payload.audience and only ever populates the fields for
+// that branch — a matching SQL CHECK would duplicate that logic for a
+// table with exactly one trusted write path. Revisit this decision if a
+// second write path (e.g. an admin edit form in Phase 15) is ever added
+// without routing through the same Server Action.
+model ConnectRegistration {
+  id        String          @id @default(cuid())
+  audience  ConnectAudience
+  email     String
+  visitDate DateTime
+
+  // kids
+  parentName String?
+  children   String?
+
+  // youth
+  studentName String?
+  grade       String?
+
+  // adults & youth
+  fullName          String?
+  socialMedia       String?
+  additionalContact String?
+
+  createdAt DateTime @default(now())
+
+  @@index([audience])
+  @@index([createdAt])
+}
+
+// ─────────────────────────────────────────────────────────
+// Admin
+// ─────────────────────────────────────────────────────────
+
+// Staff accounts for the /admin route tree (Phase 13). Deliberately
+// separate from Person — Person is public-facing content (sermon
+// speakers, ministry leaders); AdminUser is a login credential and
+// should never be conflated with "someone whose name appears on the
+// site." There is no public sign-up route — rows here are only ever
+// created via `npm run admin:create` (scripts/create-admin.ts) by
+// someone with direct database access.
+model AdminUser {
+  id           String @id @default(cuid())
+  email        String @unique
+  passwordHash String
+  name         String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

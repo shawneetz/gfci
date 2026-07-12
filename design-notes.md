@@ -14,6 +14,52 @@ The interface is designed around four principles:
 - **Accessible** – High contrast, readable typography, visible focus states, and semantic HTML.
 
 ---
+# Design Direction: Modern Heritage
+
+*Adopted 2026-07-11 — tracked in `design-checklist.md` §1.*
+
+The current system (Big Shoulders + Archivo, hard offset shadows, sharp
+corners) is one generation of the identity. The next pass isn't a
+redesign — it's the same institution with its edges sanded down in the
+right places. The reference point is a well-kept civic institution that's
+been quietly renovated: the original materials (thick rules, sharp
+corners, condensed civic-signage lettering) stay as the signature move,
+but get used with more restraint instead of being the default texture on
+every surface.
+
+**What stays exactly as-is:**
+- The full color palette — brown/ink/cream/near-black. Nothing in this
+  direction touches a hex value beyond the two conflicts already resolved
+  in §0.
+- Big Shoulders Display for structural/UI headlines (nav, buttons,
+  section titles).
+- The hard-offset-shadow / sharp-corner signature — it stays the
+  recognizable move, just applied more deliberately (see design-checklist.md
+  §3–§4) rather than by default on every bordered surface.
+
+**What's introduced:**
+- A warmer editorial serif for moments that carry emotional or
+  institutional weight — the mission statement, testimonies/answered
+  prayers, sermon pull-quotes. Structural and UI text keeps the existing
+  industrial sans; this is additive, not a wholesale typeface swap. See
+  design-checklist.md §2 and §11 for the shortlisted pairing.
+- A general "quieter chrome" pass on borders, shadows, and spacing
+  anywhere the hard-shadow signature isn't the point — the shadow stays
+  reserved for things that are genuinely clickable or the single most
+  important surface on a page, not applied reflexively to every panel.
+
+**Why this direction and not something else:** it's timeless over
+trendy — it leans on print and civic-institution reference points
+(ledger books, engraved plaques, archive typography) rather than this
+year's SaaS-template look (soft gradients, blur, glow, a single acid
+accent, rounded-2xl everywhere), so it won't date the way that aesthetic
+will. See design-checklist.md §9 ("will this age well?") for the filter
+this direction is meant to pass.
+
+This section is the reference implementation sections should build
+against — if a task in design-checklist.md §2–§8 seems to conflict with
+it, the direction here wins; flag the conflict rather than quietly
+picking one.
 
 # Color Palette
 
@@ -42,7 +88,7 @@ the design consistent if colors change later.
 
 | Token | Value |
 |-------|--------|
-| `border` | `#DDDDDD` |
+| `border` | `#D8D3CD` |
 
 Borders are now a structural element, not a subtle divider — see
 **Shadows & Borders** below.
@@ -54,13 +100,46 @@ links, and the Giving callout — never a full-section background.
 
 | Token | Value |
 |-------|--------|
-| `brand` | `#074E40` |
-| `brand-hover` | `#063F34` |
-| `brand-active` | `#052F27` |
-| `brand-subtle` | `#E6F2EF` |
+| `brand` | `#342B25` |
+| `brand-hover` | `#463831` |
+| `brand-active` | `#241D19` |
+| `brand-subtle` | `#F3F0ED` |
 
-Add a new token category only once a component actually needs it
-(e.g. `danger` when the Connect form gets validation states).
+> **2026-07-11:** this table previously documented a green brand color
+> (`#074E40` and matching hover/active/subtle values) that was never
+> actually implemented in `globals.css`. The code's brown has always been
+> what renders on the live site — this table now matches it.
+
+### Contrast Validation
+
+*Verified 2026-07-11, alongside the §0 brand/border documentation fix.*
+
+Every brand-involving text/background pairing in active use, checked
+against WCAG 2.x contrast ratios:
+
+| Pairing | Where used | Ratio | Result |
+|---|---|---|---|
+| `brand` on `brand-subtle` | `AmountOption` selected state | 12.18:1 | AA + AAA |
+| `inverse` on `brand` fill | Form submit buttons, `ConnectHero` CTA | 13.82:1 | AA + AAA |
+| `brand` on white/`surface` | `FieldLabel`, `ArrowLink`, brand-tone `IconEyebrow` | 13.82:1 | AA + AAA |
+| `brand-hover` on white/`surface` | `ArrowLink` hover state | 11.22:1 | AA + AAA |
+
+All four clear AA (4.5:1) and AAA (7:1) by a wide margin — the brown is
+dark enough that neither direction is close to the threshold. Nothing
+here needed adjustment once the brand token itself was corrected to
+match the code.
+
+`Button`'s `disabled:opacity-60` state is exempt from this check under
+WCAG SC 1.4.11 (inactive components have no contrast minimum) and wasn't
+audited further.
+
+**Hover/active ramp** — `brand-active` (0.0133 luminance) < `brand`
+(0.0260) < `brand-hover` (0.0436) is the correct, monotonic
+darken-on-press / lighten-on-hover ordering. These were manually picked
+and remain manually picked; the ramp is already well-formed, so there's
+no need to derive them from `brand` programmatically (e.g. via
+`color-mix()`) right now. Worth revisiting only if `brand` itself
+changes again.
 
 ## Tone System
 
@@ -97,19 +176,30 @@ live in a file named after a different component.
 
 ### Headlines
 
-- **Big Shoulders**
-- Weight: **700–800**
-- Set in **uppercase** with tight letter-spacing — this is a condensed
-  industrial display face modeled on old civic signage; it's designed
-  to be set in caps and reads weak in lowercase.
+- **Zodiak** (self-hosted via `next/font/local`; see `src/app/fonts/zodiak`)
+- Weight: **700–900**
+- An editorial serif with bracketed, slab-like details — reads like an
+  engraved plaque or a century-old newspaper masthead, continuing the
+  "civic signage" lineage the previous condensed grotesk claimed, but as a
+  proper serif. Unlike Big Shoulders, Zodiak is **not** forced uppercase —
+  every `h1`–`h6` now renders in its natural mixed case by default.
+  Reserve `uppercase` for short strings (nav labels, eyebrows, buttons,
+  badges); those render in the body face, not the headline face. The rare
+  cases where headline-font text is still forced uppercase (the wordmark,
+  footer section labels) carry a small positive `tracking-[0.02em]` bump
+  at the component level to keep the caps from feeling cramped.
+- Fallback stack: `Georgia, "Times New Roman", serif`
 
 ### Body
 
-- **Archivo**
+- **General Sans** (self-hosted via `next/font/local`; see
+  `src/app/fonts/general-sans`)
 - Weight: **400–700**
-
----
-
+- A quiet humanist sans that stays out of the way of the serif headlines
+  and holds up cleanly at small sizes — confirmed at `text-body-sm`'s 14px,
+  which carries most of the site's meta info (dates, speaker names,
+  captions).
+- Fallback stack: `"Helvetica Neue", Arial, sans-serif`
 ## Typography Scale
 
 ### Display
@@ -298,6 +388,23 @@ Maximum Width
 ```
 1280px
 ```
+Within that outer container, two narrower widths repeat across several
+pages and are centralized as shared constants (`src/lib/layout.ts`)
+rather than hand-typed per section:
+
+| Constant | Value | Used by |
+|---|---|---|
+| `FORM_PAGE_MAX_WIDTH` | `max-w-xl` | Giving (all sections), Prayer Requests' form + urgent-line sections |
+| `CONTENT_MAX_WIDTH` | `max-w-2xl` | About (all sections), Prayer Requests' team list, Events list + archive |
+
+**Layout audit, 2026-07-11:** every page in each family above was already
+using the same literal value — this just gives that agreement a name so
+a future edit to one section can't quietly drift from its siblings, the
+way `home-page/ministries.tsx`'s section padding had (see below). Widths
+used by only one page/pattern (`max-w-3xl` for the Ministry/Sermon detail
+pages, `max-w-md` for the Events feature/photo blocks) were checked too
+and don't need a shared constant — centralize a width once more than one
+page relies on it, not before.
 
 ---
 
@@ -342,6 +449,46 @@ Preferred spacing values:
 
 Whenever possible, spacing should be multiples of **8px**.
 
+**Grid audit, 2026-07-11:** everything added since the "Modern Heritage"
+pass (`TiltCard`, `lib/icon-sizes.ts`, the header/footer `tracking-[0.02em]`
+additions, `CtaCard`'s border-width fix, the new `Panel`/`QuoteCard`/
+`CtaCard` shadow defaults) only touches typography, borders, shadows, and
+icon sizing — none of it introduces a new padding/margin/gap value, so
+there's nothing to fix here this cycle. (Icon sizes in `icon-sizes.ts` are
+a separate 16/20/24 scale for SVG dimensions, not page spacing, so they're
+intentionally not measured against this table.) The one pre-existing
+exception, `CardBody`'s `p-5` (20px, not a multiple of 8), predates this
+audit window and stays a known, separately-tracked item rather than
+something changed here.
+---
+
+# Section Padding Weight
+
+Every full-width page section uses one of three padding utilities:
+
+| Class | Mobile | Desktop | Use for |
+|---|---|---|---|
+| `section-sm` | 48px | 64px | A single info row — one icon, one line or two of text (`UrgentPrayerLine`, `SecurityInfo`) |
+| `section` | 64px | 96px | The default — most page content |
+| `section-lg` | 96px | 128px | Reserved for a section that needs to visually anchor a page; unused so far |
+
+**Layout audit, 2026-07-11:** every section was checked against this
+table. One mismatch was found and fixed: `home-page/ministries.tsx` was
+using a hardcoded `py-16` instead of the `section` class, so unlike every
+other Home section it never got the 96px desktop bump — on a wide screen
+it visually pinched between `UpcomingEvents` and `CtaSection` above and
+below it. Fixed to use `section` directly.
+
+`MissionStatement`'s content (an eyebrow plus a single quote) is lighter
+than most `section`-weight blocks, but it's kept at `section` rather than
+downgraded to `section-sm` on purpose — per the Modern Heritage direction
+above, a pull-quote is exactly the kind of moment meant to carry
+emotional/institutional weight and earns generous surrounding space
+regardless of how little text it holds.
+
+No section is under-padded for its content — the specific failure mode
+this audit watches for (a section that grew heavier over time while
+still sitting in `section-sm`).
 ---
 
 # Border Radius
@@ -399,6 +546,31 @@ use `4px 4px`, so the effect scales with the size of the element.
 The same `6px 6px` treatment is reused for floating overlays that aren't
 cards — the desktop nav dropdown, for instance — so anything that "lifts off"
 the page reads consistently regardless of what triggered it.
+
+## Shadow discipline
+
+The hard offset shadow is reserved for two cases only: an element that's
+**actually clickable**, or **the single most important surface** on its
+page. It is not a default decoration for every bordered container.
+
+The most common mistake is a container that holds exactly one button —
+giving the container *and* the button their own shadows creates two
+competing signals about what's actually interactive. In that pattern,
+the button keeps its shadow; the container goes flat
+(`shadow={false}` on `Panel`, or omit the `shadow` prop on `CtaCard` to
+use its `"transparent"` default).
+
+Static, non-interactive content (testimonials, informational panels
+sitting beside something else) defaults to no shadow — `QuoteCard`
+follows this via its own `"transparent"` default, same as `CtaCard`.
+
+Floating overlays (`Modal`, the desktop nav dropdown) are the one
+exception that doesn't use a boolean — they're always the sole focal
+surface while open, so they're always shadowed.
+
+This was audited component-by-component in design-checklist.md §3; that
+audit is the canonical list if a new component's shadow default is ever
+in question.
 
 ---
 
@@ -490,6 +662,11 @@ info block) and `Card` for anything that's actually clickable. Mixing the
 two up is a common way to accidentally imply an element is interactive when
 it isn't, or vice versa.
 
+**Audit confirmed, 2026-07-11:** every `Card` in the codebase is wrapped
+in a `Link` (sermons list, sermon detail, latest sermon, featured event),
+and no `Panel` is wrapped in a `Link` or given a click handler anywhere.
+Re-check this any time a new `Card` or `Panel` is added — the rule is
+easy to violate by copy-pasting the "wrong" one for a new use case.
 ---
 
 # Imagery
@@ -505,22 +682,63 @@ Images should:
 
 ---
 
+# Imagery
+
+Images should:
+
+- Fill container
+- Use object-cover
+- **Sharp corners** (no radius)
+- 2px ink border around the tile
+- Optional gradient overlay for text legibility
+- Maintain consistent aspect ratio
+
+**Exception:** the three full-bleed hero background images (`Hero`,
+`ConnectHero`, `EventsHero`) intentionally skip the border — they're
+edge-to-edge page backgrounds, not bordered tiles, and a 2px frame around
+a full-bleed photo would fight the effect. Every other content image in
+the codebase (cards, ministry tiles, the photo grid, detail-page heroes)
+carries the border. Audited 2026-07-11; no other exceptions found.
+
+## Gradient Overlays
+
+Every overlay fades the same direction — `bg-linear-to-t`, dark at the
+bottom, transparent at the top — so a photo with text on it always reads
+as "darkens toward the caption." What used to vary was the *opacity* at
+each stop, picked separately per component. Three named strengths
+(`src/lib/overlays.ts`) replace that:
+
+| Constant | Value | Use |
+|---|---|---|
+| `HERO_OVERLAY` | `/70` → `/30` | Full-bleed hero backgrounds (`Hero`, `ConnectHero`, `EventsHero`) |
+| `CARD_OVERLAY` | `/90` → `/40` | A bordered tile with its own heading + description overlaid on the photo (`MinistryCard`, `WhyWeGive`) |
+| `TILE_OVERLAY` | `/70` → `/10` | A small tile with only a single-line title, no supporting copy (`ImageCard`) |
+
+**Audit, 2026-07-11:** direction was already consistent everywhere; two
+components had drifted on strength and were brought back in line —
+`ConnectHero` (was `/80`→`/40`, alone against `Hero`/`EventsHero`'s
+`/70`→`/30`) and `MinistryCard` (was `/90`→`/30`, alone against
+`WhyWeGive`'s `/90`→`/40`). `PhotoGrid` has no overlay to unify — it
+carries no captions on top of its images, so there was nothing hand-tuned
+there in the first place. `LatestSermon`'s dark scrim behind its centered
+play button (`bg-surface-inverse/25`) is a different pattern — a flat
+tint for icon contrast, not a bottom-anchored text-legibility gradient —
+and is correctly excluded from this table.
+
+---
+---
+
 # Page Hero
 
-`PageHero` takes a `tone` prop — `"dark"` (default) or `"light"` — so a page
-can pick whichever reads better against its own content, without every page
-header needing a separate component.
+`PageHero` is a single fixed style — dark `surface-inverse` background,
+`ink-inverse` title, `ink-inverse-secondary` eyebrow/description. Every
+top-level content page (About, Sermons, Ministries, Prayer Requests,
+Giving, Events Archive) uses it as-is with no per-page variation, so a
+hero always looks the same no matter which page you land on.
 
-| Tone | Background | Title | Eyebrow / Description |
-|------|------------|-------|------------------------|
-| `dark` (default) | `surface-inverse` | `ink-inverse` | `ink-inverse-secondary` |
-| `light` | `surface-alt` | `brand` | `ink-muted` / `ink-secondary` |
-
-Use `light` for pages whose hero has no photography behind it and would
-otherwise feel like an isolated dark band sitting on top of an all-white
-page (About, Ministries, Prayer Requests, Giving). Use `dark` when the hero
-sits over an image or needs to visually match the header/footer's dark
-sections (Sermons detail, Events).
+Pages with their own full-bleed photo hero (Connect, Events) don't use
+`PageHero` at all — they're a deliberately different pattern (dark text
+over an image rather than a flat dark panel) and aren't expected to match.
 
 ---
 
@@ -650,6 +868,18 @@ Always include:
   (dropdowns, accordions, Tabs) so assistive tech can track open/selected
   state the same way sighted users see it visually
 
+**Alt text audit, 2026-07-11:** every `Image` in the codebase has an
+`alt` prop — nothing was silently missing one. `MinistryCard` (via
+`data/ministries.ts`'s `imageAlt` field) and `PhotoGrid`'s callers are the
+model to copy: a real, unique description of the photo, separate from any
+caption rendered next to it. Three spots weren't following that model —
+`ImageCard`, `FeaturedEvent`, and `LatestSermon` were all passing the same
+string as both the visible heading *and* the image's `alt`, which makes a
+screen reader announce that string twice in a row for no reason. Since
+each of those images sits directly beside/below its own duplicate
+heading, the correct fix per WCAG is an empty `alt=""` (marks the image
+as decorative so the reader skips straight to the one, real heading)
+rather than inventing a new description that wasn't otherwise needed.
 ---
 
 # Responsive Design
@@ -670,6 +900,86 @@ Where a feature can't reasonably fit multiple panels side-by-side below
 hiding content outright with `hidden lg:block` — mobile visitors should
 still be able to reach every feature, just one view at a time instead of
 three side-by-side.
+
+
+# Content Governance
+
+*Added 2026-07-12 — Phase 11 audit, tracked in `design-checklist.md`.*
+
+Every page reads from Postgres via Prisma as of Phase 9, and `src/content/*.ts`
+holds fixed UI copy alongside it. As both grow, new copy needs an obvious
+home so it doesn't land in the wrong one by default.
+
+**The rule:**
+
+- Belongs in the **database** (a Prisma model, read through
+  `src/server/queries/*`) if it's expected to change without a deploy
+  (sermon titles, event descriptions, leader bios), if it has more than one
+  instance that grows over time (ministries, prayer teams, testimonies), or
+  if a non-engineer should reasonably be able to edit it.
+- Belongs in **`src/content/*.ts`** if it's fixed UI chrome: button labels,
+  section eyebrows/titles that don't vary per row, form success/error
+  strings, empty-state copy.
+
+**Audit findings (2026-07-12):**
+
+Two spots in `src/content/*.ts` hold row-shaped, growable content that the
+rule above says belongs in the database, not static TS:
+
+- `src/content/about.ts` → `coreValues.values` — three `{ icon, title,
+  description }` cards, the same shape as `PrayerTeam`.
+- `src/content/connect.ts` → `whatToExpect.items` — three `{ icon, title,
+  description }` cards, same shape again.
+
+Everything else currently in `content/` (button labels, eyebrows, form
+messages, hero titles) matches the rule and stays put.
+
+Migrating these two into real models (`CoreValue`, `ExpectationItem`) is
+scoped to **Phase 12**, alongside that phase's other schema work — Phase 11
+is the rule and the audit, not the migration.
+
+
+# Asset Pipeline
+
+*Added 2026-07-12 — Phase 12, tracked in `design-checklist.md`.*
+
+Images for Ministries, Sermons, Events, and Prayer Teams are stored as a
+plain URL string on each model (`Ministry.image`, `Sermon.thumbnail`,
+`Event.image`, `PrayerTeam.image`) — no schema change was needed for
+Phase 12, only *what* populates those columns changed.
+
+**Provider:** Vercel Blob, via the single `uploadImage()` helper in
+`src/lib/storage.ts`. Chosen over Supabase Storage for the simplest
+possible setup (one package, one env var, nothing extra to provision).
+Every upload — the Phase 15 admin forms, and the one-off
+`scripts/backfill-images.ts` — goes through that one helper, so switching
+providers later means editing one file, not every call site. Requires
+`BLOB_READ_WRITE_TOKEN` in the environment (`vercel env pull` sets this
+automatically for projects deployed on Vercel).
+
+**Upload size policy:** admin uploads are resized client-side to a max of
+1600px on the longest side and re-encoded as JPEG at 85% quality before
+upload, via `src/lib/resize-image.ts`. This runs in the browser (canvas +
+`createImageBitmap`), so a staffer uploading a full-resolution phone photo
+doesn't quietly regress page weight. Not wired into any form yet — the
+Phase 15 admin upload forms call it as a first step before calling
+`uploadImage()`.
+
+`public/images/` remains the fallback/seed source for now — it'll be
+called out as legacy seed assets in `README.md` once the Phase 15 admin
+UI ships and becomes the actual way images get added.
+
+## Icon-backed content rows
+
+`CoreValue` and `ExpectationItem` (added this phase, closing the Phase 11
+content-governance audit) store their icon as a **string key**, not a
+component — e.g. `"Heart"`, not the `Heart` import from `lucide-react`.
+`src/lib/icon-map.ts` is the single fixed lookup translating a stored key
+into the actual icon to render, the same pattern `prayer-teams.tsx`
+already used for `iconBySlug`. The Phase 15 admin form for these two
+models should offer exactly the keys in `ICON_MAP` as a dropdown, not a
+free-text field — a typo'd icon name should fail obviously in the admin
+form, not silently fall back on the public site.
 
 ---
 

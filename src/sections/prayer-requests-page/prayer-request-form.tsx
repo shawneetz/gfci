@@ -14,6 +14,8 @@ import { Button } from "@/components/ui/button";
 import { FormStatusBanner } from "@/components/ui/form-status-banner";
 import { PRAYER_CATEGORIES, type PrayerRequestSubmission } from "@/types";
 import { submitPrayerRequest, type SubmitStatus } from "@/lib/forms";
+import { FORM_PAGE_MAX_WIDTH } from "@/lib/layout";
+import { form as prayerForm } from "@/content/prayer-requests";
 
 const initialForm: PrayerRequestSubmission = {
   name: "",
@@ -50,7 +52,7 @@ export function PrayerRequestForm() {
 
   return (
     <section className="section bg-surface">
-      <Container className="max-w-xl">
+      <Container className={FORM_PAGE_MAX_WIDTH}>
         <form onSubmit={handleSubmit}>
           <Panel className="space-y-8">
             <div>
@@ -84,10 +86,7 @@ export function PrayerRequestForm() {
                 name="category"
                 value={form.category}
                 onChange={(e) =>
-                  updateField(
-                    "category",
-                    e.target.value as PrayerRequestSubmission["category"]
-                  )
+                  updateField("category", e.target.value as PrayerRequestSubmission["category"])
                 }
                 disabled={status === "submitting"}
               >
@@ -133,16 +132,10 @@ export function PrayerRequestForm() {
             </div>
 
             {status === "success" && (
-              <FormStatusBanner
-                status="success"
-                message="Your prayer request has been received. Our prayer team will be praying with you."
-              />
+              <FormStatusBanner status="success" message={prayerForm.messages.success} />
             )}
             {status === "error" && (
-              <FormStatusBanner
-                status="error"
-                message="Something went wrong sending your request. Please try again."
-              />
+              <FormStatusBanner status="error" message={prayerForm.messages.error} />
             )}
 
             <Button
@@ -155,7 +148,7 @@ export function PrayerRequestForm() {
               disabled={status === "submitting"}
             >
               <Send size={16} />
-              {status === "submitting" ? "Sending..." : "Submit Request"}
+              {status === "submitting" ? "Sending..." : prayerForm.submitLabel}
             </Button>
           </Panel>
         </form>

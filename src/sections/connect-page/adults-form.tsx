@@ -7,11 +7,10 @@ import { TextField } from "@/components/ui/text-field";
 import { Button } from "@/components/ui/button";
 import { FormStatusBanner } from "@/components/ui/form-status-banner";
 import { OptionalContactFields } from "@/sections/connect-page/optional-contact-fields";
-import { ministries } from "@/data/ministries";
+import type { MinistryWithLeader } from "@/server/queries/ministries";
 import { submitConnectRegistration, type SubmitStatus } from "@/lib/forms";
 import type { AdultsConnectRegistration } from "@/types";
-
-const connectGroupsMinistry = ministries.find((m) => m.slug === "connect-groups");
+import { messages } from "@/content/connect";
 
 type AdultsFormFields = Omit<AdultsConnectRegistration, "audience">;
 
@@ -23,14 +22,17 @@ const initialForm: AdultsFormFields = {
   additionalContact: "",
 };
 
-export function AdultsForm() {
+interface AdultsFormProps {
+  ministries: MinistryWithLeader[];
+}
+
+export function AdultsForm({ ministries }: AdultsFormProps) {
+  const connectGroupsMinistry = ministries.find((m) => m.slug === "connect-groups");
+
   const [form, setForm] = useState<AdultsFormFields>(initialForm);
   const [status, setStatus] = useState<SubmitStatus>("idle");
 
-  function updateField<K extends keyof AdultsFormFields>(
-    field: K,
-    value: AdultsFormFields[K]
-  ) {
+  function updateField<K extends keyof AdultsFormFields>(field: K, value: AdultsFormFields[K]) {
     setForm((prev) => ({ ...prev, [field]: value }));
   }
 
@@ -103,18 +105,10 @@ export function AdultsForm() {
       />
 
       {status === "success" && (
-        <FormStatusBanner
-          status="success"
-          message="You're on the list! We can't wait to meet you this week."
-          className="mt-6"
-        />
+        <FormStatusBanner status="success" message={messages.adults.success} className="mt-6" />
       )}
       {status === "error" && (
-        <FormStatusBanner
-          status="error"
-          message="Something went wrong submitting your registration. Please try again."
-          className="mt-6"
-        />
+        <FormStatusBanner status="error" message={messages.adults.error} className="mt-6" />
       )}
 
       <Button

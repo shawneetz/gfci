@@ -2,9 +2,11 @@ import { EventsHero } from "@/sections/events-page/events-hero";
 import { EventList } from "@/sections/events-page/event-list";
 import { FeaturedEvent } from "@/sections/events-page/featured-event";
 import { Moments } from "@/sections/events-page/moments";
-import { events } from "@/data/events";
+import { getAllEvents } from "@/server/queries/events";
 import { EVENT_CATEGORIES } from "@/types";
 import { getMonthKey, formatMonthLabel } from "@/lib/utils";
+
+export const dynamic = "force-dynamic";
 
 const TABS = ["upcoming", "today", "past"] as const;
 type EventsTab = (typeof TABS)[number];
@@ -20,26 +22,24 @@ function isValidTab(value: string | undefined): value is EventsTab {
   return TABS.includes(value as EventsTab);
 }
 
-function isValidCategory(
-  value: string | undefined
-): value is EventsCategoryFilter {
+function isValidCategory(value: string | undefined): value is EventsCategoryFilter {
   return CATEGORY_FILTERS.includes(value as EventsCategoryFilter);
 }
 
-// Every distinct month present in the event data, oldest first — drives the
-// month-nav arrows and the default/fallback month below. Recomputed from
-// `events` directly so it can never drift out of sync with the data (this is
-// also what replaces the old hardcoded `monthLabel="October 2026"`).
-const AVAILABLE_MONTHS = Array.from(
-  new Set(events.map((event) => getMonthKey(event.date)))
-).sort();
-
 export default async function EventsPage({ searchParams }: EventsPageProps) {
   const params = await searchParams;
+  const events = await getAllEvents();
+
+  // Every distinct month present in the event data, oldest first — drives
+  // the month-nav arrows and the default/fallback month below. Recomputed
+  // per-request from the DB rather than a hardcoded constant, so it can
+  // never drift out of sync with what's actually in the database.
+  const AVAILABLE_MONTHS = Array.from(
+    new Set(events.map((event) => getMonthKey(event.date)))
+  ).sort();
+
   const activeTab: EventsTab = isValidTab(params.tab) ? params.tab : "upcoming";
-  const activeCategory = isValidCategory(params.category)
-    ? params.category
-    : "All";
+  const activeCategory = isValidCategory(params.category) ? params.category : "All";
   const activeMonth =
     params.month && AVAILABLE_MONTHS.includes(params.month)
       ? params.month
@@ -48,9 +48,7 @@ export default async function EventsPage({ searchParams }: EventsPageProps) {
   const monthIndex = AVAILABLE_MONTHS.indexOf(activeMonth);
   const prevMonth = monthIndex > 0 ? AVAILABLE_MONTHS[monthIndex - 1] : undefined;
   const nextMonth =
-    monthIndex < AVAILABLE_MONTHS.length - 1
-      ? AVAILABLE_MONTHS[monthIndex + 1]
-      : undefined;
+    monthIndex < AVAILABLE_MONTHS.length - 1 ? AVAILABLE_MONTHS[monthIndex + 1] : undefined;
 
   function monthHref(month: string) {
     return {
@@ -63,15 +61,9 @@ export default async function EventsPage({ searchParams }: EventsPageProps) {
   const today = new Date();
 
   const filteredEvents = events.filter((event) => {
-    // The featured event gets its own section above, so it's excluded here
-    // regardless of tab/category/month — otherwise it shows up twice.
     if (event.featured) return false;
-
     if (getMonthKey(event.date) !== activeMonth) return false;
-
-    if (activeCategory !== "All" && event.category !== activeCategory) {
-      return false;
-    }
+    if (activeCategory !== "All" && event.category !== activeCategory) return false;
 
     const eventDate = new Date(event.date);
     const isToday = eventDate.toDateString() === today.toDateString();
@@ -79,7 +71,7 @@ export default async function EventsPage({ searchParams }: EventsPageProps) {
 
     if (activeTab === "today") return isToday;
     if (activeTab === "past") return isPast;
-    return !isPast; // "upcoming" includes today and future events
+    return !isPast;
   });
 
   return (

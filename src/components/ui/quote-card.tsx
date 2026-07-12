@@ -8,13 +8,12 @@ import { Badge } from "@/components/ui/badge";
 interface QuoteCardProps {
   quote: string;
   name: string;
-  tag?: string; // e.g. category label, shown as a small badge
+  tag?: string;
 
-  // Design props — same Tone system as Button/CtaCard.
   fill?: Tone;
   text?: Tone;
   border?: Tone;
-  shadow?: Tone; // "transparent" = no shadow
+  shadow?: Tone;
 
   className?: string;
 }
@@ -26,7 +25,7 @@ export function QuoteCard({
   fill = "inverse",
   text = "ink",
   border = "ink",
-  shadow = "ink",
+  shadow = "transparent",
   className,
 }: QuoteCardProps) {
   const style: CSSProperties = {

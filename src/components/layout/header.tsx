@@ -11,8 +11,6 @@ import { Container } from "@/components/ui/container";
 import { ButtonLink } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-// Matches the shape of `siteConfig.nav` exactly (rather than a hand-written
-// duplicate type), so the two can never drift apart.
 type NavItem = (typeof siteConfig.nav)[number];
 
 export function Header() {
@@ -20,10 +18,19 @@ export function Header() {
 
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const solid = scrolled || open;
 
-  useEffect(() => {
+  // Close the mobile menu on route change. This adjusts state during
+  // render (comparing against the last-seen pathname) instead of doing it
+  // in a useEffect — calling setState synchronously inside an effect body
+  // causes an extra commit-then-rerender cascade, which is exactly what
+  // react-hooks/set-state-in-effect warns about. See:
+  // https://react.dev/learn/you-might-not-need-an-effect#adjusting-some-state-when-a-prop-changes
+  const [prevPathname, setPrevPathname] = useState(pathname);
+  if (pathname !== prevPathname) {
+    setPrevPathname(pathname);
     setOpen(false);
-  }, [pathname]);
+  }
 
   useEffect(() => {
     const handleScroll = () => {
@@ -48,7 +55,7 @@ export function Header() {
     <header
       className={cn(
         "fixed inset-x-0 top-0 z-50 transition-all duration-300",
-        scrolled
+        solid
           ? "border-b border-border bg-surface shadow-sm"
           : "bg-transparent"
       )}
@@ -73,8 +80,8 @@ export function Header() {
           <Link href="/" className="flex-1 text-center">
             <span
               className={cn(
-                "font-headline text-[32px] font-extrabold leading-none transition-colors duration-300",
-                scrolled ? "text-ink" : "text-ink-inverse"
+                "font-headline text-[32px] font-extrabold leading-none tracking-[0.02em] transition-colors duration-300",
+                solid ? "text-ink" : "text-ink-inverse"
               )}
             >
               {siteConfig.name}
@@ -88,7 +95,7 @@ export function Header() {
             onClick={() => setOpen(!open)}
             className={cn(
               "flex h-10 w-10 items-center justify-center rounded-sm transition-colors",
-              scrolled ? "text-ink" : "text-ink-inverse"
+              solid ? "text-ink" : "text-ink-inverse"
             )}
           >
             {open ? <X size={30} /> : <Menu size={30} />}
@@ -109,7 +116,7 @@ export function Header() {
 
             <span
               className={cn(
-                "font-headline text-[32px] font-extrabold leading-none transition-colors duration-300",
+                "font-headline text-[32px] font-extrabold leading-none tracking-[0.02em] transition-colors duration-300",
                 scrolled ? "text-ink" : "text-ink-inverse"
               )}
             >
@@ -175,7 +182,13 @@ function DesktopNavItem({
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
-  useEffect(() => setOpen(false), [pathname]);
+  // Same render-time adjustment as Header above — closes the dropdown on
+  // route change without setState-in-effect.
+  const [prevPathname, setPrevPathname] = useState(pathname);
+  if (pathname !== prevPathname) {
+    setPrevPathname(pathname);
+    setOpen(false);
+  }
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -235,7 +248,7 @@ function DesktopNavItem({
       </button>
 
       {open && (
-        <div className="absolute left-0 top-full mt-3 min-w-200px rounded-none border-2 border-ink bg-surface py-2 shadow-[4px_4px_0_0_var(--color-ink)]">
+        <div className="absolute left-0 top-full mt-3 min-w-200px rounded-none border-2 border-frame bg-surface py-2 shadow-[4px_4px_0_0_var(--color-frame)]">
           {item.items.map((sub) => (
             <Link
               key={sub.href}
@@ -271,7 +284,13 @@ function MobileNavItem({
 }) {
   const [open, setOpen] = useState(false);
 
-  useEffect(() => setOpen(false), [pathname]);
+  // Same render-time adjustment as Header/DesktopNavItem above — closes
+  // the accordion on route change without setState-in-effect.
+  const [prevPathname, setPrevPathname] = useState(pathname);
+  if (pathname !== prevPathname) {
+    setPrevPathname(pathname);
+    setOpen(false);
+  }
 
   if (item.type === "link") {
     return (

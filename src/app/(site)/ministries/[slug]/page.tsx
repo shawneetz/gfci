@@ -7,44 +7,39 @@ import { Container } from "@/components/ui/container";
 import { IconInfoRow } from "@/components/ui/icon-info-row";
 import { ButtonLink } from "@/components/ui/button";
 import { ArrowLink } from "@/components/ui/arrow-link";
-import { ministries } from "@/data/ministries";
+import { getAllMinistries, getMinistryBySlug, getMinistrySlugs } from "@/server/queries/ministries";
+import { detail } from "@/content/ministries";
+
+export const dynamic = "force-dynamic";
 
 interface MinistryPageProps {
   params: Promise<{ slug: string }>;
 }
 
-export function generateStaticParams() {
-  return ministries.map((ministry) => ({ slug: ministry.slug }));
+export async function generateStaticParams() {
+  const slugs = await getMinistrySlugs();
+  return slugs.map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({ params }: MinistryPageProps) {
   const { slug } = await params;
-  const ministry = ministries.find((m) => m.slug === slug);
-
+  const ministry = await getMinistryBySlug(slug);
   if (!ministry) return {};
-
-  return {
-    title: ministry.title,
-    description: ministry.tagline,
-  };
+  return { title: ministry.title, description: ministry.tagline };
 }
 
 export default async function MinistryPage({ params }: MinistryPageProps) {
   const { slug } = await params;
-  const ministry = ministries.find((m) => m.slug === slug);
+  const ministry = await getMinistryBySlug(slug);
 
   if (!ministry) notFound();
 
-  const otherMinistries = ministries.filter((m) => m.slug !== ministry.slug);
+  const allMinistries = await getAllMinistries();
+  const otherMinistries = allMinistries.filter((m) => m.slug !== ministry.slug);
 
   return (
     <>
-      <PageHero
-        tone="light"
-        eyebrow="Ministry"
-        title={ministry.title}
-        description={ministry.tagline}
-      />
+      <PageHero eyebrow={detail.eyebrow} title={ministry.title} description={ministry.tagline} />
 
       <section className="section bg-surface">
         <Container className="max-w-3xl">
@@ -58,21 +53,19 @@ export default async function MinistryPage({ params }: MinistryPageProps) {
             />
           </div>
 
-          <p className="mt-8 text-body-lg text-ink-secondary">
-            {ministry.overview}
-          </p>
+          <p className="mt-8 text-body-lg text-ink-secondary">{ministry.overview}</p>
 
           <div className="mt-8 grid gap-6 sm:grid-cols-2">
-            <IconInfoRow icon={Users} title="Who It's For">
+            <IconInfoRow icon={Users} title={detail.audienceLabel}>
               {ministry.audience}
             </IconInfoRow>
-            <IconInfoRow icon={Clock} title="When We Meet">
+            <IconInfoRow icon={Clock} title={detail.scheduleLabel}>
               {ministry.schedule}
             </IconInfoRow>
-            <IconInfoRow icon={MapPin} title="Where">
+            <IconInfoRow icon={MapPin} title={detail.locationLabel}>
               {ministry.location}
             </IconInfoRow>
-            <IconInfoRow icon={UserRound} title="Ministry Leader">
+            <IconInfoRow icon={UserRound} title={detail.leaderLabel}>
               {ministry.leader}
             </IconInfoRow>
           </div>
@@ -86,11 +79,11 @@ export default async function MinistryPage({ params }: MinistryPageProps) {
             className="mt-8 w-full sm:w-auto"
           >
             <Mail size={16} />
-            Get In Touch
+            {detail.ctaLabel}
           </ButtonLink>
 
           <div className="mt-8">
-            <ArrowLink href="/ministries">← All Ministries</ArrowLink>
+            <ArrowLink href="/ministries">{detail.backLabel}</ArrowLink>
           </div>
         </Container>
       </section>
@@ -98,9 +91,7 @@ export default async function MinistryPage({ params }: MinistryPageProps) {
       {otherMinistries.length > 0 && (
         <section className="section bg-surface-alt">
           <Container className="max-w-3xl">
-            <h2 className="mb-6 text-section-title text-ink">
-              Other Ministries
-            </h2>
+            <h2 className="mb-6 text-section-title text-ink">{detail.otherTitle}</h2>
 
             <div className="flex flex-wrap gap-x-8 gap-y-3">
               {otherMinistries.map((item) => (

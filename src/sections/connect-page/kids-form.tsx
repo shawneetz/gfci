@@ -6,11 +6,10 @@ import { FieldLabel } from "@/components/ui/field-label";
 import { TextField } from "@/components/ui/text-field";
 import { Button } from "@/components/ui/button";
 import { FormStatusBanner } from "@/components/ui/form-status-banner";
-import { ministries } from "@/data/ministries";
+import type { MinistryWithLeader } from "@/server/queries/ministries";
 import { submitConnectRegistration, type SubmitStatus } from "@/lib/forms";
 import type { KidsConnectRegistration } from "@/types";
-
-const kidsMinistry = ministries.find((m) => m.slug === "golden-kids");
+import { messages } from "@/content/connect";
 
 type KidsFormFields = Omit<KidsConnectRegistration, "audience">;
 
@@ -21,14 +20,17 @@ const initialForm: KidsFormFields = {
   visitDate: "",
 };
 
-export function KidsForm() {
+interface KidsFormProps {
+  ministries: MinistryWithLeader[];
+}
+
+export function KidsForm({ ministries }: KidsFormProps) {
+  const kidsMinistry = ministries.find((m) => m.slug === "golden-kids");
+
   const [form, setForm] = useState<KidsFormFields>(initialForm);
   const [status, setStatus] = useState<SubmitStatus>("idle");
 
-  function updateField<K extends keyof KidsFormFields>(
-    field: K,
-    value: KidsFormFields[K]
-  ) {
+  function updateField<K extends keyof KidsFormFields>(field: K, value: KidsFormFields[K]) {
     setForm((prev) => ({ ...prev, [field]: value }));
   }
 
@@ -106,18 +108,10 @@ export function KidsForm() {
       </div>
 
       {status === "success" && (
-        <FormStatusBanner
-          status="success"
-          message="You're all set! We'll see your family this Sunday — look for the VIP Kids Check-in desk."
-          className="mt-6"
-        />
+        <FormStatusBanner status="success" message={messages.kids.success} className="mt-6" />
       )}
       {status === "error" && (
-        <FormStatusBanner
-          status="error"
-          message="Something went wrong submitting your registration. Please try again."
-          className="mt-6"
-        />
+        <FormStatusBanner status="error" message={messages.kids.error} className="mt-6" />
       )}
 
       <Button

@@ -1,32 +1,18 @@
 import { Container } from "@/components/ui/container";
 import { PhotoGrid } from "@/components/ui/photo-grid";
 import { ArrowLink } from "@/components/ui/arrow-link";
+import { moments } from "@/content/events";
 
 export function Moments() {
   return (
     <section className="section bg-surface">
       <Container className="max-w-md">
-        <h2 className="mb-6 text-section-title text-ink">Moments</h2>
+        <h2 className="mb-6 text-section-title text-ink">{moments.title}</h2>
 
-        <PhotoGrid
-          featured={{
-            src: "/images/home-page/outreach.jpg",
-            alt: "Congregation gathered outdoors for a community picnic",
-          }}
-          secondary={[
-            {
-              src: "/images/home-page/connect-groups.jpg",
-              alt: "Two people chatting over coffee at a connect group",
-            },
-            {
-              src: "/images/home-page/youth-assemble.jpg",
-              alt: "Volunteers greeting each other at a service event",
-            },
-          ]}
-        />
+        <PhotoGrid featured={moments.featured} secondary={moments.secondary} />
 
         <div className="mt-6 text-center">
-          <ArrowLink href="/events/archive">View Archive →</ArrowLink>
+          <ArrowLink href="/events/archive">{moments.archiveLabel}</ArrowLink>
         </div>
       </Container>
     </section>

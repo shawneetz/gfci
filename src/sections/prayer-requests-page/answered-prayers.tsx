@@ -1,12 +1,15 @@
 import { Container } from "@/components/ui/container";
 import { QuoteCard } from "@/components/ui/quote-card";
-import { answeredPrayers } from "@/data/testimonies";
+import { getAnsweredPrayers } from "@/server/queries/testimonies";
+import { answered } from "@/content/prayer-requests";
 
-export function AnsweredPrayers() {
+export async function AnsweredPrayers() {
+  const answeredPrayers = await getAnsweredPrayers();
+
   return (
     <section className="section bg-surface">
       <Container>
-        <h2 className="mb-8 text-section-title text-ink">Answered Prayers</h2>
+        <h2 className="mb-8 text-section-title text-ink">{answered.title}</h2>
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {answeredPrayers.map((entry) => (
             <QuoteCard
@@ -17,7 +20,6 @@ export function AnsweredPrayers() {
               fill="inverse"
               text="ink"
               border="ink"
-              shadow="grey"
             />
           ))}
         </div>

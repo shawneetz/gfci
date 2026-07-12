@@ -1,8 +1,10 @@
 import { Container } from "@/components/ui/container";
 import { MinistryCard } from "@/components/ui/ministry-card";
-import { ministries } from "@/data/ministries";
+import { getAllMinistries } from "@/server/queries/ministries";
 
-export function MinistriesList() {
+export async function MinistriesList() {
+  const ministries = await getAllMinistries();
+
   return (
     <section className="section bg-surface">
       <Container className="max-w-xl">

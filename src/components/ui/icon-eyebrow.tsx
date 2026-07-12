@@ -2,6 +2,7 @@ import { LucideIcon } from "lucide-react";
 import { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { Tone } from "@/components/ui/button";
+import { ICON_SIZE } from "@/lib/icon-sizes";
 
 const toneClass: Record<Tone, string> = {
   ink: "text-ink",
@@ -27,7 +28,7 @@ export function IconEyebrow({
 }: IconEyebrowProps) {
   return (
     <div className={cn("flex items-center gap-2", toneClass[tone], className)}>
-      <Icon size={14} strokeWidth={2.5} />
+      <Icon size={ICON_SIZE.inline} strokeWidth={2.5} />
       <span className="text-label">{children}</span>
     </div>
   );

@@ -1,11 +1,15 @@
+// src/components/ui/card.tsx
 import { cn } from "@/lib/utils";
 import { ComponentPropsWithoutRef } from "react";
+import { TILT_CARD_BORDER, TILT_CARD_LIFT } from "@/components/ui/tilt-card";
 
 export function Card({ className, ...props }: ComponentPropsWithoutRef<"div">) {
   return (
     <div
       className={cn(
-        "group rounded-none border-2 border-ink bg-surface overflow-hidden transition-all duration-150 hover:-translate-y-1 hover:shadow-[6px_6px_0_0_var(--color-ink)]",
+        "group rounded-none bg-surface overflow-hidden",
+        TILT_CARD_BORDER,
+        TILT_CARD_LIFT,
         className
       )}
       {...props}

@@ -1,4 +1,4 @@
-import { ChurchEvent } from "@/types";
+import type { ChurchEvent } from "@/server/queries/events";
 import { Badge } from "@/components/ui/badge";
 import { formatWeekday, formatDay } from "@/lib/utils";
 

@@ -5,7 +5,8 @@ import { Container } from "@/components/ui/container";
 import { Card, CardBody } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { MetaRow } from "@/components/ui/meta-row";
-import { ChurchEvent } from "@/types";
+import type { ChurchEvent } from "@/server/queries/events";
+import { featured } from "@/content/events";
 
 interface FeaturedEventProps {
   event: ChurchEvent;
@@ -15,7 +16,7 @@ export function FeaturedEvent({ event }: FeaturedEventProps) {
   return (
     <section className="section bg-surface-alt">
       <Container className="max-w-md">
-        <h2 className="mb-6 text-section-title text-ink">Featured</h2>
+        <h2 className="mb-6 text-section-title text-ink">{featured.title}</h2>
 
         <Link href={`/events#${event.id}`} className="block">
           <Card>
@@ -28,7 +29,7 @@ export function FeaturedEvent({ event }: FeaturedEventProps) {
                 className="object-cover"
               />
               <Badge tone="brand" className="absolute left-3 top-3">
-                Special Event
+                {featured.badge}
               </Badge>
             </div>
 
@@ -41,11 +42,9 @@ export function FeaturedEvent({ event }: FeaturedEventProps) {
                   { icon: MapPin, label: event.location },
                 ]}
               />
-              <p className="mt-3 text-body-sm text-ink-secondary">
-                {event.description}
-              </p>
+              <p className="mt-3 text-body-sm text-ink-secondary">{event.description}</p>
               <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-brand underline decoration-dotted underline-offset-4">
-                Learn More →
+                {featured.learnMoreLabel}
               </span>
             </CardBody>
           </Card>
