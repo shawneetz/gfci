@@ -34,7 +34,7 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts"
-  ],
+, "src/app/admin/(dashboard)/core-values"  ],
   "exclude": [
     "node_modules"
   ]

@@ -1,5 +1,8 @@
 import { getAllPeople, type Person } from "@/server/queries/people";
+import { deletePerson } from "@/server/mutations/people";
 import { Badge } from "@/components/ui/badge";
+import { ButtonLink } from "@/components/ui/button";
+import { AdminRowActions } from "../_components/admin-row-actions";
 import { AdminPageHeader } from "../_components/admin-page-header";
 import { AdminTable, type AdminTableColumn } from "../_components/admin-table";
 
@@ -16,6 +19,17 @@ const columns: AdminTableColumn<Person>[] = [
       ),
   },
   { header: "Email", cell: (person) => person.email ?? <span className="text-ink-muted">—</span> },
+  {
+    header: "",
+    className: "w-20",
+    cell: (person) => (
+      <AdminRowActions
+        editHref={`/admin/people/${person.id}`}
+        deleteLabel={person.displayName}
+        onDelete={deletePerson.bind(null, person.id)}
+      />
+    ),
+  },
 ];
 
 export default async function AdminPeoplePage() {
@@ -26,6 +40,11 @@ export default async function AdminPeoplePage() {
       <AdminPageHeader
         title="People"
         description={`${people.length} ${people.length === 1 ? "person" : "people"} — every sermon speaker and ministry leader, plus anyone else on staff. Only those marked "On About page" appear in the public Leadership grid.`}
+        action={
+          <ButtonLink href="/admin/people/new" fill="brand" text="inverse" border="brand" shadow="grey">
+            Add New
+          </ButtonLink>
+        }
       />
       <AdminTable
         columns={columns}

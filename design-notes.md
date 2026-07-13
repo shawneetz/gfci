@@ -384,10 +384,7 @@ text-caption
 ## Container
 
 Maximum Width
-
-```
 1280px
-```
 Within that outer container, two narrower widths repeat across several
 pages and are centralized as shared constants (`src/lib/layout.ts`)
 rather than hand-typed per section:
@@ -411,10 +408,7 @@ page relies on it, not before.
 ## Header
 
 Height
-
-```
 64px
-```
 
 Fixed
 
@@ -516,19 +510,13 @@ Soft blurred shadows are gone. Elevation now comes from two things used
 together:
 
 ## Border
-
-```
 2px solid var(--color-ink)
-```
 
 Every card, button, and image tile carries a visible 2px border instead
 of relying on a shadow alone to define its edge.
 
 ## Hard offset shadow
-
-```
 4px 4px 0 0 var(--color-ink)
-```
 
 A flat, non-blurred shadow — no blur radius, no opacity fade. On hover,
 the element translates into the shadow (`translate-x-[4px] translate-y-[4px]`)
@@ -680,19 +668,6 @@ Images should:
 - Optional gradient overlay for text legibility
 - Maintain consistent aspect ratio
 
----
-
-# Imagery
-
-Images should:
-
-- Fill container
-- Use object-cover
-- **Sharp corners** (no radius)
-- 2px ink border around the tile
-- Optional gradient overlay for text legibility
-- Maintain consistent aspect ratio
-
 **Exception:** the three full-bleed hero background images (`Hero`,
 `ConnectHero`, `EventsHero`) intentionally skip the border — they're
 edge-to-edge page backgrounds, not bordered tiles, and a 2px frame around
@@ -726,7 +701,6 @@ tint for icon contrast, not a bottom-anchored text-legibility gradient —
 and is correctly excluded from this table.
 
 ---
----
 
 # Page Hero
 
@@ -739,7 +713,6 @@ hero always looks the same no matter which page you land on.
 Pages with their own full-bleed photo hero (Connect, Events) don't use
 `PageHero` at all — they're a deliberately different pattern (dark text
 over an image rather than a flat dark panel) and aren't expected to match.
-
 ---
 
 # Tabs (Segmented Control)
@@ -830,16 +803,10 @@ Animations should be subtle and fast — closer to a mechanical snap
 than a soft fade.
 
 Recommended duration:
-
-```
 150ms
-```
 
 or
-
-```
 200ms
-```
 
 Use:
 
@@ -901,85 +868,85 @@ hiding content outright with `hidden lg:block` — mobile visitors should
 still be able to reach every feature, just one view at a time instead of
 three side-by-side.
 
+---
 
-# Content Governance
+# Caching Strategy
 
-*Added 2026-07-12 — Phase 11 audit, tracked in `design-checklist.md`.*
+*Added Phase 16, 2026-07-12.*
 
-Every page reads from Postgres via Prisma as of Phase 9, and `src/content/*.ts`
-holds fixed UI copy alongside it. As both grow, new copy needs an obvious
-home so it doesn't land in the wrong one by default.
+## The current tradeoff
 
-**The rule:**
+As of Phase 9, every public page carries `export const dynamic =
+"force-dynamic"`. That's a deliberate choice, not an oversight: it means
+every request re-runs its Prisma queries and always reflects whatever's
+currently in the database, with no CDN or Next.js Data Cache layer sitting
+in front of it. The cost is a DB round-trip on every page view — acceptable
+at current traffic, and simplest to reason about while the admin UI
+(Phase 14–15) was still being built and tested against always-fresh reads.
 
-- Belongs in the **database** (a Prisma model, read through
-  `src/server/queries/*`) if it's expected to change without a deploy
-  (sermon titles, event descriptions, leader bios), if it has more than one
-  instance that grows over time (ministries, prayer teams, testimonies), or
-  if a non-engineer should reasonably be able to edit it.
-- Belongs in **`src/content/*.ts`** if it's fixed UI chrome: button labels,
-  section eyebrows/titles that don't vary per row, form success/error
-  strings, empty-state copy.
+That tradeoff is being narrowed, not abandoned: it's still the default for
+anything time-sensitive, and only loosened where the content genuinely
+doesn't change minute-to-minute.
 
-**Audit findings (2026-07-12):**
+## Where ISR has been adopted
 
-Two spots in `src/content/*.ts` hold row-shaped, growable content that the
-rule above says belongs in the database, not static TS:
+Five routes moved from `force-dynamic` to `export const revalidate = 300`
+(a 5-minute cache window) in Phase 16:
 
-- `src/content/about.ts` → `coreValues.values` — three `{ icon, title,
-  description }` cards, the same shape as `PrayerTeam`.
-- `src/content/connect.ts` → `whatToExpect.items` — three `{ icon, title,
-  description }` cards, same shape again.
+| Route | Why it qualifies |
+|---|---|
+| `/about` | Leadership roster and core values change on the order of weeks |
+| `/ministries` | New ministries are rare; existing ones are edited occasionally |
+| `/ministries/[slug]` | Same reasoning, per-ministry |
+| `/sermons` | New sermons publish roughly weekly |
+| `/sermons/[slug]` | Same reasoning, per-sermon |
 
-Everything else currently in `content/` (button labels, eyebrows, form
-messages, hero titles) matches the rule and stays put.
+Everything else stays `force-dynamic` on purpose:
 
-Migrating these two into real models (`CoreValue`, `ExpectationItem`) is
-scoped to **Phase 12**, alongside that phase's other schema work — Phase 11
-is the rule and the audit, not the migration.
+| Route | Why it stays dynamic |
+|---|---|
+| `/` | Surfaces the latest sermon and nearest upcoming events — "just published, show up instantly" matters here more than anywhere else |
+| `/events`, `/events/archive` | Time-sensitive by nature; a stale event list is actively misleading |
+| `/live` | Whatever's live right now has to be right now |
+| `/prayer-requests` | A submitted request or a newly answered prayer should never wait behind a cache window |
+| `/connect`, `/giving` | Both read the ministries list for form/fund options and are cheap, low-traffic pages — no measured benefit to caching them yet |
 
+## Cache busting
 
-# Asset Pipeline
+A 5-minute window is a ceiling, not the expected delay, because every
+mutation that touches ISR'd content calls `revalidatePath()` after a
+successful write:
 
-*Added 2026-07-12 — Phase 12, tracked in `design-checklist.md`.*
+- `src/server/mutations/ministries.ts` → `revalidatePath("/ministries")`
+  and `revalidatePath("/ministries/[slug]", "page")` on create, update,
+  and delete.
+- `src/server/mutations/sermons.ts` → `revalidatePath("/sermons")` and
+  `revalidatePath("/sermons/[slug]", "page")`, same three operations.
+- `src/server/mutations/core-values.ts` → `revalidatePath("/about")`.
+- `src/server/mutations/people.ts` → `revalidatePath("/about")`,
+  `revalidatePath("/ministries/[slug]", "page")`, `revalidatePath("/sermons")`,
+  and `revalidatePath("/sermons/[slug]", "page")` — a `Person`'s
+  `displayName`/`title` surfaces in the About leadership grid, every
+  ministry's "Ministry Leader" row, and the sermons list/detail speaker
+  credit, so an edit here has to bust all three rather than trying to
+  track which specific ministries or sermons reference that person.
 
-Images for Ministries, Sermons, Events, and Prayer Teams are stored as a
-plain URL string on each model (`Ministry.image`, `Sermon.thumbnail`,
-`Event.image`, `PrayerTeam.image`) — no schema change was needed for
-Phase 12, only *what* populates those columns changed.
+The `"/ministries/[slug]"` / `"/sermons/[slug]"` calls use Next's dynamic
+route-pattern form (with the `"page"` type argument) rather than a
+specific slug string, so they invalidate every generated detail page in
+one call instead of requiring the mutation to know which slug(s) changed.
 
-**Provider:** Vercel Blob, via the single `uploadImage()` helper in
-`src/lib/storage.ts`. Chosen over Supabase Storage for the simplest
-possible setup (one package, one env var, nothing extra to provision).
-Every upload — the Phase 15 admin forms, and the one-off
-`scripts/backfill-images.ts` — goes through that one helper, so switching
-providers later means editing one file, not every call site. Requires
-`BLOB_READ_WRITE_TOKEN` in the environment (`vercel env pull` sets this
-automatically for projects deployed on Vercel).
+Mutations for content whose only public page is already `force-dynamic`
+(events, prayer teams, testimonies, live stream, expectation items) don't
+call `revalidatePath()` — there's nothing cached there to bust.
 
-**Upload size policy:** admin uploads are resized client-side to a max of
-1600px on the longest side and re-encoded as JPEG at 85% quality before
-upload, via `src/lib/resize-image.ts`. This runs in the browser (canvas +
-`createImageBitmap`), so a staffer uploading a full-resolution phone photo
-doesn't quietly regress page weight. Not wired into any form yet — the
-Phase 15 admin upload forms call it as a first step before calling
-`uploadImage()`.
+## If this needs revisiting
 
-`public/images/` remains the fallback/seed source for now — it'll be
-called out as legacy seed assets in `README.md` once the Phase 15 admin
-UI ships and becomes the actual way images get added.
-
-## Icon-backed content rows
-
-`CoreValue` and `ExpectationItem` (added this phase, closing the Phase 11
-content-governance audit) store their icon as a **string key**, not a
-component — e.g. `"Heart"`, not the `Heart` import from `lucide-react`.
-`src/lib/icon-map.ts` is the single fixed lookup translating a stored key
-into the actual icon to render, the same pattern `prayer-teams.tsx`
-already used for `iconBySlug`. The Phase 15 admin form for these two
-models should offer exactly the keys in `ICON_MAP` as a dropdown, not a
-free-text field — a typo'd icon name should fail obviously in the admin
-form, not silently fall back on the public site.
+If a future content type moves onto ISR, or an existing ISR page's
+revalidate window needs shortening, update both this section and the two
+tables above so they stay the single source of truth for "what's cached
+and why," rather than that knowledge living only in scattered `export
+const revalidate` lines across the page files.
 
 ---
 

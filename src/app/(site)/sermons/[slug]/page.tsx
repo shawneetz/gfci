@@ -11,7 +11,7 @@ import { getSermonBySlug, getSermonSlugs, getMoreInSeries } from "@/server/queri
 import { formatDate } from "@/lib/utils";
 import { detail } from "@/content/sermons";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 interface SermonPageProps {
   params: Promise<{ slug: string }>;

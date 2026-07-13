@@ -2,13 +2,6 @@ import "server-only";
 import { prisma } from "@/lib/prisma";
 import type { Sermon as PrismaSermon } from "@/generated/prisma/client";
 
-// Mirrors the legacy src/types/index.ts Sermon interface: a flat `speaker`
-// display-name string (not a nested Person relation — same reasoning as
-// MinistryWithLeader in queries/ministries.ts), and `date` as a
-// "YYYY-MM-DD" string so it slots straight into formatDate/formatWeekday
-// in lib/utils.ts, which both take a string. Matches the date handling
-// queries/events.ts already does; this file previously left `date` as a
-// raw Date, which would have broken every template calling formatDate().
 export interface SermonWithSpeaker extends Omit<PrismaSermon, "date"> {
   date: string;
   speaker: string;
@@ -45,6 +38,14 @@ export async function getLatestSermon(): Promise<SermonWithSpeaker | null> {
 export async function getSermonBySlug(slug: string): Promise<SermonWithSpeaker | null> {
   const row = await prisma.sermon.findUnique({
     where: { slug },
+    include: speakerInclude,
+  });
+  return row ? toSermonWithSpeaker(row) : null;
+}
+
+export async function getSermonById(id: string): Promise<SermonWithSpeaker | null> {
+  const row = await prisma.sermon.findUnique({
+    where: { id },
     include: speakerInclude,
   });
   return row ? toSermonWithSpeaker(row) : null;

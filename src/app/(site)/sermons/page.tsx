@@ -7,7 +7,7 @@ import { formatDate } from "@/lib/utils";
 import { Play } from "lucide-react";
 import { hero } from "@/content/sermons";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 export default async function SermonsPage() {
   const sermons = await getAllSermons();

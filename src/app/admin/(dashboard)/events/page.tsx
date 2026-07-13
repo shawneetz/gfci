@@ -1,6 +1,9 @@
 import { getAllEvents, type ChurchEvent } from "@/server/queries/events";
+import { deleteEvent } from "@/server/mutations/events";
 import { formatDate } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { ButtonLink } from "@/components/ui/button";
+import { AdminRowActions } from "../_components/admin-row-actions";
 import { AdminPageHeader } from "../_components/admin-page-header";
 import { AdminTable, type AdminTableColumn } from "../_components/admin-table";
 
@@ -14,6 +17,17 @@ const columns: AdminTableColumn<ChurchEvent>[] = [
       event.featured ? <Badge tone="brand">Featured</Badge> : <span className="text-ink-muted">—</span>,
   },
   { header: "Location", cell: (event) => event.location },
+  {
+    header: "",
+    className: "w-20",
+    cell: (event) => (
+      <AdminRowActions
+        editHref={`/admin/events/${event.id}`}
+        deleteLabel={event.title}
+        onDelete={deleteEvent.bind(null, event.id)}
+      />
+    ),
+  },
 ];
 
 export default async function AdminEventsPage() {
@@ -24,6 +38,11 @@ export default async function AdminEventsPage() {
       <AdminPageHeader
         title="Events"
         description={`${events.length} event${events.length === 1 ? "" : "s"} — including past events. Exactly one may be marked Featured (enforced at the database level, Phase 10).`}
+        action={
+          <ButtonLink href="/admin/events/new" fill="brand" text="inverse" border="brand" shadow="grey">
+            Add New
+          </ButtonLink>
+        }
       />
       <AdminTable
         columns={columns}
