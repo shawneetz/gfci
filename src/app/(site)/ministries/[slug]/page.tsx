@@ -10,7 +10,7 @@ import { ArrowLink } from "@/components/ui/arrow-link";
 import { getAllMinistries, getMinistryBySlug, getMinistrySlugs } from "@/server/queries/ministries";
 import { detail } from "@/content/ministries";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 interface MinistryPageProps {
   params: Promise<{ slug: string }>;

@@ -4,7 +4,7 @@ import { CoreValues } from "@/sections/about-page/core-values";
 import { Leadership } from "@/sections/about-page/leadership";
 import { hero } from "@/content/about";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 export default function AboutPage() {
   return (

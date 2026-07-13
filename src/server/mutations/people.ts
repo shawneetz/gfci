@@ -1,0 +1,69 @@
+"use server";
+
+import { revalidatePath } from "next/cache";
+import { prisma } from "@/lib/prisma";
+import type { MutationResult } from "./types";
+
+export interface PersonInput {
+  name: string;
+  title: string;
+  displayName: string;
+  email: string;
+  isLeadershipTeam: boolean;
+  leadershipOrder: number | null;
+}
+
+function revalidatePersonDependentPaths() {
+  revalidatePath("/about");
+  revalidatePath("/ministries/[slug]", "page");
+  revalidatePath("/sermons");
+  revalidatePath("/sermons/[slug]", "page");
+}
+
+export async function createPerson(data: PersonInput): Promise<MutationResult> {
+  try {
+    await prisma.person.create({ data: { ...data, email: data.email || null } });
+    revalidatePersonDependentPaths();
+    return { success: true };
+  } catch (error) {
+    console.error("createPerson failed:", error);
+    return { success: false, error: "Something went wrong. Please try again." };
+  }
+}
+
+export async function updatePerson(id: string, data: PersonInput): Promise<MutationResult> {
+  try {
+    await prisma.person.update({ where: { id }, data: { ...data, email: data.email || null } });
+    revalidatePersonDependentPaths();
+    return { success: true };
+  } catch (error) {
+    console.error("updatePerson failed:", error);
+    return { success: false, error: "Something went wrong. Please try again." };
+  }
+}
+
+function isForeignKeyViolation(error: unknown): boolean {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "code" in error &&
+    (error as { code?: string }).code === "P2003"
+  );
+}
+
+export async function deletePerson(id: string): Promise<MutationResult> {
+  try {
+    await prisma.person.delete({ where: { id } });
+    revalidatePersonDependentPaths();
+    return { success: true };
+  } catch (error) {
+    if (isForeignKeyViolation(error)) {
+      return {
+        success: false,
+        error: "This person still leads a ministry or is credited on a sermon. Reassign those first.",
+      };
+    }
+    console.error("deletePerson failed:", error);
+    return { success: false, error: "Could not delete this person." };
+  }
+}

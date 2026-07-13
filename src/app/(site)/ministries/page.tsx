@@ -2,7 +2,7 @@ import { PageHero } from "@/components/ui/page-hero";
 import { MinistriesList } from "@/sections/ministries-page/ministries-list";
 import { hero } from "@/content/ministries";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 export const metadata = {
   title: hero.title,
