@@ -1,6 +1,33 @@
+// One-time production bootstrap — seeds real starter content into a
+// FRESH production database. Kept intentionally separate from
+// prisma/seed.ts (dev/CI fixtures) per Phase 17: the two must never be
+// conflated. prisma/seed.ts is meant to be wiped and re-run freely
+// against a throwaway dev/CI database; this script is meant to run at
+// most once, against a database people will actually use.
+//
+// Safe to re-run: every write below is upsert(...) with an EMPTY
+// `update: {}`. On a row that already exists, nothing changes — so
+// running this again after admins have started editing content through
+// /admin will NOT clobber their edits, it will just skip every row
+// that's already there. Do not "fix" this by filling `update` in with
+// the same payload as `create` — that would turn this into a silent
+// reset-to-hardcoded-content script and defeat the entire point of
+// splitting it out from prisma/seed.ts.
+//
+// A number of rows below reference images that were never added to
+// public/images — see scripts/seed-image-urls.ts for where those Blob
+// URLs get filled in once uploaded. Because of the upsert-with-empty-
+// update behavior above, filling that file in and re-running this
+// script will NOT fix rows already inserted by a prior run — use
+// scripts/sync-seed-images.ts (`npm run sync:seed-images`) for that.
+//
+// Usage (once, against a fresh production DB):
+//   npm run bootstrap:production
+
 import "dotenv/config";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../src/generated/prisma/client";
+import { SEED_IMAGE_URLS } from "./seed-image-urls";
 
 const adapter = new PrismaPg({ connectionString: process.env.DIRECT_URL });
 const prisma = new PrismaClient({ adapter });
@@ -174,7 +201,8 @@ async function main() {
       title: "The Weight of Grace",
       series: "Foundations",
       date: new Date("2026-06-28"),
-      thumbnail: "/images/home-page/sermon-2.jpg",
+      // Not shipped under public/images — see scripts/seed-image-urls.ts.
+      thumbnail: SEED_IMAGE_URLS.sermonTheWeightOfGrace || "/images/home-page/sermon-2.jpg",
       summary: "Understanding grace not as a concept, but as a daily practice.",
       speakerId: "anna-reyes",
     },
@@ -189,7 +217,8 @@ async function main() {
       title: "Faith That Moves",
       series: "Foundations",
       date: new Date("2026-06-21"),
-      thumbnail: "/images/sermon-3.jpg",
+      // Not shipped under public/images — see scripts/seed-image-urls.ts.
+      thumbnail: SEED_IMAGE_URLS.sermonFaithThatMoves || "/images/sermon-3.jpg",
       summary: "Faith isn't static — it's meant to move us toward action.",
       speakerId: "noel-gonzales",
     },
@@ -207,7 +236,8 @@ async function main() {
       time: "7:00 PM",
       category: "Worship",
       location: "Main Sanctuary",
-      image: "/images/event-youth-night.jpg",
+      // Not shipped under public/images — see scripts/seed-image-urls.ts.
+      image: SEED_IMAGE_URLS.eventYouthNightWorship || "/images/event-youth-night.jpg",
       description:
         "Join us for an extended evening of uninterrupted worship and prayer as we seek renewal.",
       featured: true,
@@ -224,7 +254,8 @@ async function main() {
       time: "9:00 AM & 11:00 AM",
       category: "Worship",
       location: "Main Sanctuary",
-      image: "/images/event-sunday-gathering.jpg",
+      // Not shipped under public/images — see scripts/seed-image-urls.ts.
+      image: SEED_IMAGE_URLS.eventSundayGathering || "/images/event-sunday-gathering.jpg",
       description:
         "Weekly worship service featuring modern worship music and a practical, Scripture-based message.",
     },
@@ -240,7 +271,8 @@ async function main() {
       time: "6:30 PM",
       category: "Youth",
       location: "Youth Hall",
-      image: "/images/event-youth-night-gf.jpg",
+      // Not shipped under public/images — see scripts/seed-image-urls.ts.
+      image: SEED_IMAGE_URLS.eventGfYouthNight || "/images/event-youth-night-gf.jpg",
       description:
         "Middle and High School students gather for games, community, and teaching.",
     },
@@ -256,7 +288,8 @@ async function main() {
       time: "8:00 AM",
       category: "Outreach",
       location: "Various Sites",
-      image: "/images/event-city-serve-day.jpg",
+      // Not shipped under public/images — see scripts/seed-image-urls.ts.
+      image: SEED_IMAGE_URLS.eventCityServeDay || "/images/event-city-serve-day.jpg",
       description:
         "Partnering with local organizations to serve our city through various volunteer projects.",
     },
@@ -272,7 +305,8 @@ async function main() {
       slug: "kids",
       name: "Kids Prayer Team",
       details: "Praying for children and families as they grow in faith and community.",
-      image: "/images/ministry-kids.jpg",
+      // Not shipped under public/images — see scripts/seed-image-urls.ts.
+      image: SEED_IMAGE_URLS.prayerTeamKids || "/images/ministry-kids.jpg",
       schedule: "Sundays, 9:00 AM & 11:00 AM",
       order: 0,
     },
@@ -286,7 +320,8 @@ async function main() {
       slug: "youth",
       name: "Youth Prayer Circle",
       details: "Standing with young people through prayer, support, and encouragement.",
-      image: "/images/ministry-youth.jpg",
+      // Not shipped under public/images — see scripts/seed-image-urls.ts.
+      image: SEED_IMAGE_URLS.prayerTeamYouth || "/images/ministry-youth.jpg",
       schedule: "Fridays, 6:30 PM",
       order: 1,
     },
@@ -300,7 +335,8 @@ async function main() {
       slug: "adults",
       name: "Adult Prayer Group",
       details: "Coming together to pray for our church, city, and world.",
-      image: "/images/ministry-adults.jpg",
+      // Not shipped under public/images — see scripts/seed-image-urls.ts.
+      image: SEED_IMAGE_URLS.prayerTeamAdults || "/images/ministry-adults.jpg",
       schedule: "Sundays, 11:00 AM",
       order: 2,
     },

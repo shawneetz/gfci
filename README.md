@@ -1,112 +1,121 @@
 # Golden Faith — Church Website
 
 This is the website for Golden Faith Church International. It's built with
-**Next.js** (a popular framework for building fast, modern websites),
-**TypeScript** (JavaScript with some extra safety nets), and **Tailwind CSS**
-(a way to style pages quickly without writing separate CSS files for
-everything).
+**Next.js** (App Router), **TypeScript**, **Tailwind CSS**, **Prisma** +
+PostgreSQL for content that changes over time, and a password-protected
+admin panel for editing that content without a code deploy.
 
 ## What's the look and feel?
 
 We're calling it "retro-industrial" — think old civic signage and vintage
 print design. In practice that means:
 
-- **Bold, condensed headlines** in all-caps (the font is called Big Shoulders
-  Display)
+- A serif display face (**Zodiak**) for headlines, paired with a quiet
+  humanist sans (**General Sans**) for body text
 - **Sharp corners everywhere** — no rounded buttons or cards
-- **Thick black borders** instead of soft drop shadows
-- **A "pressed button" effect** — buttons and cards have a hard shadow that
-  disappears when you hover, like the element is physically being pushed in
-
-Body text (paragraphs, labels, etc.) uses a font called Archivo.
+- **Thick borders** instead of soft drop shadows
+- **A "pressed button" effect** — buttons and cards have a hard shadow
+  that disappears when you hover, like the element is physically being
+  pushed in
 
 If you want the full breakdown of colors, spacing, and component rules,
-check out `design-notes.md` in this folder — that's the detailed style guide.
+check out `design-notes.md` in this folder — that's the detailed style
+guide.
 
 ## Getting started
 
-You'll need [Node.js](https://nodejs.org) installed. Then, from this folder,
-run:
+You'll need [Node.js](https://nodejs.org) and a PostgreSQL database (the
+project is set up for [Supabase](https://supabase.com), but any Postgres
+works). Add a `.env` file with `DATABASE_URL` (pooled connection, used at
+runtime) and `DIRECT_URL` (direct connection, used for migrations and
+seeding — see `prisma.config.ts`). Then, from this folder:
 
 ```bash
 npm install
+npm run db:migrate
+npm run db:seed
 npm run dev
 ```
 
-Once that's running, open `http://localhost:3000` in your browser and you
-should see the site.
+Once that's running, open `http://localhost:3000` for the public site.
+For the admin panel, see "Admin access" below.
 
 ## How the project is organized
 
-Everything lives inside the `src` folder. Here's the short version of what's
-where:
+Everything lives inside the `src` folder. Here's the short version of
+what's where:
 
-- **`app/`** — This is where the actual pages live (Home, About, Sermons,
-  Events, and so on). Next.js turns each folder in here into a page on the
-  site automatically.
-- **`components/`** — Reusable building blocks. `layout/` has the header and
-  footer that show up on every page. `ui/` has smaller pieces like buttons,
-  cards, and form fields that get reused all over the site.
-- **`sections/`** — Bigger chunks built from those smaller pieces, grouped by
-  which page they belong to (e.g. everything for the Events page lives in
-  `sections/events-page/`).
-- **`config/site.ts`** — One file that controls the navigation menu, footer
-  links, contact info, and service times. Change something here and it
-  updates everywhere it's used.
-- **`data/`** — This is where the actual content lives: sermons, ministries,
-  events, staff/leader names, prayer teams, and testimonies. Think of these
-  as simple lists you can edit without touching any page code.
-- **`lib/`** — Small helper functions, like formatting a date nicely or
-  handling what happens when someone submits a form.
-- **`types/`** — Defines the "shape" of the data (what fields a sermon or
-  event is supposed to have). Mostly useful for keeping things consistent
-  behind the scenes.
+- **`app/(site)/`** — The public pages (Home, About, Sermons, Events, and
+  so on). Next.js turns each folder in here into a page automatically.
+- **`app/admin/`** — The password-protected admin panel: a dashboard plus
+  create/edit/delete screens for every content type.
+- **`components/`** — Reusable building blocks. `layout/` has the header
+  and footer that show up on every page. `ui/` has smaller pieces like
+  buttons, cards, and form fields that get reused all over the site.
+- **`sections/`** — Bigger chunks built from those smaller pieces, grouped
+  by which page they belong to.
+- **`config/site.ts`** — One file that controls the navigation menu,
+  footer links, contact info, and service times.
+- **`content/`** — Fixed page copy that doesn't change without a code
+  deploy: headings, button labels, form messages, empty states. This is
+  *not* where sermons, events, or ministries live — see below.
+- **`server/queries/`** and **`server/mutations/`** — Everything that
+  reads from or writes to the database: sermons, ministries, events,
+  prayer teams, testimonies, staff/leaders, the live stream, core values,
+  and "what to expect" items. This is the actual content of the site,
+  and it's editable through `/admin` without touching code.
+- **`lib/`** — Shared helpers: date formatting, image resizing, slug
+  generation, the icon lookup table, the database client.
 
-## What pages exist right now
+## Admin access
 
-- **Home** — hero section, mission statement, latest sermon, upcoming events,
-  ministries preview, and a giving/prayer call-to-action
-- **About** — mission statement, core values, and leadership info
-- **Sermons** — a list of past messages, plus a dedicated page for each one
-- **Ministries** — a list of ministries (Kids, Youth, Connect Groups), plus a
-  dedicated page for each one
-- **Events** — upcoming events with filters, a featured event, and an
-  archive of past events
-- **Prayer Requests** — a form to submit a request, info on prayer teams you
-  can join, and answered-prayer testimonials
-- **Giving** — a donation form with preset amounts, fund selection, and
-  one-time/monthly options
-- **Connect** — a "plan your visit" page with separate sign-up forms for
-  kids, youth, and adults
-- **Live** — the live stream page, with sermon notes and chat alongside the
-  video
+There's no public sign-up page. To create the first admin account, run:
 
-The header navigation groups some of these together — "Watch" covers Sermons
-and Live, and "Get Involved" covers Ministries, Events, Prayer Requests, and
-Connect — so the menu doesn't get too crowded.
+```bash
+npm run admin:create -- "you@goldenfaith.church" "a-strong-password" "Your Name"
+```
+
+Then sign in at `/admin/login`. From there you can create, edit, and
+delete every content type listed above, including uploading images
+(automatically resized before upload — see "Images" below).
 
 ## Making changes
 
-- **Want to update text, add a sermon, or add an event?** You probably just
-  need to edit a file in `src/data/`. No need to touch the page layouts.
-- **Want to change contact info, service times, or menu links?** That's all
+- **Want to update a sermon, event, ministry, prayer team, testimony, or
+  staff member?** Sign in to `/admin` and edit it there — no code changes
+  or deploys needed.
+- **Want to change contact info, service times, or menu links?** That's
   in `src/config/site.ts`.
-- **Want to change how something looks?** Look in `src/components/ui/` first
-  — there's a good chance the button, card, or form style you want to change
-  already exists as a reusable piece there, and changing it once will update
+- **Want to change fixed page copy** (headings, button labels, form
+  success/error messages)? That's in `src/content/*.ts`, one file per
+  page.
+- **Want to change how something looks?** Look in `src/components/ui/`
+  first — there's a good chance the button, card, or form style you want
+  already exists as a reusable piece there, and changing it once updates
   it everywhere it's used.
 
-One thing worth knowing: the forms (Giving, Prayer Requests, Connect) don't
-actually send anything anywhere yet. They're fully working on the screen —
-you can type, submit, and see a success message — but behind the scenes
-they just log the submission instead of saving it or emailing anyone. That's
-intentional for now; when a real backend or email service is ready, there's
-one file (`src/lib/forms.ts`) where that gets wired up, so none of the forms
-themselves need to change.
+One thing worth knowing: the public-facing forms (Giving, Prayer
+Requests, Connect) write real rows to the database via Server Actions in
+`src/lib/forms.ts`. Giving only records *intent* — no payment is actually
+processed yet, since a payment provider isn't wired up.
 
-## A note on fonts and images
+## Images
 
-The headline font (Big Shoulders Display) is loaded from font files sitting
-in `src/app/fonts/`, and the body font (Archivo) comes from Google Fonts
-automatically. Images used across the site live in `public/images/` — if
-you're swapping in real photos, that's where they go.
+New images (ministry photos, sermon thumbnails, event photos) uploaded
+through `/admin` go straight to [Vercel Blob](https://vercel.com/docs/storage/vercel-blob),
+not into this repo. `public/images/` is legacy at this point — it holds
+the original launch placeholder images and the small set `prisma/seed.ts`
+still points at for local dev fixtures, kept around so development
+doesn't require a Blob token just to look at seed data. A one-time script
+(`npm run backfill:images`) exists to migrate any database row still
+pointing at a local `/images/...` path over to Blob storage.
+
+## Seed data vs. production content
+
+- **`prisma/seed.ts`** (`npm run db:seed`) — minimal fixture data for
+  local development and CI. Just enough rows to exercise every code
+  path. Safe to wipe and re-run against a throwaway database any time.
+- **`scripts/bootstrap-production.ts`** (`npm run bootstrap:production`)
+  — a one-time script for seeding a *fresh* production database with
+  real starter content. Real content changes after that go through
+  `/admin`, not this script.

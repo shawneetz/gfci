@@ -11,6 +11,7 @@
     "lint:fix": "eslint --fix",
     "check:enums": "tsx scripts/check-enum-parity.ts",
     "backfill:images": "tsx scripts/backfill-images.ts",
+    "sync:seed-images": "tsx scripts/sync-seed-images.ts",
     "bootstrap:production": "tsx scripts/bootstrap-production.ts",
     "admin:create": "tsx scripts/create-admin.ts",
     "postinstall": "prisma generate",
