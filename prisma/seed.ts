@@ -1,6 +1,29 @@
+// Minimal dev/CI fixture data — NOT production content.
+//
+// Phase 17 split seeding into two concerns:
+//   - prisma/seed.ts (this file): just enough rows to exercise every
+//     code path (both isLeadershipTeam branches, a sermon series with
+//     more than one entry, a featured event AND a past event, etc.).
+//     Safe to wipe and re-run against a throwaway dev/CI database at
+//     any time.
+//   - scripts/bootstrap-production.ts: the original hand-written
+//     starter content, run once against a fresh production database.
+//     Real content after that point is entered through /admin, not
+//     hand-synced here.
+//
+// Three rows below reference images that were never added to
+// public/images (Sermon "Faith That Moves", Event "City Serve Day",
+// PrayerTeam "Kids Prayer Team") — see scripts/seed-image-urls.ts for
+// where those Blob URLs get filled in once uploaded, and
+// scripts/sync-seed-images.ts for patching rows already seeded before
+// that happened.
+//
+// Run with `npm run db:seed`.
+
 import "dotenv/config";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../src/generated/prisma/client";
+import { SEED_IMAGE_URLS } from "../scripts/seed-image-urls";
 
 const adapter = new PrismaPg({ connectionString: process.env.DIRECT_URL });
 const prisma = new PrismaClient({ adapter });
@@ -83,7 +106,8 @@ async function main() {
       title: "Faith That Moves",
       series: "Foundations",
       date: new Date("2026-06-21"),
-      thumbnail: "/images/sermon-3.jpg",
+      // Not shipped under public/images — see scripts/seed-image-urls.ts.
+      thumbnail: SEED_IMAGE_URLS.sermonFaithThatMoves || "/images/sermon-3.jpg",
       summary: "Faith isn't static — it's meant to move us toward action.",
       speakerId: "noel-gonzales",
     },
@@ -104,7 +128,8 @@ async function main() {
       time: "7:00 PM",
       category: "Worship",
       location: "Main Sanctuary",
-      image: "/images/event-youth-night.jpg",
+      // Not shipped under public/images — see scripts/seed-image-urls.ts.
+      image: SEED_IMAGE_URLS.eventYouthNightWorship || "/images/event-youth-night.jpg",
       description: "An extended evening of uninterrupted worship and prayer.",
       featured: true,
     },
@@ -120,7 +145,8 @@ async function main() {
       time: "8:00 AM",
       category: "Outreach",
       location: "Various Sites",
-      image: "/images/event-city-serve-day.jpg",
+      // Not shipped under public/images — see scripts/seed-image-urls.ts.
+      image: SEED_IMAGE_URLS.eventCityServeDay || "/images/event-city-serve-day.jpg",
       description: "Partnering with local organizations to serve our city.",
     },
   });
@@ -135,7 +161,8 @@ async function main() {
       slug: "kids",
       name: "Kids Prayer Team",
       details: "Praying for children and families as they grow in faith and community.",
-      image: "/images/ministry-kids.jpg",
+      // Not shipped under public/images — see scripts/seed-image-urls.ts.
+      image: SEED_IMAGE_URLS.prayerTeamKids || "/images/ministry-kids.jpg",
       schedule: "Sundays, 9:00 AM & 11:00 AM",
       order: 0,
     },

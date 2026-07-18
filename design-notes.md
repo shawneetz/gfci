@@ -964,3 +964,21 @@ const revalidate` lines across the page files.
 - When a component needs colorable fill/text/border/shadow, accept `Tone`
   props resolved via `toneVar` rather than inventing a new color prop or a
   local tone union — see **Tone System** above.
+
+  # Seed & Fixture Data
+
+*Added 2026-07-14 (Phase 17).*
+
+Two separate scripts populate the database, and they are not
+interchangeable:
+
+| Script | Command | Purpose | Safe to re-run? |
+|---|---|---|---|
+| `prisma/seed.ts` | `npm run db:seed` | Minimal dev/CI fixture data — just enough rows to exercise every code path (both `isLeadershipTeam` branches, a multi-entry sermon series, a featured *and* a past event, etc.) | Yes, freely — meant for throwaway dev/CI databases |
+| `scripts/bootstrap-production.ts` | `npm run bootstrap:production` | The original hand-written starter content, for seeding a *fresh* production database once | Technically yes (every write is `upsert` with an empty `update: {}`, so an existing row is never touched) — but only meant to run once, right after the production DB is created |
+
+Real content changes after that first production bootstrap go through
+`/admin`, not either of these scripts. `prisma/seed.ts` should never grow
+back into a hand-synced copy of production content — if a new code path
+needs exercising, add the smallest possible fixture row for it, not a
+"real" one.

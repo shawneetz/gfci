@@ -7,6 +7,8 @@ import { FieldLabel } from "@/components/ui/field-label";
 import { TextField } from "@/components/ui/text-field";
 import { Button } from "@/components/ui/button";
 import { FormStatusBanner } from "@/components/ui/form-status-banner";
+import { ImageField } from "../../_components/image-field";
+import { resizeImageFile } from "@/lib/resize-image";
 import { createPerson, updatePerson, type PersonInput } from "@/server/mutations/people";
 import type { Person } from "@/server/queries/people";
 
@@ -24,6 +26,7 @@ export function PersonForm({ person }: PersonFormProps) {
     isLeadershipTeam: person?.isLeadershipTeam ?? false,
     leadershipOrder: person?.leadershipOrder ?? null,
   });
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [status, setStatus] = useState<"idle" | "submitting" | "error">("idle");
   const [error, setError] = useState("");
 
@@ -35,7 +38,11 @@ export function PersonForm({ person }: PersonFormProps) {
     e.preventDefault();
     setStatus("submitting");
 
-    const result = person ? await updatePerson(person.id, form) : await createPerson(form);
+    const resized = imageFile ? await resizeImageFile(imageFile) : null;
+
+    const result = person
+      ? await updatePerson(person.id, form, resized, person.imageUrl)
+      : await createPerson(form, resized);
 
     if (result.success) {
       router.push("/admin/people");
@@ -72,6 +79,13 @@ export function PersonForm({ person }: PersonFormProps) {
         <FieldLabel>Email</FieldLabel>
         <TextField type="email" value={form.email} onChange={(e) => updateField("email", e.target.value)} />
       </div>
+
+      <ImageField
+        label="Photo"
+        currentUrl={person?.imageUrl ?? undefined}
+        onChange={setImageFile}
+        required={false}
+      />
 
       <label className="flex items-center gap-2 text-body-sm font-semibold text-ink">
         <input
