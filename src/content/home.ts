@@ -16,7 +16,7 @@ export const mission = {
 };
 
 export const latestSermon = {
-  title: "Latest Message",
+  title: "Latest Messages",
   viewAllLabel: "View All Sermons",
 };
 

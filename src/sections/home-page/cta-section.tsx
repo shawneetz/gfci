@@ -10,7 +10,7 @@ export function CtaSection() {
   return (
     <section className="section bg-surface">
       <Container>
-        <div className="space-y-6">
+        <div className="grid gap-6 lg:grid-cols-2 lg:items-stretch">
           <CtaCard
             icon={<GivingIcon size={24} />}
             label={cta.giving.label}

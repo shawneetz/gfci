@@ -5,12 +5,14 @@ import { Container } from "@/components/ui/container";
 import { ButtonLink } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { HERO_OVERLAY } from "@/lib/overlays";
+import { HOME_HERO_ID } from "@/lib/layout";
 import { hero } from "@/content/home";
 
 export function Hero() {
   return (
     <section
-      className="relative flex min-h-dvh items-end overflow-hidden bg-surface-inverse bg-cover bg-center bg-fixed text-ink-inverse"
+      id={HOME_HERO_ID}
+      className="relative flex min-h-dvh items-end overflow-hidden bg-surface-inverse bg-cover bg-center bg-fixed text-ink-inverse lg:-ml-72 lg:w-[calc(100%+18rem)]"
       style={{ backgroundImage: "url('/images/home-page/hero-img.jpg')" }}
     >
       <div className={cn("pointer-events-none absolute inset-0", HERO_OVERLAY)} />

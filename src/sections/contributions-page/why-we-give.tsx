@@ -9,7 +9,7 @@ export function WhyWeGive() {
   return (
     <section className="section bg-surface-alt">
       <Container className={FORM_PAGE_MAX_WIDTH}>
-        <div className="relative aspect-4/3 overflow-hidden border-2 border-ink sm:aspect-video">
+        <div className="relative aspect-4/3 overflow-hidden rounded-lg border border-border sm:aspect-video">
           <Image
             src="/images/home-page/outreach.jpg"
             alt="Congregation gathered together in worship and service"

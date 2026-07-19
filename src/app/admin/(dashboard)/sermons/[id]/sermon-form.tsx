@@ -95,9 +95,12 @@ export function SermonForm({ sermon, people }: SermonFormProps) {
 
       <div>
         <FieldLabel>Video URL</FieldLabel>
-        <TextField value={form.videoUrl} onChange={(e) => updateField("videoUrl", e.target.value)} placeholder="Optional" />
+        <TextField
+          value={form.videoUrl}
+          onChange={(e) => updateField("videoUrl", e.target.value)}
+          placeholder="Paste a Facebook or YouTube video link (optional)"
+        />
       </div>
-
       <div>
         <FieldLabel>Summary</FieldLabel>
         <TextAreaField rows={3} value={form.summary} onChange={(e) => updateField("summary", e.target.value)} />

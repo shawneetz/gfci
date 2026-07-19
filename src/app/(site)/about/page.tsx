@@ -9,7 +9,13 @@ export const revalidate = 300;
 export default function AboutPage() {
   return (
     <>
-      <PageHero eyebrow={hero.eyebrow} title={hero.title} description={hero.description} />
+      <PageHero
+        eyebrow={hero.eyebrow}
+        title={hero.title}
+        description={hero.description}
+        image="/images/home-page/outreach.jpg"
+        imageAlt="Golden Faith congregation gathered together outdoors"
+      />
       <MissionStatement />
       <CoreValues />
       <Leadership />

@@ -5,6 +5,19 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+
+export function gridColsForCount(count: number, max: 2 | 3 = 3): string {
+  const columns = Math.max(1, Math.min(count, max));
+
+  if (max === 2) {
+    return columns >= 2 ? "sm:grid-cols-2" : "grid-cols-1";
+  }
+
+  if (columns >= 3) return "sm:grid-cols-2 lg:grid-cols-3";
+  if (columns === 2) return "sm:grid-cols-2";
+  return "grid-cols-1";
+}
+
 export function formatDate(dateString: string) {
   return new Date(dateString).toLocaleDateString("en-US", {
     month: "long",
@@ -19,10 +32,6 @@ export function formatWeekday(dateString: string) {
     .toUpperCase();
 }
 
-// Derives the "OCT" / "15" pieces EventCard and EventListItem need for
-// their date badges. ChurchEvent stores a single ISO `date` string as its
-// source of truth — these are computed on demand instead of being stored as
-// separate `month`/`day` fields that could silently fall out of sync with it.
 export function formatMonthShort(dateString: string) {
   return new Date(dateString)
     .toLocaleDateString("en-US", { month: "short" })

@@ -33,7 +33,7 @@ export function VisitInfo() {
             <p className="mt-6 text-caption text-ink-muted">{visitInfo.note}</p>
           </Panel>
 
-          <div className="relative overflow-hidden border-2 border-ink">
+          <div className="relative overflow-hidden rounded-lg border border-border">
             <iframe
               title={`Map to ${siteConfig.name}`}
               src={`https://www.google.com/maps?q=${mapQuery}&output=embed`}
@@ -43,7 +43,7 @@ export function VisitInfo() {
               referrerPolicy="no-referrer-when-downgrade"
             />
 
-            <div className="absolute left-4 top-4 max-w-xs border-2 border-ink bg-surface p-4">
+            <div className="absolute left-4 top-4 max-w-xs rounded-lg border border-border bg-surface p-4 shadow-[var(--shadow-soft)]">
               <div className="flex items-start gap-2">
                 <MapPin size={18} className="mt-0.5 shrink-0 text-brand" />
                 <div>

@@ -48,7 +48,7 @@ export function MinistryCard({
   return (
     <div
       className={cn(
-        "group relative overflow-hidden border-2 border-ink",
+        "group relative overflow-hidden rounded-lg border border-border transition-shadow duration-200 hover:shadow-[var(--shadow-lift)]",
         aspectClass[aspect],
         className
       )}
@@ -58,7 +58,7 @@ export function MinistryCard({
         alt={imageAlt ?? title}
         fill
         sizes="(max-width: 768px) 100vw, 576px"
-        className="object-cover transition-transform duration-300 group-hover:scale-105"
+        className="object-cover transition-transform duration-200 group-hover:scale-105"
       />
 
       <div className={cn("absolute inset-0", CARD_OVERLAY)} />

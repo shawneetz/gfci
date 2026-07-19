@@ -35,6 +35,18 @@ export async function getLatestSermon(): Promise<SermonWithSpeaker | null> {
   return row ? toSermonWithSpeaker(row) : null;
 }
 
+// Powers the home page's "Latest Messages" grid — more than a single card
+// (see LatestSermon). getLatestSermon above is kept as-is for any call
+// site that only ever wants the single most recent sermon.
+export async function getRecentSermons(limit = 3): Promise<SermonWithSpeaker[]> {
+  const rows = await prisma.sermon.findMany({
+    orderBy: { date: "desc" },
+    take: limit,
+    include: speakerInclude,
+  });
+  return rows.map(toSermonWithSpeaker);
+}
+
 export async function getSermonBySlug(slug: string): Promise<SermonWithSpeaker | null> {
   const row = await prisma.sermon.findUnique({
     where: { slug },

@@ -25,7 +25,7 @@ export async function WhatToExpect() {
             const Icon = resolveIcon(item.icon);
             return (
               <Panel key={item.id} shadow={false}>
-                <div className="flex h-11 w-11 items-center justify-center rounded-none bg-brand-subtle text-brand">
+                <div className="flex h-11 w-11 items-center justify-center rounded-full bg-brand-subtle text-brand">
                   <Icon size={ICON_SIZE.section} />
                 </div>
                 <h3 className="mt-5 text-lg font-bold text-ink">{item.title}</h3>

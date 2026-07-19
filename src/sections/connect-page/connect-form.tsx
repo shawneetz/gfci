@@ -69,7 +69,6 @@ export function ConnectForm({ ministries }: ConnectFormProps) {
             fill="ink"
             text="inverse"
             border="ink"
-            radius="none"
             buttonFill="inverse"
             buttonTextColor="ink"
             buttonBorder="ink"

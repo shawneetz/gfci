@@ -39,17 +39,22 @@ export function EventList({ events, monthLabel, prevMonthHref, nextMonthHref }: 
         </div>
 
         {hasMore && (
-          <Button
-            type="button"
-            onClick={() => setVisibleCount((count) => count + PAGE_SIZE)}
-            fill="transparent"
-            text="ink"
-            border="ink"
-            shadow="grey"
-            className="mt-8 w-full"
-          >
-            {list.loadMoreLabel}
-          </Button>
+          // Full width on mobile for an easy tap target; on larger screens
+          // it shrinks to content width and centers instead of stretching
+          // across the whole content column.
+          <div className="mt-8 flex justify-center">
+            <Button
+              type="button"
+              onClick={() => setVisibleCount((count) => count + PAGE_SIZE)}
+              fill="transparent"
+              text="ink"
+              border="ink"
+              shadow="grey"
+              className="w-full sm:w-auto sm:min-w-[240px]"
+            >
+              {list.loadMoreLabel}
+            </Button>
+          </div>
         )}
       </Container>
     </section>

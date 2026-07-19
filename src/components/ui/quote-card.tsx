@@ -33,11 +33,11 @@ export function QuoteCard({
     color: toneVar[text],
     borderColor: toneVar[border],
     boxShadow:
-      shadow === "transparent" ? "none" : `6px 6px 0 0 ${toneVar[shadow]}`,
+      shadow === "transparent" ? "none" : `0 16px 32px -14px ${toneVar[shadow]}`,
   };
 
   return (
-    <div className={cn("border-2 p-6 md:p-7", className)} style={style}>
+    <div className={cn("rounded-lg border p-6 md:p-7", className)} style={style}>
       <Quote size={28} className="opacity-20" fill="currentColor" strokeWidth={0} />
       <p className="mt-3 text-body leading-relaxed">&ldquo;{quote}&rdquo;</p>
       <div className="mt-5 flex items-center justify-between gap-3">

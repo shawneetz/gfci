@@ -35,7 +35,16 @@
   --radius-md: 10px;
   --radius-lg: 16px;
 
+  /* SHADOWS
+     Soft, diffused, and quiet — used in place of the old hard offset
+     "sticker" shadow so cards, panels, and buttons read as gently
+     elevated rather than graphically outlined. --shadow-card is the
+     smallest (small floating elements like the play-button circle),
+     --shadow-soft is the resting elevation for panels/inputs-adjacent
+     surfaces, --shadow-lift is the deeper elevation used on hover. */
   --shadow-card: 0 2px 16px rgba(0, 0, 0, 0.06);
+  --shadow-soft: 0 1px 2px rgba(17, 17, 17, 0.04), 0 10px 24px rgba(17, 17, 17, 0.07);
+  --shadow-lift: 0 6px 16px rgba(17, 17, 17, 0.08), 0 20px 40px rgba(17, 17, 17, 0.10);
 }
 
 :root {
@@ -90,7 +99,7 @@ textarea:focus-visible {
 .text-display {
   font-family: var(--font-headline);
   font-size: 3rem;
-  line-height: 1;
+  line-height: 1.05; /* was 1 — too tight once this wraps to multiple lines (Home hero) */
   font-weight: 800;
 }
 

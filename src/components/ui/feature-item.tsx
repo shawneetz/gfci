@@ -26,7 +26,7 @@ export function FeatureItem({
         className
       )}
     >
-      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-none bg-brand-subtle text-brand">
+      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-brand-subtle text-brand">
         <Icon size={ICON_SIZE.feature} />
       </div>
       <div>

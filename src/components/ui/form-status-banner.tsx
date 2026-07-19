@@ -19,7 +19,7 @@ export function FormStatusBanner({
     <div
       role="status"
       className={cn(
-        "flex items-start gap-3 border-2 p-4",
+        "flex items-start gap-3 rounded-lg border p-4",
         isSuccess
           ? "border-brand bg-brand-subtle text-brand"
           : "border-ink bg-surface-alt text-ink",

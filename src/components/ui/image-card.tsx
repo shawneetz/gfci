@@ -22,7 +22,7 @@ export function ImageCard({ title, image, href }: ImageCardProps) {
         alt=""
         fill
         sizes="(max-width: 768px) 50vw, 25vw"
-        className="object-cover transition-transform duration-300 group-hover:scale-105"
+        className="object-cover transition-transform duration-200 group-hover:scale-105"
       />
 
       <div className={cn("absolute inset-0", TILE_OVERLAY)} />
