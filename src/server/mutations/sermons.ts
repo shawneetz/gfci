@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { uniqueSlug } from "@/lib/slugify";
+import { extractVideoUrl } from "@/lib/video";
 import { resolveImageUrl } from "./image";
 import type { MutationResult } from "./types";
 
@@ -38,7 +39,10 @@ export async function createSermon(data: SermonInput, thumbnailFile: File | null
         series: data.series,
         date: new Date(data.date),
         thumbnail,
-        videoUrl: data.videoUrl || null,
+        // Accepts a plain link OR a pasted <iframe> embed snippet —
+        // this normalizes either input down to a clean video URL before
+        // it's stored, so the admin form shows a tidy link on re-edit.
+        videoUrl: data.videoUrl ? extractVideoUrl(data.videoUrl) : null,
         summary: data.summary || null,
         speakerId: data.speakerId,
       },
@@ -73,7 +77,7 @@ export async function updateSermon(
         series: data.series,
         date: new Date(data.date),
         thumbnail,
-        videoUrl: data.videoUrl || null,
+        videoUrl: data.videoUrl ? extractVideoUrl(data.videoUrl) : null,
         summary: data.summary || null,
         speakerId: data.speakerId,
       },
