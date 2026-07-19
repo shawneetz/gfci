@@ -47,7 +47,7 @@ export function Modal({ open, onClose, title, children, className }: ModalProps)
 
       <div
         className={cn(
-          "relative max-h-[90vh] w-full max-w-lg overflow-y-auto border-2 border-frame bg-surface shadow-[6px_6px_0_0_var(--color-frame)]",
+          "relative max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-t-lg border border-border bg-surface shadow-[var(--shadow-lift)] sm:rounded-lg",
           className
         )}
       >
@@ -55,7 +55,7 @@ export function Modal({ open, onClose, title, children, className }: ModalProps)
         type="button"
         onClick={onClose}
         aria-label="Close"
-        className="absolute right-4 top-4 z-10 flex h-9 w-9 items-center justify-center border-2 border-frame bg-surface text-ink transition-colors hover:bg-surface-alt"
+        className="absolute right-4 top-4 z-10 flex h-9 w-9 items-center justify-center rounded-full border border-border bg-surface text-ink transition-colors hover:bg-surface-alt"
       >
         <X size={ICON_SIZE.inline} />
       </button>

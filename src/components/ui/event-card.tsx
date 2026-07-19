@@ -18,7 +18,7 @@ export function EventCard({
   location,
 }: EventCardProps) {
   return (
-    <TiltCard href={`/events#${id}`} className="block rounded-none bg-surface p-6">
+    <TiltCard href={`/events#${id}`} className="block bg-surface p-6">
       <div className="flex items-center gap-6">
         <div className="flex w-20 shrink-0 flex-col items-center">
           <span className="text-xs font-bold uppercase tracking-[0.2em] text-ink-muted">
@@ -29,7 +29,7 @@ export function EventCard({
           </span>
         </div>
 
-        <div className="h-20 w-1 bg-ink" />
+        <div className="h-20 w-px bg-border" />
 
         <div className="flex-1">
           <h3 className="text-xl font-bold text-ink">{title}</h3>

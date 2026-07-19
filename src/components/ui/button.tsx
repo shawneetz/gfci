@@ -22,16 +22,15 @@ export const toneVar: Record<Tone, string> = {
   transparent: "transparent",
 };
 
-
 const baseStyles =
-  "inline-flex items-center justify-center gap-2 rounded-none border-2 px-6 py-3 text-sm font-bold uppercase tracking-[0.14em] transition-all duration-150 whitespace-nowrap hover:translate-x-[4px] hover:translate-y-[4px] hover:shadow-none disabled:cursor-not-allowed disabled:opacity-60 disabled:pointer-events-none";
+  "inline-flex items-center justify-center gap-2 rounded-lg border px-6 py-3 text-sm font-bold uppercase tracking-[0.14em] transition-all duration-200 whitespace-nowrap hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60 disabled:pointer-events-none disabled:hover:translate-y-0";
 
 
 interface ColorProps {
   fill?: Tone;   // the button's background
   text?: Tone;   // the label color
-  border?: Tone; // the 2px outline color
-  shadow?: Tone; // the hard offset shadow color
+  border?: Tone; // the 1px outline color
+  shadow?: Tone; // the soft shadow tint
 }
 
 const defaultColors: Required<ColorProps> = {
@@ -46,7 +45,10 @@ function colorStyle({ fill, text, border, shadow }: Required<ColorProps>): CSSPr
     backgroundColor: toneVar[fill],
     color: toneVar[text],
     borderColor: toneVar[border],
-    boxShadow: `4px 4px 0 0 ${toneVar[shadow]}`,
+    boxShadow:
+      shadow === "transparent"
+        ? "none"
+        : `0 6px 18px -8px ${toneVar[shadow]}, 0 2px 6px -2px ${toneVar[shadow]}`,
   };
 }
 

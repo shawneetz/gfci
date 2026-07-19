@@ -43,7 +43,7 @@ export default async function MinistryPage({ params }: MinistryPageProps) {
 
       <section className="section bg-surface">
         <Container className="max-w-3xl">
-          <div className="relative aspect-video overflow-hidden border-2 border-ink">
+          <div className="relative aspect-video overflow-hidden rounded-lg border border-border">
             <Image
               src={ministry.image}
               alt={ministry.imageAlt}

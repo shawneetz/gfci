@@ -16,7 +16,7 @@ export function TextField({ icon, className, ...props }: TextFieldProps) {
       )}
       <input
         className={cn(
-          "w-full rounded-none border-2 border-border bg-surface py-3 text-body text-ink placeholder:text-ink-muted transition-colors focus:border-ink",
+          "w-full rounded-lg border border-border bg-surface py-3 text-body text-ink placeholder:text-ink-muted transition-colors focus:border-brand",
           icon ? "pl-10 pr-4" : "px-4",
           className
         )}

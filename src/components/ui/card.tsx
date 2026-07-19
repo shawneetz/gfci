@@ -7,7 +7,7 @@ export function Card({ className, ...props }: ComponentPropsWithoutRef<"div">) {
   return (
     <div
       className={cn(
-        "group rounded-none bg-surface overflow-hidden",
+        "group bg-surface overflow-hidden",
         TILT_CARD_BORDER,
         TILT_CARD_LIFT,
         className

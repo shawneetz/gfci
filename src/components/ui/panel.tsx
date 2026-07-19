@@ -24,9 +24,9 @@ export function Panel({
   return (
     <div
       className={cn(
-        "rounded-none border-2 border-frame p-6 md:p-8",
+        "rounded-lg border border-border p-6 md:p-8",
         toneClass[tone],
-        shadow && "shadow-[6px_6px_0_0_var(--color-frame)]",
+        shadow && "shadow-[var(--shadow-soft)]",
         className
       )}
       {...props}

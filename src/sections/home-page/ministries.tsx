@@ -2,6 +2,7 @@ import { Container } from "@/components/ui/container";
 import { ButtonLink } from "@/components/ui/button";
 import { ImageCard } from "@/components/ui/image-card";
 import { getAllMinistries } from "@/server/queries/ministries";
+import { cn, gridColsForCount } from "@/lib/utils";
 import { ministries } from "@/content/home";
 
 export async function Ministries() {
@@ -17,7 +18,7 @@ export async function Ministries() {
           </p>
         </div>
 
-        <div className="mt-10 grid grid-cols-2 gap-5 sm:grid-cols-3">
+        <div className={cn("mt-10 grid gap-5", gridColsForCount(ministriesData.length))}>
           {ministriesData.map((ministry) => (
             <ImageCard
               key={ministry.slug}
@@ -29,7 +30,14 @@ export async function Ministries() {
         </div>
 
         <div className="mt-10">
-          <ButtonLink href="/ministries" text="ink" fill="inverse" border="ink" shadow="grey" className="w-full">
+          <ButtonLink
+            href="/ministries"
+            text="ink"
+            fill="inverse"
+            border="ink"
+            shadow="grey"
+            className="w-full sm:w-auto"
+          >
             {ministries.ctaLabel}
           </ButtonLink>
         </div>

@@ -48,7 +48,7 @@ export function CtaCard({
   text = "inverse",
   border = "ink",
   shadow = "transparent",
-  radius = "none",
+  radius = "lg",
   buttonFill,
   buttonTextColor,
   buttonBorder,
@@ -59,7 +59,7 @@ export function CtaCard({
     backgroundColor: toneVar[fill],
     color: toneVar[text],
     borderColor: toneVar[border],
-    boxShadow: shadow === "transparent" ? "none" : `6px 6px 0 0 ${toneVar[shadow]}`,
+    boxShadow: shadow === "transparent" ? "none" : `0 16px 32px -12px ${toneVar[shadow]}`,
   };
 
   const resolvedButtonFill = buttonFill ?? text;
@@ -67,14 +67,11 @@ export function CtaCard({
   const resolvedButtonBorder = buttonBorder ?? fill;
 
   return (
-    // was `border` (1px) — every other bordered surface in the system
-    // (Card, Panel, MinistryCard, QuoteCard, Modal, EventCard) uses
-    // border-2, so this was an inconsistency rather than a deliberate choice.
     <div
-      className={cn("border-2 p-8 md:p-10", radiusClass[radius], className)}
+      className={cn("border p-8 md:p-10", radiusClass[radius], className)}
       style={cardStyle}
     >
-      <div className="flex h-14 w-14 items-center justify-center rounded-none bg-current/10">
+      <div className="flex h-14 w-14 items-center justify-center rounded-full bg-current/10">
         {icon}
       </div>
       <p className="mt-8 text-label opacity-80">{label}</p>

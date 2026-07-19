@@ -8,6 +8,11 @@ import { getAllPeople } from "@/server/queries/people";
 import { getLiveStream } from "@/server/queries/live-stream";
 import { getCoreValues } from "@/server/queries/core-values";
 import { getExpectationItems } from "@/server/queries/expectation-items";
+import {
+  getPrayerRequestSubmissions,
+  getGivingIntents,
+  getConnectRegistrations,
+} from "@/server/queries/submissions";
 import { AdminPageHeader } from "./_components/admin-page-header";
 
 export default async function AdminOverviewPage() {
@@ -21,6 +26,9 @@ export default async function AdminOverviewPage() {
     liveStream,
     coreValues,
     expectationItems,
+    prayerSubmissions,
+    givingSubmissions,
+    connectSubmissions,
   ] = await Promise.all([
     getAllSermons(),
     getAllEvents(),
@@ -31,6 +39,9 @@ export default async function AdminOverviewPage() {
     getLiveStream(),
     getCoreValues(),
     getExpectationItems(),
+    getPrayerRequestSubmissions(),
+    getGivingIntents(),
+    getConnectRegistrations(),
   ]);
 
   const tiles = [
@@ -43,13 +54,16 @@ export default async function AdminOverviewPage() {
     { label: "Live Stream", href: "/admin/live-stream", count: liveStream ? 1 : 0 },
     { label: "Core Values", href: "/admin/core-values", count: coreValues.length },
     { label: "What to Expect", href: "/admin/expectation-items", count: expectationItems.length },
+    { label: "Prayer Submissions", href: "/admin/prayer-submissions", count: prayerSubmissions.length },
+    { label: "Giving Submissions", href: "/admin/giving-submissions", count: givingSubmissions.length },
+    { label: "Connect Submissions", href: "/admin/connect-submissions", count: connectSubmissions.length },
   ];
 
   return (
     <div>
       <AdminPageHeader
         title="Overview"
-        description="Read-only for now — Phase 15 adds create/edit/delete on top of these same lists. Pick a content type below to see what's currently live."
+        description="Pick a content type below to see what's currently live, or check the Submissions tiles for new form activity from the public site."
       />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

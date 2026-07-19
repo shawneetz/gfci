@@ -19,7 +19,7 @@ export function PhotoGrid({
 }: PhotoGridProps) {
   return (
     <div className={cn("space-y-3", className)}>
-      <div className="relative aspect-16/10 overflow-hidden border-2 border-ink">
+      <div className="relative aspect-16/10 overflow-hidden rounded-lg border border-border">
         <Image
           src={featured.src}
           alt={featured.alt}
@@ -34,7 +34,7 @@ export function PhotoGrid({
           {secondary.map((photo) => (
             <div
               key={photo.src}
-              className="relative aspect-square overflow-hidden border-2 border-ink"
+              className="relative aspect-square overflow-hidden rounded-lg border border-border"
             >
               <Image
                 src={photo.src}

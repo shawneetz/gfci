@@ -21,7 +21,7 @@ export function AmountOption({
       onClick={onClick}
       aria-pressed={selected}
       className={cn(
-        "flex-1 rounded-none border-2 py-3 text-center font-headline text-lg font-bold transition-colors duration-150",
+        "flex-1 rounded-lg border py-3 text-center font-headline text-lg font-bold transition-colors duration-150",
         selected
           ? "border-brand bg-brand-subtle text-brand"
           : "border-border bg-surface text-ink hover:border-ink",

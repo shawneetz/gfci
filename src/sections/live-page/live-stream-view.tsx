@@ -32,7 +32,7 @@ export function LiveStreamView({ stream }: LiveStreamViewProps) {
           ]}
         />
 
-        <div className="mt-8 flex aspect-video items-center justify-center rounded-md bg-black">
+        <div className="mt-8 flex aspect-video items-center justify-center rounded-lg border border-ink-inverse/20 bg-black">
           <span className="text-sm text-ink-inverse-secondary">Live stream player</span>
         </div>
 
@@ -41,6 +41,7 @@ export function LiveStreamView({ stream }: LiveStreamViewProps) {
           value={activePanel}
           onChange={(value) => setActivePanel(value as LivePanel)}
           idPrefix={idPrefix}
+          variant="dark"
           className="mt-6"
         />
 

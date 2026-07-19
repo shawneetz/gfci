@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { ChevronDown, Menu, X } from "lucide-react";
 
@@ -19,13 +19,6 @@ export function Header() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const solid = scrolled || open;
-
-  // Close the mobile menu on route change. This adjusts state during
-  // render (comparing against the last-seen pathname) instead of doing it
-  // in a useEffect — calling setState synchronously inside an effect body
-  // causes an extra commit-then-rerender cascade, which is exactly what
-  // react-hooks/set-state-in-effect warns about. See:
-  // https://react.dev/learn/you-might-not-need-an-effect#adjusting-some-state-when-a-prop-changes
   const [prevPathname, setPrevPathname] = useState(pathname);
   if (pathname !== prevPathname) {
     setPrevPathname(pathname);
@@ -54,97 +47,51 @@ export function Header() {
   return (
     <header
       className={cn(
-        "fixed inset-x-0 top-0 z-50 transition-all duration-300",
-        solid
-          ? "border-b border-border bg-surface shadow-sm"
-          : "bg-transparent"
+        "fixed inset-x-0 top-0 z-50 transition-all duration-200 lg:hidden",
+        solid ? "border-b border-border bg-surface shadow-sm" : "bg-transparent"
       )}
     >
-      <Container className="flex h-16 items-center justify-between">
-        {/* ================= Mobile Header ================= */}
-        <div className="flex w-full items-center lg:hidden">
-          <Link
-            href="/"
-            className="flex h-10 w-10 items-center justify-center"
-          >
-            <Image
-              src="/icons/gfci-logo-icon.svg"
-              alt={`${siteConfig.name} Logo`}
-              width={30}
-              height={30}
-              priority
-              className="h-30px w-30px"
-            />
-          </Link>
+      <Container className="flex h-16 items-center">
+        <Link href="/" className="flex h-10 w-10 items-center justify-center">
+          <Image
+            src="/icons/gfci-logo-icon.svg"
+            alt={`${siteConfig.name} Logo`}
+            width={30}
+            height={30}
+            priority
+            className="h-30px w-30px"
+          />
+        </Link>
 
-          <Link href="/" className="flex-1 text-center">
-            <span
-              className={cn(
-                "font-headline text-[32px] font-extrabold leading-none tracking-[0.02em] transition-colors duration-300",
-                solid ? "text-ink" : "text-ink-inverse"
-              )}
-            >
-              {siteConfig.name}
-            </span>
-          </Link>
-
-          <button
-            type="button"
-            aria-label={open ? "Close menu" : "Open menu"}
-            aria-expanded={open}
-            onClick={() => setOpen(!open)}
+        <Link href="/" className="flex-1 text-center">
+          <span
             className={cn(
-              "flex h-10 w-10 items-center justify-center rounded-sm transition-colors",
+              "font-headline text-[clamp(1.375rem,1rem_+_3vw,2rem)] font-extrabold leading-none tracking-[0.02em] transition-colors duration-200",
               solid ? "text-ink" : "text-ink-inverse"
             )}
           >
-            {open ? <X size={30} /> : <Menu size={30} />}
-          </button>
-        </div>
+            {siteConfig.name}
+          </span>
+        </Link>
 
-        {/* ================= Desktop Header ================= */}
-        <div className="hidden w-full items-center justify-between lg:flex">
-          <Link href="/" className="flex items-center gap-3">
-            <Image
-              src="/icons/gfci-logo-icon.svg"
-              alt={`${siteConfig.name} Logo`}
-              width={30}
-              height={30}
-              priority
-              className="h-30px w-30px"
-            />
-
-            <span
-              className={cn(
-                "font-headline text-[32px] font-extrabold leading-none tracking-[0.02em] transition-colors duration-300",
-                scrolled ? "text-ink" : "text-ink-inverse"
-              )}
-            >
-              {siteConfig.name}
-            </span>
-          </Link>
-
-          <nav className="flex items-center gap-8">
-            {siteConfig.nav.map((item) => (
-              <DesktopNavItem
-                key={item.label}
-                item={item}
-                pathname={pathname}
-                scrolled={scrolled}
-              />
-            ))}
-          </nav>
-
-          <ButtonLink href={siteConfig.primaryCta.href}>
-            {siteConfig.primaryCta.label}
-          </ButtonLink>
-        </div>
+        <button
+          type="button"
+          aria-label={open ? "Close menu" : "Open menu"}
+          aria-expanded={open}
+          onClick={() => setOpen(!open)}
+          className={cn(
+            "flex h-10 w-10 items-center justify-center rounded-sm transition-colors",
+            solid ? "text-ink" : "text-ink-inverse"
+          )}
+        >
+          {open ? <X size={30} /> : <Menu size={30} />}
+        </button>
       </Container>
 
-      {/* ================= Mobile Navigation ================= */}
+      {/* ================= Mobile Navigation Drawer ================= */}
       <div
         className={cn(
-          "fixed inset-x-0 top-16 bottom-0 overflow-y-auto bg-surface transition-transform duration-300 lg:hidden",
+          "fixed inset-x-0 top-16 bottom-0 overflow-y-auto bg-surface transition-transform duration-200",
           open ? "translate-x-0" : "translate-x-full"
         )}
       >
@@ -153,10 +100,7 @@ export function Header() {
             <MobileNavItem key={item.label} item={item} pathname={pathname} />
           ))}
 
-          <ButtonLink
-            href={siteConfig.primaryCta.href}
-            className="mt-6 w-full"
-          >
+          <ButtonLink href={siteConfig.primaryCta.href} className="mt-6 w-full">
             {siteConfig.primaryCta.label}
           </ButtonLink>
         </Container>
@@ -166,126 +110,13 @@ export function Header() {
 }
 
 // ---------------------------------------------------------------------------
-// Desktop: standalone links render directly; groups render as a click-to-open
-// dropdown (closes on outside click, Escape, or route change).
+// Standalone links render directly; groups render as an accordion row that
+// expands into an indented sub-list.
 // ---------------------------------------------------------------------------
 
-function DesktopNavItem({
-  item,
-  pathname,
-  scrolled,
-}: {
-  item: NavItem;
-  pathname: string;
-  scrolled: boolean;
-}) {
-  const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-
-  // Same render-time adjustment as Header above — closes the dropdown on
-  // route change without setState-in-effect.
-  const [prevPathname, setPrevPathname] = useState(pathname);
-  if (pathname !== prevPathname) {
-    setPrevPathname(pathname);
-    setOpen(false);
-  }
-
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (ref.current && !ref.current.contains(event.target as Node)) {
-        setOpen(false);
-      }
-    }
-    function handleEscape(event: KeyboardEvent) {
-      if (event.key === "Escape") setOpen(false);
-    }
-
-    document.addEventListener("mousedown", handleClickOutside);
-    document.addEventListener("keydown", handleEscape);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-      document.removeEventListener("keydown", handleEscape);
-    };
-  }, []);
-
-  const linkColor = (active: boolean) =>
-    cn(
-      "text-sm font-semibold tracking-wide transition-colors",
-      active
-        ? scrolled
-          ? "text-ink"
-          : "text-ink-inverse"
-        : scrolled
-        ? "text-ink-secondary hover:text-brand"
-        : "text-ink-inverse/90 hover:text-ink-inverse"
-    );
-
-  if (item.type === "link") {
-    return (
-      <Link href={item.href} className={linkColor(pathname === item.href)}>
-        {item.label}
-      </Link>
-    );
-  }
-
-  // item.type === "group"
-  const isActive = item.items.some((sub) => sub.href === pathname);
-
-  return (
-    <div ref={ref} className="relative">
-      <button
-        type="button"
-        aria-haspopup="true"
-        aria-expanded={open}
-        onClick={() => setOpen((value) => !value)}
-        className={cn(linkColor(isActive), "flex items-center gap-1")}
-      >
-        {item.label}
-        <ChevronDown
-          size={14}
-          className={cn("transition-transform duration-150", open && "rotate-180")}
-        />
-      </button>
-
-      {open && (
-        <div className="absolute left-0 top-full mt-3 min-w-200px rounded-none border-2 border-frame bg-surface py-2 shadow-[4px_4px_0_0_var(--color-frame)]">
-          {item.items.map((sub) => (
-            <Link
-              key={sub.href}
-              href={sub.href}
-              onClick={() => setOpen(false)}
-              className={cn(
-                "block px-4 py-2.5 text-sm font-semibold transition-colors",
-                pathname === sub.href
-                  ? "text-ink"
-                  : "text-ink-secondary hover:bg-surface-alt hover:text-ink"
-              )}
-            >
-              {sub.label}
-            </Link>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
-// ---------------------------------------------------------------------------
-// Mobile: standalone links render directly; groups render as an accordion
-// row that expands into an indented sub-list.
-// ---------------------------------------------------------------------------
-
-function MobileNavItem({
-  item,
-  pathname,
-}: {
-  item: NavItem;
-  pathname: string;
-}) {
+function MobileNavItem({ item, pathname }: { item: NavItem; pathname: string }) {
   const [open, setOpen] = useState(false);
 
-  // Same render-time adjustment as Header/DesktopNavItem above — closes
-  // the accordion on route change without setState-in-effect.
   const [prevPathname, setPrevPathname] = useState(pathname);
   if (pathname !== prevPathname) {
     setPrevPathname(pathname);

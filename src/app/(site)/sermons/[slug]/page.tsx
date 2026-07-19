@@ -7,6 +7,7 @@ import { Container } from "@/components/ui/container";
 import { Card, CardBody } from "@/components/ui/card";
 import { MetaRow } from "@/components/ui/meta-row";
 import { ArrowLink } from "@/components/ui/arrow-link";
+import { VideoEmbed } from "@/components/ui/video-embed";
 import { getSermonBySlug, getSermonSlugs, getMoreInSeries } from "@/server/queries/sermons";
 import { formatDate } from "@/lib/utils";
 import { detail } from "@/content/sermons";
@@ -51,11 +52,7 @@ export default async function SermonPage({ params }: SermonPageProps) {
 
       <section className="section bg-surface">
         <Container className="max-w-3xl">
-          <div className="relative aspect-video overflow-hidden border-2 border-ink bg-surface-inverse flex items-center justify-center">
-            <span className="flex h-16 w-16 items-center justify-center rounded-full bg-surface/90 text-brand">
-              <Play size={24} fill="currentColor" />
-            </span>
-          </div>
+          <VideoEmbed url={sermon.videoUrl} title={sermon.title} />
 
           {sermon.summary && <p className="mt-8 text-body-lg text-ink-secondary">{sermon.summary}</p>}
 

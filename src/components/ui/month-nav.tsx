@@ -13,8 +13,10 @@ export interface MonthNavProps {
   className?: string;
 }
 
+// Circular arrow buttons instead of hard-edged squares — a small, classic
+// touch that reads more editorial next to the serif section titles.
 const arrowClass =
-  "flex h-9 w-9 items-center justify-center border-2 transition-colors";
+  "flex h-9 w-9 items-center justify-center rounded-full border transition-colors";
 
 export function MonthNav({ label, prevHref, nextHref, className }: MonthNavProps) {
   return (
@@ -25,14 +27,14 @@ export function MonthNav({ label, prevHref, nextHref, className }: MonthNavProps
           <Link
             href={prevHref}
             aria-label="Previous month"
-            className={cn(arrowClass, "border-ink text-ink hover:bg-surface-alt")}
+            className={cn(arrowClass, "border-border text-ink hover:bg-surface-alt")}
           >
             <ChevronLeft size={ICON_SIZE.inline} />
           </Link>
         ) : (
           <span
             aria-hidden="true"
-            className={cn(arrowClass, "border-border text-ink-muted")}
+            className={cn(arrowClass, "border-border text-ink-muted opacity-50")}
           >
             <ChevronLeft size={ICON_SIZE.inline} />
           </span>
@@ -41,14 +43,14 @@ export function MonthNav({ label, prevHref, nextHref, className }: MonthNavProps
           <Link
             href={nextHref}
             aria-label="Next month"
-            className={cn(arrowClass, "border-ink text-ink hover:bg-surface-alt")}
+            className={cn(arrowClass, "border-border text-ink hover:bg-surface-alt")}
           >
             <ChevronRight size={ICON_SIZE.inline} />
           </Link>
         ) : (
           <span
             aria-hidden="true"
-            className={cn(arrowClass, "border-border text-ink-muted")}
+            className={cn(arrowClass, "border-border text-ink-muted opacity-50")}
           >
             <ChevronRight size={ICON_SIZE.inline} />
           </span>

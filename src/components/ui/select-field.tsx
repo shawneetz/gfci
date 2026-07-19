@@ -12,7 +12,7 @@ export function SelectField({ className, children, ...props }: SelectFieldProps)
     <div className="relative">
       <select
         className={cn(
-          "w-full appearance-none rounded-none border-2 border-border bg-surface px-4 py-3 pr-10 text-body text-ink transition-colors focus:border-ink",
+          "w-full appearance-none rounded-lg border border-border bg-surface px-4 py-3 pr-10 text-body text-ink transition-colors focus:border-brand",
           className
         )}
         {...props}

@@ -19,7 +19,7 @@ export function PersonCard({
 }: PersonCardProps) {
   return (
     <div className={cn("text-center", className)}>
-      <div className="relative mx-auto aspect-square w-24 overflow-hidden rounded-full border-2 border-ink bg-surface-alt sm:w-28">
+      <div className="relative mx-auto aspect-square w-24 overflow-hidden rounded-full border border-border bg-surface-alt sm:w-28">
         {image ? (
           <Image
             src={image}
