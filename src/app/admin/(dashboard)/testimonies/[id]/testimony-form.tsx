@@ -1,5 +1,6 @@
 "use client";
 
+// Admin form for creating and editing an answered-prayer testimony.
 import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 
@@ -7,8 +8,7 @@ import { FieldLabel } from "@/components/ui/field-label";
 import { TextField } from "@/components/ui/text-field";
 import { TextAreaField } from "@/components/ui/textarea-field";
 import { SelectField } from "@/components/ui/select-field";
-import { Button } from "@/components/ui/button";
-import { FormStatusBanner } from "@/components/ui/form-status-banner";
+import { AdminFormActions } from "../../_components/admin-form-actions";
 import { createTestimony, updateTestimony, type TestimonyInput } from "@/server/mutations/testimonies";
 import type { AnsweredPrayer } from "@/server/queries/testimonies";
 import { PRAYER_CATEGORIES } from "@/types";
@@ -69,16 +69,7 @@ export function TestimonyForm({ entry }: TestimonyFormProps) {
         <TextAreaField rows={4} value={form.quote} onChange={(e) => updateField("quote", e.target.value)} required />
       </div>
 
-      {status === "error" && <FormStatusBanner status="error" message={error} />}
-
-      <div className="flex gap-3">
-        <Button type="submit" fill="brand" text="inverse" border="brand" shadow="grey" disabled={status === "submitting"}>
-          {status === "submitting" ? "Saving..." : "Save"}
-        </Button>
-        <Button type="button" onClick={() => router.push("/admin/testimonies")} fill="transparent" text="ink" border="ink" shadow="transparent">
-          Cancel
-        </Button>
-      </div>
+      <AdminFormActions status={status} error={error} cancelHref="/admin/testimonies" />
     </form>
   );
 }

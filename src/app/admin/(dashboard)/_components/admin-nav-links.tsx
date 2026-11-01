@@ -1,5 +1,7 @@
 "use client";
 
+// Navigation links shared by the admin sidebar (desktop) and drawer (mobile).
+// A small heading is shown above the first link of each group.
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -16,13 +18,17 @@ export function AdminNavLinks({ onNavigate, className }: AdminNavLinksProps) {
   return (
     <nav className={cn("flex flex-col gap-1", className)}>
       {ADMIN_NAV_ITEMS.map((item, index) => {
+        // Overview only matches /admin exactly; other links match their sub-pages too.
         const active =
           item.href === "/admin" ? pathname === "/admin" : pathname.startsWith(item.href);
 
+        // Show the group heading only when this item starts a new group.
+        const startsGroup = !!item.group && ADMIN_NAV_ITEMS[index - 1]?.group !== item.group;
+
         return (
           <div key={item.href}>
-          {item.group && (index === 0 || ADMIN_NAV_ITEMS[index - 1]?.group !== item.group) && (
-            <p className="mb-2 mt-5 px-3 text-[0.68rem] font-bold uppercase tracking-[0.18em] text-ink-inverse-muted">{item.group}</p>
+          {startsGroup && (
+            <p className="mb-2 mt-5 px-3 text-[0.68rem] font-bold uppercase tracking-[0.18em] text-ink-inverse-secondary/60">{item.group}</p>
           )}
           <Link
             key={item.href}

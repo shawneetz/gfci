@@ -1,5 +1,6 @@
 "use client";
 
+// Admin form for creating and editing an event.
 import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 
@@ -7,9 +8,8 @@ import { FieldLabel } from "@/components/ui/field-label";
 import { TextField } from "@/components/ui/text-field";
 import { TextAreaField } from "@/components/ui/textarea-field";
 import { SelectField } from "@/components/ui/select-field";
-import { Button } from "@/components/ui/button";
-import { FormStatusBanner } from "@/components/ui/form-status-banner";
 import { ImageField } from "../../_components/image-field";
+import { AdminFormActions } from "../../_components/admin-form-actions";
 import { resizeImageFile } from "@/lib/resize-image";
 import { createEvent, updateEvent, type EventInput } from "@/server/mutations/events";
 import type { ChurchEvent } from "@/server/queries/events";
@@ -41,6 +41,7 @@ export function EventForm({ event }: EventFormProps) {
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
+    // A new event needs an image; when editing, leaving it blank keeps the old one.
     if (!event && !imageFile) {
       setStatus("error");
       setError("An image is required.");
@@ -114,16 +115,7 @@ export function EventForm({ event }: EventFormProps) {
         Featured event (only one at a time)
       </label>
 
-      {status === "error" && <FormStatusBanner status="error" message={error} />}
-
-      <div className="flex gap-3">
-        <Button type="submit" fill="brand" text="inverse" border="brand" shadow="grey" disabled={status === "submitting"}>
-          {status === "submitting" ? "Saving..." : "Save"}
-        </Button>
-        <Button type="button" onClick={() => router.push("/admin/events")} fill="transparent" text="ink" border="ink" shadow="transparent">
-          Cancel
-        </Button>
-      </div>
+      <AdminFormActions status={status} error={error} cancelHref="/admin/events" />
     </form>
   );
 }

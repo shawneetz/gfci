@@ -1,13 +1,13 @@
 "use client";
 
+// Admin form for creating and editing a person (staff, speaker or ministry leader).
 import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 
 import { FieldLabel } from "@/components/ui/field-label";
 import { TextField } from "@/components/ui/text-field";
-import { Button } from "@/components/ui/button";
-import { FormStatusBanner } from "@/components/ui/form-status-banner";
 import { ImageField } from "../../_components/image-field";
+import { AdminFormActions } from "../../_components/admin-form-actions";
 import { resizeImageFile } from "@/lib/resize-image";
 import { createPerson, updatePerson, type PersonInput } from "@/server/mutations/people";
 import type { Person } from "@/server/queries/people";
@@ -108,16 +108,7 @@ export function PersonForm({ person }: PersonFormProps) {
         </div>
       )}
 
-      {status === "error" && <FormStatusBanner status="error" message={error} />}
-
-      <div className="flex gap-3">
-        <Button type="submit" fill="brand" text="inverse" border="brand" shadow="grey" disabled={status === "submitting"}>
-          {status === "submitting" ? "Saving..." : "Save"}
-        </Button>
-        <Button type="button" onClick={() => router.push("/admin/people")} fill="transparent" text="ink" border="ink" shadow="transparent">
-          Cancel
-        </Button>
-      </div>
+      <AdminFormActions status={status} error={error} cancelHref="/admin/people" />
     </form>
   );
 }

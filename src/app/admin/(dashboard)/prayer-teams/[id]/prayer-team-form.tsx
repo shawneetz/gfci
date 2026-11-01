@@ -1,5 +1,6 @@
 "use client";
 
+// Admin form for creating and editing a prayer team.
 import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 

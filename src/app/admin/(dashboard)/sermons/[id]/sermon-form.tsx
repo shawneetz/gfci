@@ -1,5 +1,6 @@
 "use client";
 
+// Admin form for creating and editing a sermon.
 import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 
@@ -7,9 +8,8 @@ import { FieldLabel } from "@/components/ui/field-label";
 import { TextField } from "@/components/ui/text-field";
 import { TextAreaField } from "@/components/ui/textarea-field";
 import { SelectField } from "@/components/ui/select-field";
-import { Button } from "@/components/ui/button";
-import { FormStatusBanner } from "@/components/ui/form-status-banner";
 import { ImageField } from "../../_components/image-field";
+import { AdminFormActions } from "../../_components/admin-form-actions";
 import { resizeImageFile } from "@/lib/resize-image";
 import { createSermon, updateSermon, type SermonInput } from "@/server/mutations/sermons";
 import type { SermonWithSpeaker } from "@/server/queries/sermons";
@@ -108,16 +108,7 @@ export function SermonForm({ sermon, people }: SermonFormProps) {
         <TextAreaField rows={3} value={form.summary} onChange={(e) => updateField("summary", e.target.value)} />
       </div>
 
-      {status === "error" && <FormStatusBanner status="error" message={error} />}
-
-      <div className="flex gap-3">
-        <Button type="submit" fill="brand" text="inverse" border="brand" shadow="grey" disabled={status === "submitting"}>
-          {status === "submitting" ? "Saving..." : "Save"}
-        </Button>
-        <Button type="button" onClick={() => router.push("/admin/sermons")} fill="transparent" text="ink" border="ink" shadow="transparent">
-          Cancel
-        </Button>
-      </div>
+      <AdminFormActions status={status} error={error} cancelHref="/admin/sermons" />
     </form>
   );
 }

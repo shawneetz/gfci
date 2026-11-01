@@ -1,12 +1,13 @@
 "use client";
 
+// Admin form for the single Live Stream row. It stays on the page after saving,
+// so it shows a "Saved." message and has no Cancel link.
 import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 
 import { FieldLabel } from "@/components/ui/field-label";
 import { TextField } from "@/components/ui/text-field";
-import { Button } from "@/components/ui/button";
-import { FormStatusBanner } from "@/components/ui/form-status-banner";
+import { AdminFormActions } from "../_components/admin-form-actions";
 import { updateLiveStream, type LiveStreamInput } from "@/server/mutations/live-stream";
 
 interface LiveStreamFormProps {
@@ -55,12 +56,7 @@ export function LiveStreamForm({ initial }: LiveStreamFormProps) {
         <TextField value={form.location} onChange={(e) => updateField("location", e.target.value)} required />
       </div>
 
-      {status === "success" && <FormStatusBanner status="success" message="Saved." />}
-      {status === "error" && <FormStatusBanner status="error" message={error} />}
-
-      <Button type="submit" fill="brand" text="inverse" border="brand" shadow="grey" disabled={status === "submitting"}>
-        {status === "submitting" ? "Saving..." : "Save"}
-      </Button>
+      <AdminFormActions status={status} error={error} successMessage="Saved." />
     </form>
   );
 }

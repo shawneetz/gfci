@@ -1,5 +1,6 @@
 "use client";
 
+// Admin form for creating and editing a "What to Expect" item (shown on /connect).
 import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 
@@ -7,13 +8,10 @@ import { FieldLabel } from "@/components/ui/field-label";
 import { TextField } from "@/components/ui/text-field";
 import { TextAreaField } from "@/components/ui/textarea-field";
 import { SelectField } from "@/components/ui/select-field";
-import { Button } from "@/components/ui/button";
-import { FormStatusBanner } from "@/components/ui/form-status-banner";
-import { ICON_MAP } from "@/lib/icon-map";
+import { AdminFormActions } from "../../_components/admin-form-actions";
+import { ICON_KEYS } from "@/lib/icon-map";
 import { createExpectationItem, updateExpectationItem, type ExpectationItemInput } from "@/server/mutations/expectation-items";
 import type { ExpectationItem } from "@/server/queries/expectation-items";
-
-const ICON_KEYS = Object.keys(ICON_MAP);
 
 interface ExpectationItemFormProps {
   item: ExpectationItem | null;
@@ -77,16 +75,7 @@ export function ExpectationItemForm({ item }: ExpectationItemFormProps) {
         <TextField type="number" value={form.order} onChange={(e) => updateField("order", Number(e.target.value))} />
       </div>
 
-      {status === "error" && <FormStatusBanner status="error" message={error} />}
-
-      <div className="flex gap-3">
-        <Button type="submit" fill="brand" text="inverse" border="brand" shadow="grey" disabled={status === "submitting"}>
-          {status === "submitting" ? "Saving..." : "Save"}
-        </Button>
-        <Button type="button" onClick={() => router.push("/admin/expectation-items")} fill="transparent" text="ink" border="ink" shadow="transparent">
-          Cancel
-        </Button>
-      </div>
+      <AdminFormActions status={status} error={error} cancelHref="/admin/expectation-items" />
     </form>
   );
 }
