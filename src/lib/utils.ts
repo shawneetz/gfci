@@ -49,6 +49,15 @@ export function getMonthKey(dateString: string) {
   return dateString.slice(0, 7); // "YYYY-MM-DD" -> "YYYY-MM"
 }
 
+export function todayKey() {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Manila",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date());
+}
+
 // Renders a "YYYY-MM" key as a human label, e.g. "2026-10" -> "October 2026".
 export function formatMonthLabel(monthKey: string) {
   return new Date(`${monthKey}-01`).toLocaleDateString("en-US", {

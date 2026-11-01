@@ -19,7 +19,7 @@ export const {
   // Safe here — this is an internal admin tool, not a multi-tenant app.
   trustHost: true,
 
-  session: { strategy: "jwt" },
+  session: { strategy: "jwt", maxAge: 7 * 24 * 60 * 60 },
 
   callbacks: {
     authorized({ auth, request }) {

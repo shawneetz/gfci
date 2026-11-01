@@ -163,7 +163,7 @@ model PrayerTeam {
   slug     String @unique
   name     String
   details  String
-  image    String
+  icon     String   @default("Users")
   schedule String
   order    Int    @default(0)
 
@@ -236,8 +236,29 @@ model LiveStream {
   title    String
   schedule String
   location String
+  videoUrl String?
 
   updatedAt DateTime @updatedAt
+}
+
+model SiteSetting {
+  id                 String   @id @default("singleton")
+  address            String
+  phone              String
+  email              String
+  facebookUrl        String   @default("")
+  instagramUrl       String   @default("")
+  youtubeUrl         String   @default("")
+  givingInstructions String   @default("")
+  updatedAt          DateTime @updatedAt
+}
+
+model ServiceTime {
+  id    String @id @default(cuid())
+  label String
+  time  String
+  order Int @default(0)
+  @@index([order])
 }
 
 // ─────────────────────────────────────────────────────────

@@ -40,7 +40,4 @@ export const SEED_IMAGE_URLS = {
   eventGfYouthNight: "", // "GF Youth Night" — bootstrap-production.ts only
 
   // PrayerTeam.image
-  prayerTeamKids: "", // "Kids Prayer Team" — used by both scripts
-  prayerTeamYouth: "", // "Youth Prayer Circle" — bootstrap-production.ts only
-  prayerTeamAdults: "", // "Adult Prayer Group" — bootstrap-production.ts only
 } as const;

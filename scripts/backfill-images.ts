@@ -72,15 +72,7 @@ async function backfillEvents() {
   }
 }
 
-async function backfillPrayerTeams() {
-  const rows = await prisma.prayerTeam.findMany({ where: { image: { startsWith: "/images/" } } });
-  for (const row of rows) {
-    const url = await migrateOne(row.image);
-    if (!url) continue;
-    await prisma.prayerTeam.update({ where: { id: row.id }, data: { image: url } });
-    console.log(`  ✓ PrayerTeam "${row.name}" → ${url}`);
-  }
-}
+
 
 async function main() {
   if (!process.env.BLOB_READ_WRITE_TOKEN) {
@@ -99,7 +91,6 @@ async function main() {
   await backfillEvents();
 
   console.log("Backfilling prayer teams...");
-  await backfillPrayerTeams();
 
   console.log("Backfill complete.");
 }

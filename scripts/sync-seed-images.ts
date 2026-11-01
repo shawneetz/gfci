@@ -38,12 +38,6 @@ const EVENT_UPDATES = [
   { id: "3", title: "GF Youth Night", image: SEED_IMAGE_URLS.eventGfYouthNight }, // bootstrap-production.ts
 ];
 
-const PRAYER_TEAM_UPDATES = [
-  { id: "prayer-team-kids", name: "Kids Prayer Team", image: SEED_IMAGE_URLS.prayerTeamKids },
-  { id: "prayer-team-youth", name: "Youth Prayer Circle", image: SEED_IMAGE_URLS.prayerTeamYouth },
-  { id: "prayer-team-adults", name: "Adult Prayer Group", image: SEED_IMAGE_URLS.prayerTeamAdults },
-];
-
 async function main() {
   const updated: string[] = [];
   const skipped: string[] = [];
@@ -67,14 +61,6 @@ async function main() {
     (count > 0 ? updated : notFound).push(`Event "${title}" (${id})`);
   }
 
-  for (const { id, name, image } of PRAYER_TEAM_UPDATES) {
-    if (!image) {
-      skipped.push(`PrayerTeam "${name}" (${id})`);
-      continue;
-    }
-    const { count } = await prisma.prayerTeam.updateMany({ where: { id, name }, data: { image } });
-    (count > 0 ? updated : notFound).push(`PrayerTeam "${name}" (${id})`);
-  }
 
   console.log(`✓ Updated ${updated.length} row(s):`);
   for (const row of updated) console.log(`  - ${row}`);

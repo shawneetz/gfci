@@ -5,7 +5,7 @@ import { SecurityInfo } from "@/sections/contributions-page/security-info";
 import { hero } from "@/content/giving";
 import { getAllMinistries } from "@/server/queries/ministries";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 export default async function GivingPage() {
   const ministries = await getAllMinistries();

@@ -2,6 +2,8 @@
 
 import { prisma } from "@/lib/prisma";
 import type { MutationResult } from "./types";
+import { requireAdmin } from "@/server/auth";
+import { revalidateSite } from "@/server/revalidate";
 
 export interface ExpectationItemInput {
   icon: string;
@@ -12,7 +14,9 @@ export interface ExpectationItemInput {
 
 export async function createExpectationItem(data: ExpectationItemInput): Promise<MutationResult> {
   try {
+    await requireAdmin();
     await prisma.expectationItem.create({ data });
+    revalidateSite();
     return { success: true };
   } catch (error) {
     console.error("createExpectationItem failed:", error);
@@ -22,7 +26,9 @@ export async function createExpectationItem(data: ExpectationItemInput): Promise
 
 export async function updateExpectationItem(id: string, data: ExpectationItemInput): Promise<MutationResult> {
   try {
+    await requireAdmin();
     await prisma.expectationItem.update({ where: { id }, data });
+    revalidateSite();
     return { success: true };
   } catch (error) {
     console.error("updateExpectationItem failed:", error);
@@ -32,7 +38,9 @@ export async function updateExpectationItem(id: string, data: ExpectationItemInp
 
 export async function deleteExpectationItem(id: string): Promise<MutationResult> {
   try {
+    await requireAdmin();
     await prisma.expectationItem.delete({ where: { id } });
+    revalidateSite();
     return { success: true };
   } catch (error) {
     console.error("deleteExpectationItem failed:", error);

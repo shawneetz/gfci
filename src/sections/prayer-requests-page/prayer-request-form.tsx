@@ -16,6 +16,7 @@ import { PRAYER_CATEGORIES, type PrayerRequestSubmission } from "@/types";
 import { submitPrayerRequest, type SubmitStatus } from "@/lib/forms";
 import { FORM_PAGE_MAX_WIDTH } from "@/lib/layout";
 import { form as prayerForm } from "@/content/prayer-requests";
+import { HoneypotField } from "@/components/ui/honeypot-field";
 
 const initialForm: PrayerRequestSubmission = {
   name: "",
@@ -28,6 +29,7 @@ const initialForm: PrayerRequestSubmission = {
 export function PrayerRequestForm() {
   const [form, setForm] = useState<PrayerRequestSubmission>(initialForm);
   const [status, setStatus] = useState<SubmitStatus>("idle");
+  const [website, setWebsite] = useState("");
 
   function updateField<K extends keyof PrayerRequestSubmission>(
     field: K,
@@ -40,7 +42,7 @@ export function PrayerRequestForm() {
     e.preventDefault();
     setStatus("submitting");
 
-    const result = await submitPrayerRequest(form);
+    const result = await submitPrayerRequest({ ...form, website });
 
     if (result.success) {
       setStatus("success");
@@ -55,6 +57,7 @@ export function PrayerRequestForm() {
       <Container className={FORM_PAGE_MAX_WIDTH}>
         <form onSubmit={handleSubmit}>
           <Panel className="space-y-8">
+            <HoneypotField value={website} onChange={setWebsite} />
             <div>
               <FieldLabel>Your Name</FieldLabel>
               <TextField

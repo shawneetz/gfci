@@ -5,7 +5,7 @@ import { CtaSection } from "@/sections/home-page/cta-section";
 import { UpcomingEvents } from "@/sections/home-page/upcoming-events";
 import { Ministries } from "@/sections/home-page/ministries";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 export default function HomePage() {
   return (

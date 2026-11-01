@@ -13,6 +13,7 @@ import type {
   GivingSubmission,
   ConnectRegistration,
 } from "@/types";
+import { isValidDate, isValidEmail, oneOf, required, validatePrayerCategory } from "@/server/validation";
 
 export type SubmitStatus = "idle" | "submitting" | "success" | "error";
 
@@ -26,7 +27,11 @@ const GENERIC_ERROR = "Something went wrong. Please try again.";
 export async function submitPrayerRequest(
   payload: PrayerRequestSubmission
 ): Promise<SubmitResult> {
+  if (payload.website) return { success: true };
   try {
+    required(payload.name, "Name", 100); validatePrayerCategory(payload.category);
+    if (!isValidEmail(payload.email) || payload.message.length < 1 || payload.message.length > 2000 ||
+      !oneOf(payload.visibility, ["private", "public"], "visibility")) return { success: false, error: "Please check your form entries." };
     await prisma.prayerRequestSubmission.create({
       data: {
         name: payload.name,
@@ -46,7 +51,10 @@ export async function submitPrayerRequest(
 export async function submitGivingIntent(
   payload: GivingSubmission
 ): Promise<SubmitResult> {
+  if (payload.website) return { success: true };
   try {
+    if (!Number.isInteger(payload.amount) || payload.amount < 1 || payload.amount > 1_000_000 ||
+      payload.fund.length > 100 || !oneOf(payload.frequency, ["one-time", "monthly"], "frequency")) return { success: false, error: "Please check your form entries." };
     await prisma.givingIntent.create({
       data: {
         amount: payload.amount,
@@ -67,8 +75,10 @@ export async function submitGivingIntent(
 export async function submitConnectRegistration(
   payload: ConnectRegistration
 ): Promise<SubmitResult> {
+  if (payload.website) return { success: true };
   try {
     const { audience, email, visitDate } = payload;
+    if (!isValidEmail(email) || !isValidDate(visitDate)) return { success: false, error: "Please check your form entries." };
     const visitDateValue = new Date(visitDate);
 
     // Switching on payload.audience (not the destructured `audience`)

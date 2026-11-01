@@ -306,7 +306,7 @@ async function main() {
       name: "Kids Prayer Team",
       details: "Praying for children and families as they grow in faith and community.",
       // Not shipped under public/images — see scripts/seed-image-urls.ts.
-      image: SEED_IMAGE_URLS.prayerTeamKids || "/images/ministry-kids.jpg",
+       icon: "Users",
       schedule: "Sundays, 9:00 AM & 11:00 AM",
       order: 0,
     },
@@ -321,7 +321,7 @@ async function main() {
       name: "Youth Prayer Circle",
       details: "Standing with young people through prayer, support, and encouragement.",
       // Not shipped under public/images — see scripts/seed-image-urls.ts.
-      image: SEED_IMAGE_URLS.prayerTeamYouth || "/images/ministry-youth.jpg",
+       icon: "Users",
       schedule: "Fridays, 6:30 PM",
       order: 1,
     },
@@ -336,7 +336,7 @@ async function main() {
       name: "Adult Prayer Group",
       details: "Coming together to pray for our church, city, and world.",
       // Not shipped under public/images — see scripts/seed-image-urls.ts.
-      image: SEED_IMAGE_URLS.prayerTeamAdults || "/images/ministry-adults.jpg",
+       icon: "Users",
       schedule: "Sundays, 11:00 AM",
       order: 2,
     },

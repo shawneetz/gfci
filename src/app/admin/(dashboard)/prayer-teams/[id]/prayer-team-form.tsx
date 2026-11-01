@@ -6,10 +6,11 @@ import { useRouter } from "next/navigation";
 import { FieldLabel } from "@/components/ui/field-label";
 import { TextField } from "@/components/ui/text-field";
 import { TextAreaField } from "@/components/ui/textarea-field";
-import { Button } from "@/components/ui/button";
-import { FormStatusBanner } from "@/components/ui/form-status-banner";
+import { SelectField } from "@/components/ui/select-field";
+import { ICON_KEYS } from "@/lib/icon-map";
 import { createPrayerTeam, updatePrayerTeam, type PrayerTeamInput } from "@/server/mutations/prayer-teams";
 import type { PrayerTeam } from "@/server/queries/prayer-teams";
+import { AdminFormActions } from "../../_components/admin-form-actions";
 
 interface PrayerTeamFormProps {
   team: PrayerTeam | null;
@@ -20,7 +21,7 @@ export function PrayerTeamForm({ team }: PrayerTeamFormProps) {
   const [form, setForm] = useState<PrayerTeamInput>({
     name: team?.name ?? "",
     details: team?.details ?? "",
-    image: team?.image ?? "",
+    icon: team?.icon ?? ICON_KEYS[0],
     schedule: team?.schedule ?? "",
     order: team?.order ?? 0,
   });
@@ -69,8 +70,14 @@ export function PrayerTeamForm({ team }: PrayerTeamFormProps) {
       </div>
 
       <div>
-        <FieldLabel>Image URL</FieldLabel>
-        <TextField value={form.image} onChange={(e) => updateField("image", e.target.value)} />
+        <FieldLabel>Icon</FieldLabel>
+        <SelectField value={form.icon} onChange={(e) => updateField("icon", e.target.value)}>
+          {ICON_KEYS.map((key) => (
+            <option key={key} value={key}>
+              {key}
+            </option>
+          ))}
+        </SelectField>
       </div>
 
       <div>
@@ -78,16 +85,7 @@ export function PrayerTeamForm({ team }: PrayerTeamFormProps) {
         <TextField type="number" value={form.order} onChange={(e) => updateField("order", Number(e.target.value))} />
       </div>
 
-      {status === "error" && <FormStatusBanner status="error" message={error} />}
-
-      <div className="flex gap-3">
-        <Button type="submit" fill="brand" text="inverse" border="brand" shadow="grey" disabled={status === "submitting"}>
-          {status === "submitting" ? "Saving..." : "Save"}
-        </Button>
-        <Button type="button" onClick={() => router.push("/admin/prayer-teams")} fill="transparent" text="ink" border="ink" shadow="transparent">
-          Cancel
-        </Button>
-      </div>
+      <AdminFormActions status={status} error={error} cancelHref="/admin/prayer-teams" />
     </form>
   );
 }
