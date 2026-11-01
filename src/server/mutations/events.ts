@@ -1,5 +1,7 @@
 "use server";
 
+// Admin actions for events: create, update, delete.
+// Each action: check admin -> validate -> write -> refresh the site.
 import { prisma } from "@/lib/prisma";
 import { deleteImage } from "@/lib/storage";
 import { resolveImageUrl } from "./image";
@@ -24,6 +26,7 @@ export interface EventInput {
   featured: boolean;
 }
 
+// Checks and trims every field. Throws ValidationError on bad input.
 function cleanEvent(input: EventInput): EventInput {
   if (!isValidDate(input.date)) {
     throw new ValidationError("Date is not valid.");
@@ -47,6 +50,7 @@ export async function createEvent(input: EventInput, imageFile: File | null): Pr
     const image = await resolveImageUrl(imageFile, "", "events");
     if (!image) return { success: false, error: "An image is required." };
 
+    // Only one event can be featured, so un-feature the others first (same transaction).
     await prisma.$transaction(async (tx) => {
       if (data.featured) {
         await tx.event.updateMany({ where: { featured: true }, data: { featured: false } });
@@ -69,6 +73,7 @@ export async function updateEvent(
   try {
     await requireAdmin();
     const data = cleanEvent(input);
+    // Read the current image from the database, never from the browser.
     const existing = await prisma.event.findUnique({ where: { id }, select: { image: true } });
     const image = await resolveImageUrl(imageFile, existing?.image ?? "", "events");
 
@@ -82,6 +87,7 @@ export async function updateEvent(
       await tx.event.update({ where: { id }, data: { ...data, date: new Date(data.date), image } });
     });
 
+    // Remove the old image only after the database write succeeded.
     if (existing && existing.image !== image) await deleteImage(existing.image);
 
     revalidateSite();

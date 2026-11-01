@@ -1,5 +1,6 @@
 "use server";
 
+// Admin actions for the "What to Expect" items shown on the Connect page.
 import { prisma } from "@/lib/prisma";
 import { toErrorResult, type MutationResult } from "./types";
 import { requireAdmin } from "@/server/auth";
@@ -12,19 +13,21 @@ export interface ExpectationItemInput {
   description: string;
   order: number;
 }
-function validateExpectationItem(data: ExpectationItemInput): ExpectationItemInput {
+
+// Checks and trims every field. Throws ValidationError on bad input.
+function cleanExpectationItem(input: ExpectationItemInput): ExpectationItemInput {
   return {
-    icon: validateIcon(data.icon),
-    title: required(data.title, "Title", 200),
-    description: required(data.description, "Description", 5000),
-    order: intInRange(data.order, 0, 100000, "Order"),
+    icon: validateIcon(input.icon),
+    title: required(input.title, "Title", 120),
+    description: required(input.description, "Description", 2000),
+    order: intInRange(input.order, 0, 9999, "Display order"),
   };
 }
 
-export async function createExpectationItem(data: ExpectationItemInput): Promise<MutationResult> {
+export async function createExpectationItem(input: ExpectationItemInput): Promise<MutationResult> {
   try {
     await requireAdmin();
-    data = validateExpectationItem(data);
+    const data = cleanExpectationItem(input);
     await prisma.expectationItem.create({ data });
     revalidateSite();
     return { success: true };
@@ -33,10 +36,13 @@ export async function createExpectationItem(data: ExpectationItemInput): Promise
   }
 }
 
-export async function updateExpectationItem(id: string, data: ExpectationItemInput): Promise<MutationResult> {
+export async function updateExpectationItem(
+  id: string,
+  input: ExpectationItemInput
+): Promise<MutationResult> {
   try {
     await requireAdmin();
-    data = validateExpectationItem(data);
+    const data = cleanExpectationItem(input);
     await prisma.expectationItem.update({ where: { id }, data });
     revalidateSite();
     return { success: true };

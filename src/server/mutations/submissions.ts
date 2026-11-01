@@ -1,5 +1,7 @@
 "use server";
 
+// Admin actions for deleting public form submissions.
+// Creating them happens in src/lib/forms.ts, not here.
 import { prisma } from "@/lib/prisma";
 import { toErrorResult, type MutationResult } from "./types";
 import { requireAdmin } from "@/server/auth";

@@ -1,5 +1,7 @@
 "use server";
 
+// Admin actions for ministries: create, update, delete.
+// The slug (the public URL) is created once and never changes after that.
 import { prisma } from "@/lib/prisma";
 import { uniqueSlug } from "@/lib/slugify";
 import { deleteImage } from "@/lib/storage";
@@ -22,6 +24,7 @@ export interface MinistryInput {
   leaderId: string;
 }
 
+// Checks and trims every field. Throws ValidationError on bad input.
 function cleanMinistry(input: MinistryInput): MinistryInput {
   return {
     title: required(input.title, "Title", 120),
@@ -48,6 +51,7 @@ export async function createMinistry(input: MinistryInput, imageFile: File | nul
     const data = cleanMinistry(input);
     const image = await resolveImageUrl(imageFile, "", "ministries");
     if (!image) return { success: false, error: "An image is required." };
+    // The slug is only generated here, so renaming later never breaks links.
     const slug = await uniqueSlug(data.title, slugExists);
 
     await prisma.ministry.create({ data: { ...data, slug, image } });
@@ -67,11 +71,14 @@ export async function updateMinistry(
   try {
     await requireAdmin();
     const data = cleanMinistry(input);
+    // Read the current image from the database, never from the browser.
     const existing = await prisma.ministry.findUnique({ where: { id }, select: { image: true } });
     const image = await resolveImageUrl(imageFile, existing?.image ?? "", "ministries");
 
+    // No slug here on purpose: it stays the same after creation.
     await prisma.ministry.update({ where: { id }, data: { ...data, image } });
 
+    // Remove the old image only after the database write succeeded.
     if (existing && existing.image !== image) await deleteImage(existing.image);
 
     revalidateSite();

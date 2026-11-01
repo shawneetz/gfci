@@ -1,29 +1,32 @@
 "use server";
 
+// Admin actions for answered-prayer testimonies: create, update, delete.
 import { prisma } from "@/lib/prisma";
 import { toErrorResult, type MutationResult } from "./types";
 import { requireAdmin } from "@/server/auth";
 import { revalidateSite } from "@/server/revalidate";
-import type { PrayerCategory } from "@/generated/prisma/client";
 import { required, validatePrayerCategory } from "@/server/validation";
+import type { PrayerCategory } from "@/generated/prisma/client";
 
 export interface TestimonyInput {
   quote: string;
   name: string;
   category: PrayerCategory;
 }
-function validateTestimony(data: TestimonyInput): TestimonyInput {
+
+// Checks and trims every field. Throws ValidationError on bad input.
+function cleanTestimony(input: TestimonyInput): TestimonyInput {
   return {
-    quote: required(data.quote, "Quote", 5000),
-    name: required(data.name, "Name", 200),
-    category: validatePrayerCategory(data.category) as PrayerCategory,
+    quote: required(input.quote, "Quote", 2000),
+    name: required(input.name, "Name", 100),
+    category: validatePrayerCategory(input.category),
   };
 }
 
-export async function createTestimony(data: TestimonyInput): Promise<MutationResult> {
+export async function createTestimony(input: TestimonyInput): Promise<MutationResult> {
   try {
     await requireAdmin();
-    data = validateTestimony(data);
+    const data = cleanTestimony(input);
     await prisma.answeredPrayer.create({ data });
     revalidateSite();
     return { success: true };
@@ -32,10 +35,10 @@ export async function createTestimony(data: TestimonyInput): Promise<MutationRes
   }
 }
 
-export async function updateTestimony(id: string, data: TestimonyInput): Promise<MutationResult> {
+export async function updateTestimony(id: string, input: TestimonyInput): Promise<MutationResult> {
   try {
     await requireAdmin();
-    data = validateTestimony(data);
+    const data = cleanTestimony(input);
     await prisma.answeredPrayer.update({ where: { id }, data });
     revalidateSite();
     return { success: true };

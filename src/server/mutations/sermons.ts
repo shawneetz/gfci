@@ -1,5 +1,7 @@
 "use server";
 
+// Admin actions for sermons: create, update, delete.
+// The slug (the public URL) is created once and never changes after that.
 import { prisma } from "@/lib/prisma";
 import { uniqueSlug } from "@/lib/slugify";
 import { extractVideoUrl } from "@/lib/video";
@@ -19,6 +21,7 @@ export interface SermonInput {
   speakerId: string;
 }
 
+// Checks and trims every field. Throws ValidationError on bad input.
 function cleanSermon(input: SermonInput) {
   if (!isValidDate(input.date)) {
     throw new ValidationError("Date is not valid.");
@@ -26,6 +29,7 @@ function cleanSermon(input: SermonInput) {
 
   const rawVideo = optionalText(input.videoUrl, "Video URL", 1000);
 
+  // The admin may paste a plain link or a full <iframe> snippet; store a clean link.
   return {
     title: required(input.title, "Title", 120),
     series: required(input.series, "Series", 120),
@@ -47,6 +51,7 @@ export async function createSermon(input: SermonInput, thumbnailFile: File | nul
     const data = cleanSermon(input);
     const thumbnail = await resolveImageUrl(thumbnailFile, "", "sermons");
     if (!thumbnail) return { success: false, error: "A thumbnail image is required." };
+    // The slug is only generated here, so renaming later never breaks shared links.
     const slug = await uniqueSlug(data.title, slugExists);
 
     await prisma.sermon.create({ data: { ...data, slug, thumbnail } });
@@ -66,11 +71,14 @@ export async function updateSermon(
   try {
     await requireAdmin();
     const data = cleanSermon(input);
+    // Read the current thumbnail from the database, never from the browser.
     const existing = await prisma.sermon.findUnique({ where: { id }, select: { thumbnail: true } });
     const thumbnail = await resolveImageUrl(thumbnailFile, existing?.thumbnail ?? "", "sermons");
 
+    // No slug here on purpose: it stays the same after creation.
     await prisma.sermon.update({ where: { id }, data: { ...data, thumbnail } });
 
+    // Remove the old image only after the database write succeeded.
     if (existing && existing.thumbnail !== thumbnail) await deleteImage(existing.thumbnail);
 
     revalidateSite();

@@ -1,5 +1,6 @@
 "use server";
 
+// Admin actions for the Core Values shown on the About page.
 import { prisma } from "@/lib/prisma";
 import { toErrorResult, type MutationResult } from "./types";
 import { requireAdmin } from "@/server/auth";
@@ -12,19 +13,21 @@ export interface CoreValueInput {
   description: string;
   order: number;
 }
-function validateCoreValue(data: CoreValueInput): CoreValueInput {
+
+// Checks and trims every field. Throws ValidationError on bad input.
+function cleanCoreValue(input: CoreValueInput): CoreValueInput {
   return {
-    icon: validateIcon(data.icon),
-    title: required(data.title, "Title", 200),
-    description: required(data.description, "Description", 5000),
-    order: intInRange(data.order, 0, 100000, "Order"),
+    icon: validateIcon(input.icon),
+    title: required(input.title, "Title", 120),
+    description: required(input.description, "Description", 2000),
+    order: intInRange(input.order, 0, 9999, "Display order"),
   };
 }
 
-export async function createCoreValue(data: CoreValueInput): Promise<MutationResult> {
+export async function createCoreValue(input: CoreValueInput): Promise<MutationResult> {
   try {
     await requireAdmin();
-    data = validateCoreValue(data);
+    const data = cleanCoreValue(input);
     await prisma.coreValue.create({ data });
     revalidateSite();
     return { success: true };
@@ -33,10 +36,10 @@ export async function createCoreValue(data: CoreValueInput): Promise<MutationRes
   }
 }
 
-export async function updateCoreValue(id: string, data: CoreValueInput): Promise<MutationResult> {
+export async function updateCoreValue(id: string, input: CoreValueInput): Promise<MutationResult> {
   try {
     await requireAdmin();
-    data = validateCoreValue(data);
+    const data = cleanCoreValue(input);
     await prisma.coreValue.update({ where: { id }, data });
     revalidateSite();
     return { success: true };

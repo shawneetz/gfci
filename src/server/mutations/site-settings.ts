@@ -1,27 +1,48 @@
 "use server";
+
+// Admin action for the single Site Settings row:
+// contact details, social links and giving instructions.
 import { prisma } from "@/lib/prisma";
+import { toErrorResult, type MutationResult } from "./types";
 import { requireAdmin } from "@/server/auth";
 import { revalidateSite } from "@/server/revalidate";
-import { optionalText, validateEmail, validHttpsUrl, required } from "@/server/validation";
-import { toErrorResult, type MutationResult } from "./types";
-export interface SiteSettingInput { address: string; phone: string; email: string; facebookUrl?: string; instagramUrl?: string; youtubeUrl?: string; givingInstructions?: string; }
-function validateSiteSettings(data: SiteSettingInput): SiteSettingInput {
-  return {
-    address: required(data.address, "Address", 500),
-    phone: required(data.phone, "Phone", 100),
-    email: validateEmail(data.email),
-    facebookUrl: validHttpsUrl(data.facebookUrl, "Facebook URL"),
-    instagramUrl: validHttpsUrl(data.instagramUrl, "Instagram URL"),
-    youtubeUrl: validHttpsUrl(data.youtubeUrl, "YouTube URL"),
-    givingInstructions: optionalText(data.givingInstructions, "Giving instructions", 5000),
-  };
+import { optionalText, required, validateEmail, validHttpsUrl } from "@/server/validation";
+
+export interface SiteSettingInput {
+  address: string;
+  phone: string;
+  email: string;
+  facebookUrl?: string;
+  instagramUrl?: string;
+  youtubeUrl?: string;
+  givingInstructions?: string;
 }
-export async function updateSiteSetting(data: SiteSettingInput): Promise<MutationResult> {
+
+export async function updateSiteSetting(input: SiteSettingInput): Promise<MutationResult> {
   try {
     await requireAdmin();
-    data = validateSiteSettings(data);
-    await prisma.siteSetting.upsert({ where: { id: "singleton" }, update: data, create: { id: "singleton", ...data } });
+
+    // Checks and trims every field. Throws ValidationError on bad input.
+    const data = {
+      address: required(input.address, "Address", 500),
+      phone: required(input.phone, "Phone", 50),
+      email: validateEmail(input.email),
+      facebookUrl: validHttpsUrl(input.facebookUrl, "Facebook URL"),
+      instagramUrl: validHttpsUrl(input.instagramUrl, "Instagram URL"),
+      youtubeUrl: validHttpsUrl(input.youtubeUrl, "YouTube URL"),
+      givingInstructions: optionalText(input.givingInstructions, "Giving instructions", 2000),
+    };
+
+    // There is only ever one row, with the fixed id "singleton".
+    await prisma.siteSetting.upsert({
+      where: { id: "singleton" },
+      update: data,
+      create: { id: "singleton", ...data },
+    });
+
     revalidateSite();
     return { success: true };
-  } catch (error) { return toErrorResult(error, "Could not save settings."); }
+  } catch (error) {
+    return toErrorResult(error, "Could not save settings.");
+  }
 }

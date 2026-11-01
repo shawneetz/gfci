@@ -1,5 +1,7 @@
 "use server";
 
+// Admin actions for prayer teams: create, update, delete.
+// The slug is created once and never changes after that.
 import { prisma } from "@/lib/prisma";
 import { uniqueSlug } from "@/lib/slugify";
 import { toErrorResult, type MutationResult } from "./types";
@@ -15,25 +17,28 @@ export interface PrayerTeamInput {
   order: number;
 }
 
-async function slugExists(slug: string, excludeId?: string): Promise<boolean> {
-  const existing = await prisma.prayerTeam.findUnique({ where: { slug } });
-  return !!existing && existing.id !== excludeId;
-}
-function validatePrayerTeam(data: PrayerTeamInput): PrayerTeamInput {
+// Checks and trims every field. Throws ValidationError on bad input.
+function cleanPrayerTeam(input: PrayerTeamInput): PrayerTeamInput {
   return {
-    name: required(data.name, "Name", 200),
-    details: required(data.details, "Details", 5000),
-    icon: validateIcon(data.icon),
-    schedule: required(data.schedule, "Schedule", 300),
-    order: intInRange(data.order, 0, 100000, "Order"),
+    name: required(input.name, "Name", 120),
+    details: required(input.details, "Details", 2000),
+    icon: validateIcon(input.icon),
+    schedule: required(input.schedule, "Schedule", 200),
+    order: intInRange(input.order, 0, 9999, "Display order"),
   };
 }
 
-export async function createPrayerTeam(data: PrayerTeamInput): Promise<MutationResult> {
+async function slugExists(slug: string): Promise<boolean> {
+  const existing = await prisma.prayerTeam.findUnique({ where: { slug } });
+  return !!existing;
+}
+
+export async function createPrayerTeam(input: PrayerTeamInput): Promise<MutationResult> {
   try {
     await requireAdmin();
-    data = validatePrayerTeam(data);
-    const slug = await uniqueSlug(data.name, (s) => slugExists(s));
+    const data = cleanPrayerTeam(input);
+    // The slug is only generated here, so renaming later keeps it the same.
+    const slug = await uniqueSlug(data.name, slugExists);
     await prisma.prayerTeam.create({ data: { ...data, slug } });
     revalidateSite();
     return { success: true };
@@ -42,16 +47,12 @@ export async function createPrayerTeam(data: PrayerTeamInput): Promise<MutationR
   }
 }
 
-export async function updatePrayerTeam(id: string, data: PrayerTeamInput): Promise<MutationResult> {
+export async function updatePrayerTeam(id: string, input: PrayerTeamInput): Promise<MutationResult> {
   try {
     await requireAdmin();
-    data = validatePrayerTeam(data);
-    const existing = await prisma.prayerTeam.findUnique({ where: { id } });
-    const slug =
-      existing && existing.name === data.name
-        ? existing.slug
-        : await uniqueSlug(data.name, (s) => slugExists(s, id));
-    await prisma.prayerTeam.update({ where: { id }, data: { ...data, slug } });
+    const data = cleanPrayerTeam(input);
+    // No slug here on purpose: it stays the same after creation.
+    await prisma.prayerTeam.update({ where: { id }, data });
     revalidateSite();
     return { success: true };
   } catch (error) {

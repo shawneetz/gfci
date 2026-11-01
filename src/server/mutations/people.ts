@@ -1,5 +1,7 @@
 "use server";
 
+// Admin actions for people (staff, speakers, ministry leaders).
+// The photo is optional: a person without one shows an icon on the site.
 import { prisma } from "@/lib/prisma";
 import { deleteImage } from "@/lib/storage";
 import { resolveImageUrl } from "./image";
@@ -17,7 +19,9 @@ export interface PersonInput {
   leadershipOrder: number | null;
 }
 
+// Checks and trims every field. Throws ValidationError on bad input.
 function cleanPerson(input: PersonInput) {
+  // Email is optional, but must be valid when filled in.
   const email = optionalText(input.email, "Email", 254);
   if (email) validateEmail(email);
 
@@ -38,6 +42,7 @@ export async function createPerson(input: PersonInput, imageFile: File | null): 
   try {
     await requireAdmin();
     const data = cleanPerson(input);
+    // An empty result means "no photo", which is stored as null.
     const imageUrl = await resolveImageUrl(imageFile, "", "people");
 
     await prisma.person.create({ data: { ...data, imageUrl: imageUrl || null } });
@@ -57,16 +62,19 @@ export async function updatePerson(
   try {
     await requireAdmin();
     const data = cleanPerson(input);
+    // Read the current photo from the database, never from the browser.
     const existing = await prisma.person.findUnique({ where: { id }, select: { imageUrl: true } });
     const imageUrl = await resolveImageUrl(imageFile, existing?.imageUrl ?? "", "people");
 
     await prisma.person.update({ where: { id }, data: { ...data, imageUrl: imageUrl || null } });
 
+    // Remove the old photo only after the database write succeeded.
     if (existing?.imageUrl && existing.imageUrl !== imageUrl) await deleteImage(existing.imageUrl);
 
     revalidateSite();
     return { success: true };
   } catch (error) {
+    // P2003 = a ministry or sermon still points at this person. Give a specific message.
     return toErrorResult(error);
   }
 }
