@@ -39,5 +39,4 @@ export const SEED_IMAGE_URLS = {
   eventSundayGathering: "", // "Sunday Gathering" — bootstrap-production.ts only
   eventGfYouthNight: "", // "GF Youth Night" — bootstrap-production.ts only
 
-  // PrayerTeam.image
 } as const;

@@ -27,6 +27,7 @@
 import "dotenv/config";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../src/generated/prisma/client";
+import { siteConfig } from "../src/config/site";
 import { SEED_IMAGE_URLS } from "./seed-image-urls";
 
 const adapter = new PrismaPg({ connectionString: process.env.DIRECT_URL });
@@ -305,8 +306,7 @@ async function main() {
       slug: "kids",
       name: "Kids Prayer Team",
       details: "Praying for children and families as they grow in faith and community.",
-      // Not shipped under public/images — see scripts/seed-image-urls.ts.
-       icon: "Users",
+      icon: "Baby",
       schedule: "Sundays, 9:00 AM & 11:00 AM",
       order: 0,
     },
@@ -320,8 +320,7 @@ async function main() {
       slug: "youth",
       name: "Youth Prayer Circle",
       details: "Standing with young people through prayer, support, and encouragement.",
-      // Not shipped under public/images — see scripts/seed-image-urls.ts.
-       icon: "Users",
+      icon: "Users",
       schedule: "Fridays, 6:30 PM",
       order: 1,
     },
@@ -335,8 +334,7 @@ async function main() {
       slug: "adults",
       name: "Adult Prayer Group",
       details: "Coming together to pray for our church, city, and world.",
-      // Not shipped under public/images — see scripts/seed-image-urls.ts.
-       icon: "Users",
+      icon: "HeartHandshake",
       schedule: "Sundays, 11:00 AM",
       order: 2,
     },
@@ -476,6 +474,43 @@ async function main() {
   });
 
   console.log("Bootstrapped live stream singleton.");
+
+  const contact = siteConfig.contact;
+  const address = contact.address
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .join("\n");
+
+  await prisma.siteSetting.upsert({
+    where: { id: "singleton" },
+    update: {},
+    create: {
+      id: "singleton",
+      address,
+      phone: contact.phone,
+      email: contact.email,
+      facebookUrl: contact.facebook,
+      instagramUrl: contact.instagram,
+      youtubeUrl: contact.youtube,
+    },
+  });
+
+  console.log("Bootstrapped site settings singleton.");
+
+  await prisma.serviceTime.upsert({
+    where: { id: "service-sundays" },
+    update: {},
+    create: { id: "service-sundays", label: "Sundays", time: "9:00 AM & 11:00 AM", order: 0 },
+  });
+
+  await prisma.serviceTime.upsert({
+    where: { id: "service-wednesdays" },
+    update: {},
+    create: { id: "service-wednesdays", label: "Wednesdays", time: "7:00 PM", order: 1 },
+  });
+
+  console.log("Bootstrapped 2 service times.");
   console.log("Production bootstrap complete.");
 }
 

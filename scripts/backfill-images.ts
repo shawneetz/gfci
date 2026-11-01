@@ -1,6 +1,6 @@
 // One-off migration script: uploads every image currently referenced by
-// a local /public path (Ministry.image, Sermon.thumbnail, Event.image,
-// PrayerTeam.image) to Blob storage via src/lib/storage.ts's
+// a local /public path (Ministry.image, Sermon.thumbnail, Event.image)
+// to Blob storage via src/lib/storage.ts's
 // uploadImage(), then updates the corresponding DB row to point at the
 // new URL.
 //
@@ -71,9 +71,6 @@ async function backfillEvents() {
     console.log(`  ✓ Event "${row.title}" → ${url}`);
   }
 }
-
-
-
 async function main() {
   if (!process.env.BLOB_READ_WRITE_TOKEN) {
     throw new Error(
@@ -89,8 +86,6 @@ async function main() {
 
   console.log("Backfilling events...");
   await backfillEvents();
-
-  console.log("Backfilling prayer teams...");
 
   console.log("Backfill complete.");
 }

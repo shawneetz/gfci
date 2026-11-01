@@ -12,9 +12,17 @@ export const getSiteSettings = cache(async (): Promise<SiteSetting> => {
 
   // Fallback: no row saved yet, so use the defaults from siteConfig.
   const contact = siteConfig.contact;
+  // The default address is a multi-line template string, so each line carries
+  // leading spaces from the source code. Trim every line and drop empty ones.
+  const address = contact.address
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .join("\n");
+
   return {
     id: "singleton",
-    address: contact.address.trim(),
+    address,
     phone: contact.phone,
     email: contact.email,
     facebookUrl: contact.facebook,

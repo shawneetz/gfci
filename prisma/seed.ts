@@ -1,19 +1,19 @@
 // Minimal dev/CI fixture data — NOT production content.
 //
-// Phase 17 split seeding into two concerns:
+// Seeding is split into two concerns:
 //   - prisma/seed.ts (this file): just enough rows to exercise every
 //     code path (both isLeadershipTeam branches, a sermon series with
 //     more than one entry, a featured event AND a past event, etc.).
 //     Safe to wipe and re-run against a throwaway dev/CI database at
 //     any time.
-//   - scripts/bootstrap-production.ts: the original hand-written
-//     starter content, run once against a fresh production database.
+//   - scripts/bootstrap-production.ts: the starter content, run once
+//     against a fresh production database.
 //     Real content after that point is entered through /admin, not
 //     hand-synced here.
 //
-// Three rows below reference images that were never added to
-// public/images (Sermon "Faith That Moves", Event "City Serve Day",
-// PrayerTeam "Kids Prayer Team") — see scripts/seed-image-urls.ts for
+// Some rows below reference images that were never added to
+// public/images (Sermon "Faith That Moves", Event "City Serve Day"). See
+// scripts/seed-image-urls.ts for
 // where those Blob URLs get filled in once uploaded, and
 // scripts/sync-seed-images.ts for patching rows already seeded before
 // that happened.
@@ -23,6 +23,7 @@
 import "dotenv/config";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../src/generated/prisma/client";
+import { siteConfig } from "../src/config/site";
 import { SEED_IMAGE_URLS } from "../scripts/seed-image-urls";
 
 const adapter = new PrismaPg({ connectionString: process.env.DIRECT_URL });
@@ -161,7 +162,6 @@ async function main() {
       slug: "kids",
       name: "Kids Prayer Team",
       details: "Praying for children and families as they grow in faith and community.",
-      // Not shipped under public/images — see scripts/seed-image-urls.ts.
       icon: "Users",
       schedule: "Sundays, 9:00 AM & 11:00 AM",
       order: 0,
@@ -248,6 +248,46 @@ async function main() {
   });
 
   console.log("Seeded live stream singleton.");
+
+  // Site settings — one row (id "singleton"), starting from the defaults in siteConfig.
+  // The default address is indented in the source, so trim each line first.
+  const contact = siteConfig.contact;
+  const address = contact.address
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .join("\n");
+
+  await prisma.siteSetting.upsert({
+    where: { id: "singleton" },
+    update: {},
+    create: {
+      id: "singleton",
+      address,
+      phone: contact.phone,
+      email: contact.email,
+      facebookUrl: contact.facebook,
+      instagramUrl: contact.instagram,
+      youtubeUrl: contact.youtube,
+    },
+  });
+
+  console.log("Seeded site settings singleton.");
+
+  // Service times — the two lines shown on About and Connect.
+  await prisma.serviceTime.upsert({
+    where: { id: "service-sundays" },
+    update: {},
+    create: { id: "service-sundays", label: "Sundays", time: "9:00 AM & 11:00 AM", order: 0 },
+  });
+
+  await prisma.serviceTime.upsert({
+    where: { id: "service-wednesdays" },
+    update: {},
+    create: { id: "service-wednesdays", label: "Wednesdays", time: "7:00 PM", order: 1 },
+  });
+
+  console.log("Seeded 2 service times.");
   console.log("Seed complete (dev fixture data).");
 }
 
