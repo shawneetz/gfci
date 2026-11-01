@@ -5,7 +5,10 @@ import { prisma } from "@/lib/prisma";
 import { uniqueSlug } from "@/lib/slugify";
 import { extractVideoUrl } from "@/lib/video";
 import { resolveImageUrl } from "./image";
+import { deleteImage } from "@/lib/storage";
 import type { MutationResult } from "./types";
+import { requireAdmin } from "@/server/auth";
+import { revalidateSite } from "@/server/revalidate";
 
 export interface SermonInput {
   title: string;
@@ -28,6 +31,7 @@ function revalidateSermonPaths() {
 
 export async function createSermon(data: SermonInput, thumbnailFile: File | null): Promise<MutationResult> {
   try {
+    await requireAdmin();
     const slug = await uniqueSlug(data.title, (s) => slugExists(s));
     const thumbnail = await resolveImageUrl(thumbnailFile, "", "sermons");
     if (!thumbnail) return { success: false, error: "A thumbnail image is required." };
@@ -48,6 +52,7 @@ export async function createSermon(data: SermonInput, thumbnailFile: File | null
       },
     });
     revalidateSermonPaths();
+    revalidateSite();
     return { success: true };
   } catch (error) {
     console.error("createSermon failed:", error);
@@ -59,15 +64,16 @@ export async function updateSermon(
   id: string,
   data: SermonInput,
   thumbnailFile: File | null,
-  currentThumbnail: string
+  _legacyCurrentThumbnail?: string
 ): Promise<MutationResult> {
   try {
+    await requireAdmin();
     const existing = await prisma.sermon.findUnique({ where: { id } });
     const slug =
       existing && existing.title === data.title
         ? existing.slug
         : await uniqueSlug(data.title, (s) => slugExists(s, id));
-    const thumbnail = await resolveImageUrl(thumbnailFile, currentThumbnail, "sermons");
+    const thumbnail = await resolveImageUrl(thumbnailFile, existing?.thumbnail ?? "", "sermons");
 
     await prisma.sermon.update({
       where: { id },
@@ -82,7 +88,9 @@ export async function updateSermon(
         speakerId: data.speakerId,
       },
     });
+    if (thumbnailFile && existing?.thumbnail !== thumbnail) await deleteImage(existing?.thumbnail);
     revalidateSermonPaths();
+    revalidateSite();
     return { success: true };
   } catch (error) {
     console.error("updateSermon failed:", error);
@@ -92,8 +100,12 @@ export async function updateSermon(
 
 export async function deleteSermon(id: string): Promise<MutationResult> {
   try {
+    await requireAdmin();
+    const existing = await prisma.sermon.findUnique({ where: { id }, select: { thumbnail: true } });
     await prisma.sermon.delete({ where: { id } });
+    await deleteImage(existing?.thumbnail);
     revalidateSermonPaths();
+    revalidateSite();
     return { success: true };
   } catch (error) {
     console.error("deleteSermon failed:", error);

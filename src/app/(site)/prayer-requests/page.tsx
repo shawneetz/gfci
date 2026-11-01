@@ -5,7 +5,7 @@ import { AnsweredPrayers } from "@/sections/prayer-requests-page/answered-prayer
 import { UrgentPrayerLine } from "@/sections/prayer-requests-page/urgent-prayer-line";
 import { hero } from "@/content/prayer-requests";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 export default function PrayerRequestsPage() {
   return (

@@ -10,7 +10,7 @@ import { Tabs, type TabItem } from "@/components/ui/tabs";
 import { KidsForm } from "@/sections/connect-page/kids-form";
 import { YouthForm } from "@/sections/connect-page/youth-form";
 import { AdultsForm } from "@/sections/connect-page/adults-form";
-import { siteConfig } from "@/config/site";
+
 import type { MinistryWithLeader } from "@/server/queries/ministries";
 import { form } from "@/content/connect";
 
@@ -24,9 +24,10 @@ const TABS: TabItem[] = [
 
 interface ConnectFormProps {
   ministries: MinistryWithLeader[];
+  hostEmail: string;
 }
 
-export function ConnectForm({ ministries }: ConnectFormProps) {
+export function ConnectForm({ ministries, hostEmail }: ConnectFormProps) {
   const [audience, setAudience] = useState<Audience>("kids");
   const idPrefix = useId();
 
@@ -65,7 +66,7 @@ export function ConnectForm({ ministries }: ConnectFormProps) {
             title={form.host.title}
             description={form.host.description}
             buttonText={form.host.buttonText}
-            buttonHref={`mailto:${siteConfig.contact.email}?subject=${encodeURIComponent(form.host.subject)}`}
+            buttonHref={`mailto:${hostEmail}?subject=${encodeURIComponent(form.host.subject)}`}
             fill="ink"
             text="inverse"
             border="ink"

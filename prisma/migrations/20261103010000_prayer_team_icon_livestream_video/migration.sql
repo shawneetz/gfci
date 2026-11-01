@@ -1,0 +1,3 @@
+ALTER TABLE "PrayerTeam" ADD COLUMN "icon" TEXT NOT NULL DEFAULT 'Users';
+ALTER TABLE "PrayerTeam" DROP COLUMN "image";
+ALTER TABLE "LiveStream" ADD COLUMN "videoUrl" TEXT;

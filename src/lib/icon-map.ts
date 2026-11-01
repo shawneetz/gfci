@@ -16,6 +16,7 @@ export const ICON_MAP = {
 } satisfies Record<string, LucideIcon>;
 
 export type IconKey = keyof typeof ICON_MAP;
+export const ICON_KEYS = Object.keys(ICON_MAP) as IconKey[];
 
 // Falls back to Heart for any stored key that isn't recognized (e.g. an
 // icon later removed from ICON_MAP while old rows still reference it),

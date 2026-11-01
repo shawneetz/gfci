@@ -3,7 +3,10 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { resolveImageUrl } from "./image";
+import { deleteImage } from "@/lib/storage";
 import type { MutationResult } from "./types";
+import { requireAdmin } from "@/server/auth";
+import { revalidateSite } from "@/server/revalidate";
 
 export interface PersonInput {
   name: string;
@@ -28,11 +31,13 @@ function revalidatePersonDependentPaths() {
 // than "".
 export async function createPerson(data: PersonInput, imageFile: File | null): Promise<MutationResult> {
   try {
+    await requireAdmin();
     const imageUrl = await resolveImageUrl(imageFile, "", "people");
     await prisma.person.create({
       data: { ...data, email: data.email || null, imageUrl: imageUrl || null },
     });
     revalidatePersonDependentPaths();
+    revalidateSite();
     return { success: true };
   } catch (error) {
     console.error("createPerson failed:", error);
@@ -44,15 +49,19 @@ export async function updatePerson(
   id: string,
   data: PersonInput,
   imageFile: File | null,
-  currentImageUrl: string | null
+  _legacyCurrentImageUrl?: string | null
 ): Promise<MutationResult> {
   try {
-    const imageUrl = await resolveImageUrl(imageFile, currentImageUrl ?? "", "people");
+    await requireAdmin();
+    const existing = await prisma.person.findUnique({ where: { id }, select: { imageUrl: true } });
+    const imageUrl = await resolveImageUrl(imageFile, existing?.imageUrl ?? "", "people");
     await prisma.person.update({
       where: { id },
       data: { ...data, email: data.email || null, imageUrl: imageUrl || null },
     });
+    if (imageFile && existing?.imageUrl !== imageUrl) await deleteImage(existing?.imageUrl);
     revalidatePersonDependentPaths();
+    revalidateSite();
     return { success: true };
   } catch (error) {
     console.error("updatePerson failed:", error);
@@ -71,8 +80,12 @@ function isForeignKeyViolation(error: unknown): boolean {
 
 export async function deletePerson(id: string): Promise<MutationResult> {
   try {
+    await requireAdmin();
+    const existing = await prisma.person.findUnique({ where: { id }, select: { imageUrl: true } });
     await prisma.person.delete({ where: { id } });
+    await deleteImage(existing?.imageUrl);
     revalidatePersonDependentPaths();
+    revalidateSite();
     return { success: true };
   } catch (error) {
     if (isForeignKeyViolation(error)) {

@@ -59,6 +59,7 @@ export interface PrayerRequestSubmission {
   category: PrayerCategory;
   message: string;
   visibility: "private" | "public";
+  website?: string;
 }
 
 // Payload for the Giving form. This only records giving *intent* — no
@@ -67,6 +68,7 @@ export interface GivingSubmission {
   amount: number;
   fund: string;
   frequency: "one-time" | "monthly";
+  website?: string;
 }
 
 // The three Connect page registration forms (Kids/Youth/Adults) each mirror
@@ -78,6 +80,7 @@ export interface KidsConnectRegistration {
   email: string;
   children: string;
   visitDate: string;
+  website?: string;
 }
 
 export interface YouthConnectRegistration {
@@ -88,6 +91,7 @@ export interface YouthConnectRegistration {
   visitDate: string;
   socialMedia: string;
   additionalContact: string;
+  website?: string;
 }
 
 export interface AdultsConnectRegistration {
@@ -97,6 +101,7 @@ export interface AdultsConnectRegistration {
   visitDate: string;
   socialMedia: string;
   additionalContact: string;
+  website?: string;
 }
 
 export type ConnectRegistration =

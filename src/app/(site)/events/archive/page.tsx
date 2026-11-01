@@ -6,8 +6,9 @@ import { getAllEvents } from "@/server/queries/events";
 import { getMonthKey, formatMonthLabel } from "@/lib/utils";
 import { CONTENT_MAX_WIDTH } from "@/lib/layout";
 import { archive } from "@/content/events";
+import { todayKey } from "@/lib/dates";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 export const metadata = {
   title: "Events Archive",
@@ -16,10 +17,10 @@ export const metadata = {
 
 export default async function EventsArchivePage() {
   const events = await getAllEvents();
-  const today = new Date();
+  const today = todayKey();
 
   const pastEvents = events
-    .filter((event) => new Date(event.date) < today)
+    .filter((event) => event.date < today)
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
   const monthKeys = Array.from(new Set(pastEvents.map((event) => getMonthKey(event.date))));

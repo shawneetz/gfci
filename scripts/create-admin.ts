@@ -15,7 +15,7 @@ const adapter = new PrismaPg({ connectionString: process.env.DIRECT_URL });
 const prisma = new PrismaClient({ adapter });
 
 const HASH_COST = 12;
-const MIN_PASSWORD_LENGTH = 8;
+const MIN_PASSWORD_LENGTH = 12;
 
 async function main() {
   const [, , email, password, name] = process.argv;

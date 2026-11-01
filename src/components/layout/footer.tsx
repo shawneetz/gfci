@@ -3,8 +3,10 @@ import { Facebook, Instagram, Youtube } from "lucide-react";
 
 import { Container } from "@/components/ui/container";
 import { siteConfig } from "@/config/site";
+import { getSiteSettings } from "@/server/queries/site-settings";
 
-export function Footer() {
+export async function Footer() {
+  const settings = await getSiteSettings();
   return (
     <footer className="bg-surface-inverse text-ink-inverse">
       <Container className="py-14">
@@ -13,7 +15,7 @@ export function Footer() {
         <h2 className="text-subtitle uppercase tracking-[0.02em]">Follow Us</h2>
           <div className="mt-6 flex items-center gap-5">
             <a
-              href={siteConfig.contact.facebook}
+              href={settings.facebookUrl}
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Facebook"
@@ -22,7 +24,7 @@ export function Footer() {
               <Facebook size={20} fill="currentColor" />
             </a>
             <a
-              href={siteConfig.contact.instagram}
+              href={settings.instagramUrl}
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Instagram"
@@ -31,7 +33,7 @@ export function Footer() {
               <Instagram size={20} />
             </a>
             <a
-              href={siteConfig.contact.youtube}
+              href={settings.youtubeUrl}
               target="_blank"
               rel="noopener noreferrer"
               aria-label="YouTube"
@@ -52,27 +54,27 @@ export function Footer() {
                 <h4 className="font-headline font-bold">Address:</h4>
 
                 <p className="mt-2 text-body-sm whitespace-pre-line text-ink-inverse-secondary">
-                  {siteConfig.contact.address}
+                  {settings.address}
                 </p>
               </div>
 
               <div>
                 <h4 className="font-headline font-bold">Contact:</h4>
                 <a
-                  href={`tel:${siteConfig.contact.phone}`}
+                  href={`tel:${settings.phone}`}
                   className="mt-2 block text-body-sm text-ink-inverse-secondary transition-colors hover:text-ink-inverse"
                 >
-                  {siteConfig.contact.phone}
+                  {settings.phone}
                 </a>
               </div>
 
               <div>
                 <h4 className="font-headline font-bold">E-mail:</h4>
                 <a
-                  href={`mailto:${siteConfig.contact.email}`}
+                  href={`mailto:${settings.email}`}
                   className="mt-2 block break-all text-body-sm text-ink-inverse-secondary transition-colors hover:text-ink-inverse"
                 >
-                  {siteConfig.contact.email}
+                  {settings.email}
                 </a>
               </div>
             </div>

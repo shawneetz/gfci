@@ -16,6 +16,7 @@ import type { MinistryWithLeader } from "@/server/queries/ministries";
 import { submitGivingIntent, type SubmitStatus } from "@/lib/forms";
 import { FORM_PAGE_MAX_WIDTH } from "@/lib/layout";
 import { form as givingForm } from "@/content/giving";
+import { HoneypotField } from "@/components/ui/honeypot-field";
 
 interface GivingFormProps {
   ministries: MinistryWithLeader[];
@@ -29,6 +30,7 @@ export function GivingForm({ ministries }: GivingFormProps) {
   const [fund, setFund] = useState(fundOptions[0]);
   const [frequency, setFrequency] = useState<"one-time" | "monthly">("one-time");
   const [status, setStatus] = useState<SubmitStatus>("idle");
+  const [website, setWebsite] = useState("");
 
   function selectPreset(value: number) {
     setAmount(value);
@@ -51,7 +53,7 @@ export function GivingForm({ ministries }: GivingFormProps) {
     }
 
     setStatus("submitting");
-    const result = await submitGivingIntent({ amount: resolvedAmount, fund, frequency });
+    const result = await submitGivingIntent({ amount: resolvedAmount, fund, frequency, website });
     setStatus(result.success ? "success" : "error");
   }
 
@@ -60,6 +62,7 @@ export function GivingForm({ ministries }: GivingFormProps) {
       <Container className={FORM_PAGE_MAX_WIDTH}>
         <form onSubmit={handleSubmit}>
           <Panel className="space-y-8">
+            <HoneypotField value={website} onChange={setWebsite} />
             <div>
               <FieldLabel>Select Amount</FieldLabel>
               <div className="flex gap-3">

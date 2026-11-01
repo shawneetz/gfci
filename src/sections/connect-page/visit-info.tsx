@@ -3,10 +3,13 @@ import { Container } from "@/components/ui/container";
 import { Panel } from "@/components/ui/panel";
 import { ArrowLink } from "@/components/ui/arrow-link";
 import { siteConfig } from "@/config/site";
+import { getSiteSettings } from "@/server/queries/site-settings";
+import { getServiceTimes } from "@/server/queries/service-times";
 import { visitInfo } from "@/content/connect";
 
-export function VisitInfo() {
-  const mapQuery = encodeURIComponent(siteConfig.contact.address.replace(/\s+/g, " ").trim());
+export async function VisitInfo() {
+  const [settings, serviceTimes] = await Promise.all([getSiteSettings(), getServiceTimes()]);
+  const mapQuery = encodeURIComponent(settings.address.replace(/\s+/g, " ").trim());
 
   return (
     <section className="section bg-surface">
@@ -19,7 +22,7 @@ export function VisitInfo() {
             </div>
 
             <div className="mt-5 space-y-4">
-              {siteConfig.serviceTimes.map((service) => (
+              {serviceTimes.map((service) => (
                 <div
                   key={service.label}
                   className="flex items-center justify-between border-b border-border pb-4 last:border-b-0 last:pb-0"
@@ -51,7 +54,7 @@ export function VisitInfo() {
                     {siteConfig.name} {visitInfo.campusLabel}
                   </p>
                   <p className="mt-1 whitespace-pre-line text-caption text-ink-muted">
-                    {siteConfig.contact.address}
+                    {settings.address}
                   </p>
                   <ArrowLink
                     href={`https://www.google.com/maps/dir/?api=1&destination=${mapQuery}`}

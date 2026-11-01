@@ -3,11 +3,13 @@
 import { prisma } from "@/lib/prisma";
 import { uniqueSlug } from "@/lib/slugify";
 import type { MutationResult } from "./types";
+import { requireAdmin } from "@/server/auth";
+import { revalidateSite } from "@/server/revalidate";
 
 export interface PrayerTeamInput {
   name: string;
   details: string;
-  image: string;
+  icon: string;
   schedule: string;
   order: number;
 }
@@ -19,8 +21,10 @@ async function slugExists(slug: string, excludeId?: string): Promise<boolean> {
 
 export async function createPrayerTeam(data: PrayerTeamInput): Promise<MutationResult> {
   try {
+    await requireAdmin();
     const slug = await uniqueSlug(data.name, (s) => slugExists(s));
     await prisma.prayerTeam.create({ data: { ...data, slug } });
+    revalidateSite();
     return { success: true };
   } catch (error) {
     console.error("createPrayerTeam failed:", error);
@@ -30,12 +34,14 @@ export async function createPrayerTeam(data: PrayerTeamInput): Promise<MutationR
 
 export async function updatePrayerTeam(id: string, data: PrayerTeamInput): Promise<MutationResult> {
   try {
+    await requireAdmin();
     const existing = await prisma.prayerTeam.findUnique({ where: { id } });
     const slug =
       existing && existing.name === data.name
         ? existing.slug
         : await uniqueSlug(data.name, (s) => slugExists(s, id));
     await prisma.prayerTeam.update({ where: { id }, data: { ...data, slug } });
+    revalidateSite();
     return { success: true };
   } catch (error) {
     console.error("updatePrayerTeam failed:", error);
@@ -45,7 +51,9 @@ export async function updatePrayerTeam(id: string, data: PrayerTeamInput): Promi
 
 export async function deletePrayerTeam(id: string): Promise<MutationResult> {
   try {
+    await requireAdmin();
     await prisma.prayerTeam.delete({ where: { id } });
+    revalidateSite();
     return { success: true };
   } catch (error) {
     console.error("deletePrayerTeam failed:", error);

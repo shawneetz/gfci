@@ -15,11 +15,15 @@ export function AdminNavLinks({ onNavigate, className }: AdminNavLinksProps) {
 
   return (
     <nav className={cn("flex flex-col gap-1", className)}>
-      {ADMIN_NAV_ITEMS.map((item) => {
+      {ADMIN_NAV_ITEMS.map((item, index) => {
         const active =
           item.href === "/admin" ? pathname === "/admin" : pathname.startsWith(item.href);
 
         return (
+          <div key={item.href}>
+          {item.group && (index === 0 || ADMIN_NAV_ITEMS[index - 1]?.group !== item.group) && (
+            <p className="mb-2 mt-5 px-3 text-[0.68rem] font-bold uppercase tracking-[0.18em] text-ink-inverse-muted">{item.group}</p>
+          )}
           <Link
             key={item.href}
             href={item.href}
@@ -34,6 +38,7 @@ export function AdminNavLinks({ onNavigate, className }: AdminNavLinksProps) {
             <item.icon size={18} className="shrink-0" />
             {item.label}
           </Link>
+          </div>
         );
       })}
     </nav>

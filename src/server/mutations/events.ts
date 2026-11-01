@@ -2,7 +2,10 @@
 
 import { prisma } from "@/lib/prisma";
 import { resolveImageUrl } from "./image";
+import { deleteImage } from "@/lib/storage";
 import type { MutationResult } from "./types";
+import { requireAdmin } from "@/server/auth";
+import { revalidateSite } from "@/server/revalidate";
 import type { EventCategory } from "@/generated/prisma/client";
 
 export interface EventInput {
@@ -29,10 +32,15 @@ const FEATURED_ERROR =
 
 export async function createEvent(data: EventInput, imageFile: File | null): Promise<MutationResult> {
   try {
+    await requireAdmin();
     const image = await resolveImageUrl(imageFile, "", "events");
     if (!image) return { success: false, error: "An image is required." };
 
-    await prisma.event.create({ data: { ...data, date: new Date(data.date), image } });
+    await prisma.$transaction(async (tx) => {
+      if (data.featured) await tx.event.updateMany({ where: { featured: true }, data: { featured: false } });
+      await tx.event.create({ data: { ...data, date: new Date(data.date), image } });
+    });
+    revalidateSite();
     return { success: true };
   } catch (error) {
     if (isUniqueFeaturedViolation(error)) return { success: false, error: FEATURED_ERROR };
@@ -45,11 +53,18 @@ export async function updateEvent(
   id: string,
   data: EventInput,
   imageFile: File | null,
-  currentImage: string
+  _legacyCurrentImage?: string
 ): Promise<MutationResult> {
   try {
-    const image = await resolveImageUrl(imageFile, currentImage, "events");
-    await prisma.event.update({ where: { id }, data: { ...data, date: new Date(data.date), image } });
+    await requireAdmin();
+    const existing = await prisma.event.findUnique({ where: { id }, select: { image: true } });
+    const image = await resolveImageUrl(imageFile, existing?.image ?? "", "events");
+    await prisma.$transaction(async (tx) => {
+      if (data.featured) await tx.event.updateMany({ where: { featured: true, id: { not: id } }, data: { featured: false } });
+      await tx.event.update({ where: { id }, data: { ...data, date: new Date(data.date), image } });
+    });
+    if (imageFile && existing?.image !== image) await deleteImage(existing?.image);
+    revalidateSite();
     return { success: true };
   } catch (error) {
     if (isUniqueFeaturedViolation(error)) return { success: false, error: FEATURED_ERROR };
@@ -60,7 +75,11 @@ export async function updateEvent(
 
 export async function deleteEvent(id: string): Promise<MutationResult> {
   try {
+    await requireAdmin();
+    const existing = await prisma.event.findUnique({ where: { id }, select: { image: true } });
     await prisma.event.delete({ where: { id } });
+    await deleteImage(existing?.image);
+    revalidateSite();
     return { success: true };
   } catch (error) {
     console.error("deleteEvent failed:", error);

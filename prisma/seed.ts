@@ -162,7 +162,7 @@ async function main() {
       name: "Kids Prayer Team",
       details: "Praying for children and families as they grow in faith and community.",
       // Not shipped under public/images — see scripts/seed-image-urls.ts.
-      image: SEED_IMAGE_URLS.prayerTeamKids || "/images/ministry-kids.jpg",
+      icon: "Users",
       schedule: "Sundays, 9:00 AM & 11:00 AM",
       order: 0,
     },

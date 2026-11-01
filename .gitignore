@@ -75,3 +75,5 @@ design-checklist.md
 cms-checklist.md
 /src/generated/prisma
 admin-guide.md
+specs-backend.md
+specs-frontend.md

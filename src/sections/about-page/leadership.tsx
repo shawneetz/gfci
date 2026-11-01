@@ -4,13 +4,15 @@ import { Panel } from "@/components/ui/panel";
 import { IconInfoRow } from "@/components/ui/icon-info-row";
 import { PersonCard } from "@/components/ui/person-card";
 import { ButtonLink } from "@/components/ui/button";
-import { siteConfig } from "@/config/site";
 import { getLeadershipTeam } from "@/server/queries/people";
+import { getSiteSettings } from "@/server/queries/site-settings";
+import { getServiceTimes } from "@/server/queries/service-times";
 import { CONTENT_MAX_WIDTH } from "@/lib/layout";
 import { leadership } from "@/content/about";
 
 export async function Leadership() {
   const leaders = await getLeadershipTeam();
+  const [settings, serviceTimes] = await Promise.all([getSiteSettings(), getServiceTimes()]);
 
   return (
     <section className="section bg-surface-alt">
@@ -31,13 +33,13 @@ export async function Leadership() {
         <Panel className="mt-12" shadow={false}>
           <div className="space-y-6">
             <IconInfoRow icon={MapPin} title={leadership.campusTitle}>
-              <p className="whitespace-pre-line">{siteConfig.contact.address}</p>
+              <p className="whitespace-pre-line">{settings.address}</p>
             </IconInfoRow>
 
             <div className="border-t border-border" />
 
             <IconInfoRow icon={Clock} title={leadership.serviceTimesTitle}>
-              {siteConfig.serviceTimes.map((service) => (
+              {serviceTimes.map((service) => (
                 <p key={service.label}>
                   {service.label} at {service.time}
                 </p>
