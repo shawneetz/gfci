@@ -1,8 +1,8 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import { resolveImageUrl } from "./image";
 import { deleteImage } from "@/lib/storage";
+import { resolveImageUrl } from "./image";
 import { toErrorResult, type MutationResult } from "./types";
 import { requireAdmin } from "@/server/auth";
 import { revalidateSite } from "@/server/revalidate";
@@ -17,32 +17,31 @@ export interface PersonInput {
   leadershipOrder: number | null;
 }
 
-function validatePerson(data: PersonInput): PersonInput {
+function cleanPerson(input: PersonInput) {
+  const email = optionalText(input.email, "Email", 254);
+  if (email) validateEmail(email);
+
   return {
-    name: required(data.name, "Name", 200),
-    title: required(data.title, "Title", 200),
-    displayName: required(data.displayName, "Display name", 200),
-    email: optionalText(data.email, "Email", 254) ? validateEmail(data.email, "Email") : "",
-    isLeadershipTeam: data.isLeadershipTeam === true,
-    leadershipOrder: data.leadershipOrder === null
-      ? null
-      : intInRange(data.leadershipOrder, 0, 100000, "Leadership order"),
+    name: required(input.name, "Name", 120),
+    title: required(input.title, "Title", 120),
+    displayName: required(input.displayName, "Display name", 120),
+    email: email || null,
+    isLeadershipTeam: input.isLeadershipTeam === true,
+    leadershipOrder:
+      input.leadershipOrder === null
+        ? null
+        : intInRange(input.leadershipOrder, 0, 9999, "Leadership order"),
   };
 }
 
-// Unlike Ministry.image / Sermon.thumbnail / Event.image, Person.imageUrl
-// is nullable — a leader/speaker without a photo is a normal, supported
-// state (PersonCard falls back to a UserRound icon). So imageFile is
-// optional here, and an empty upload result is stored as null rather
-// than "".
-export async function createPerson(data: PersonInput, imageFile: File | null): Promise<MutationResult> {
+export async function createPerson(input: PersonInput, imageFile: File | null): Promise<MutationResult> {
   try {
     await requireAdmin();
-    data = validatePerson(data);
+    const data = cleanPerson(input);
     const imageUrl = await resolveImageUrl(imageFile, "", "people");
-    await prisma.person.create({
-      data: { ...data, email: data.email || null, imageUrl: imageUrl || null },
-    });
+
+    await prisma.person.create({ data: { ...data, imageUrl: imageUrl || null } });
+
     revalidateSite();
     return { success: true };
   } catch (error) {
@@ -52,33 +51,24 @@ export async function createPerson(data: PersonInput, imageFile: File | null): P
 
 export async function updatePerson(
   id: string,
-  data: PersonInput,
+  input: PersonInput,
   imageFile: File | null
 ): Promise<MutationResult> {
   try {
     await requireAdmin();
-    data = validatePerson(data);
+    const data = cleanPerson(input);
     const existing = await prisma.person.findUnique({ where: { id }, select: { imageUrl: true } });
     const imageUrl = await resolveImageUrl(imageFile, existing?.imageUrl ?? "", "people");
-    await prisma.person.update({
-      where: { id },
-      data: { ...data, email: data.email || null, imageUrl: imageUrl || null },
-    });
-    if (imageFile && existing?.imageUrl !== imageUrl) await deleteImage(existing?.imageUrl);
+
+    await prisma.person.update({ where: { id }, data: { ...data, imageUrl: imageUrl || null } });
+
+    if (existing?.imageUrl && existing.imageUrl !== imageUrl) await deleteImage(existing.imageUrl);
+
     revalidateSite();
     return { success: true };
   } catch (error) {
     return toErrorResult(error);
   }
-}
-
-function isForeignKeyViolation(error: unknown): boolean {
-  return (
-    typeof error === "object" &&
-    error !== null &&
-    "code" in error &&
-    (error as { code?: string }).code === "P2003"
-  );
 }
 
 export async function deletePerson(id: string): Promise<MutationResult> {
@@ -87,10 +77,11 @@ export async function deletePerson(id: string): Promise<MutationResult> {
     const existing = await prisma.person.findUnique({ where: { id }, select: { imageUrl: true } });
     await prisma.person.delete({ where: { id } });
     await deleteImage(existing?.imageUrl);
+
     revalidateSite();
     return { success: true };
   } catch (error) {
-    if (isForeignKeyViolation(error)) {
+    if ((error as { code?: string } | null)?.code === "P2003") {
       return {
         success: false,
         error: "This person still leads a ministry or is credited on a sermon. Reassign those first.",

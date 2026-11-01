@@ -2,8 +2,8 @@
 
 import { prisma } from "@/lib/prisma";
 import { uniqueSlug } from "@/lib/slugify";
-import { resolveImageUrl } from "./image";
 import { deleteImage } from "@/lib/storage";
+import { resolveImageUrl } from "./image";
 import { toErrorResult, type MutationResult } from "./types";
 import { requireAdmin } from "@/server/auth";
 import { revalidateSite } from "@/server/revalidate";
@@ -22,35 +22,36 @@ export interface MinistryInput {
   leaderId: string;
 }
 
-async function slugExists(slug: string, excludeId?: string): Promise<boolean> {
-  const existing = await prisma.ministry.findUnique({ where: { slug } });
-  return !!existing && existing.id !== excludeId;
-}
-
-function validateMinistry(data: MinistryInput): MinistryInput {
+function cleanMinistry(input: MinistryInput): MinistryInput {
   return {
-    title: required(data.title, "Title", 200),
-    tagline: required(data.tagline, "Tagline", 500),
-    overview: required(data.overview, "Overview", 5000),
-    imageAlt: required(data.imageAlt, "Image alt text", 300),
-    audience: required(data.audience, "Audience", 300),
-    schedule: required(data.schedule, "Schedule", 300),
-    location: required(data.location, "Location", 300),
-    contactEmail: validateEmail(data.contactEmail, "Contact email"),
-    order: intInRange(data.order, 0, 100000, "Order"),
-    leaderId: required(data.leaderId, "Leader", 100),
+    title: required(input.title, "Title", 120),
+    tagline: required(input.tagline, "Tagline", 200),
+    overview: required(input.overview, "Overview", 2000),
+    imageAlt: required(input.imageAlt, "Image alt text", 200),
+    audience: required(input.audience, "Audience", 200),
+    schedule: required(input.schedule, "Schedule", 200),
+    location: required(input.location, "Location", 200),
+    contactEmail: validateEmail(input.contactEmail, "Contact email"),
+    order: intInRange(input.order, 0, 9999, "Display order"),
+    leaderId: required(input.leaderId, "Leader", 100),
   };
 }
 
-export async function createMinistry(data: MinistryInput, imageFile: File | null): Promise<MutationResult> {
+async function slugExists(slug: string): Promise<boolean> {
+  const existing = await prisma.ministry.findUnique({ where: { slug } });
+  return !!existing;
+}
+
+export async function createMinistry(input: MinistryInput, imageFile: File | null): Promise<MutationResult> {
   try {
     await requireAdmin();
-    data = validateMinistry(data);
-    const slug = await uniqueSlug(data.title, (s) => slugExists(s));
+    const data = cleanMinistry(input);
     const image = await resolveImageUrl(imageFile, "", "ministries");
     if (!image) return { success: false, error: "An image is required." };
+    const slug = await uniqueSlug(data.title, slugExists);
 
     await prisma.ministry.create({ data: { ...data, slug, image } });
+
     revalidateSite();
     return { success: true };
   } catch (error) {
@@ -60,21 +61,19 @@ export async function createMinistry(data: MinistryInput, imageFile: File | null
 
 export async function updateMinistry(
   id: string,
-  data: MinistryInput,
+  input: MinistryInput,
   imageFile: File | null
 ): Promise<MutationResult> {
   try {
     await requireAdmin();
-    data = validateMinistry(data);
-    const existing = await prisma.ministry.findUnique({ where: { id } });
-    const slug =
-      existing && existing.title === data.title
-        ? existing.slug
-        : await uniqueSlug(data.title, (s) => slugExists(s, id));
+    const data = cleanMinistry(input);
+    const existing = await prisma.ministry.findUnique({ where: { id }, select: { image: true } });
     const image = await resolveImageUrl(imageFile, existing?.image ?? "", "ministries");
 
-    await prisma.ministry.update({ where: { id }, data: { ...data, slug, image } });
-    if (imageFile && existing?.image !== image) await deleteImage(existing?.image);
+    await prisma.ministry.update({ where: { id }, data: { ...data, image } });
+
+    if (existing && existing.image !== image) await deleteImage(existing.image);
+
     revalidateSite();
     return { success: true };
   } catch (error) {
@@ -88,6 +87,7 @@ export async function deleteMinistry(id: string): Promise<MutationResult> {
     const existing = await prisma.ministry.findUnique({ where: { id }, select: { image: true } });
     await prisma.ministry.delete({ where: { id } });
     await deleteImage(existing?.image);
+
     revalidateSite();
     return { success: true };
   } catch (error) {
