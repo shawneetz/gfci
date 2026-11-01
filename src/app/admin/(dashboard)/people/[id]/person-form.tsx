@@ -41,7 +41,7 @@ export function PersonForm({ person }: PersonFormProps) {
     const resized = imageFile ? await resizeImageFile(imageFile) : null;
 
     const result = person
-      ? await updatePerson(person.id, form, resized, person.imageUrl)
+      ? await updatePerson(person.id, form, resized)
       : await createPerson(form, resized);
 
     if (result.success) {

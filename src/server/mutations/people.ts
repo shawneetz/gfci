@@ -1,12 +1,12 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { resolveImageUrl } from "./image";
 import { deleteImage } from "@/lib/storage";
-import type { MutationResult } from "./types";
+import { toErrorResult, type MutationResult } from "./types";
 import { requireAdmin } from "@/server/auth";
 import { revalidateSite } from "@/server/revalidate";
+import { intInRange, optionalText, required, validateEmail } from "@/server/validation";
 
 export interface PersonInput {
   name: string;
@@ -17,11 +17,17 @@ export interface PersonInput {
   leadershipOrder: number | null;
 }
 
-function revalidatePersonDependentPaths() {
-  revalidatePath("/about");
-  revalidatePath("/ministries/[slug]", "page");
-  revalidatePath("/sermons");
-  revalidatePath("/sermons/[slug]", "page");
+function validatePerson(data: PersonInput): PersonInput {
+  return {
+    name: required(data.name, "Name", 200),
+    title: required(data.title, "Title", 200),
+    displayName: required(data.displayName, "Display name", 200),
+    email: optionalText(data.email, "Email", 254) ? validateEmail(data.email, "Email") : "",
+    isLeadershipTeam: data.isLeadershipTeam === true,
+    leadershipOrder: data.leadershipOrder === null
+      ? null
+      : intInRange(data.leadershipOrder, 0, 100000, "Leadership order"),
+  };
 }
 
 // Unlike Ministry.image / Sermon.thumbnail / Event.image, Person.imageUrl
@@ -32,27 +38,26 @@ function revalidatePersonDependentPaths() {
 export async function createPerson(data: PersonInput, imageFile: File | null): Promise<MutationResult> {
   try {
     await requireAdmin();
+    data = validatePerson(data);
     const imageUrl = await resolveImageUrl(imageFile, "", "people");
     await prisma.person.create({
       data: { ...data, email: data.email || null, imageUrl: imageUrl || null },
     });
-    revalidatePersonDependentPaths();
     revalidateSite();
     return { success: true };
   } catch (error) {
-    console.error("createPerson failed:", error);
-    return { success: false, error: "Something went wrong. Please try again." };
+    return toErrorResult(error);
   }
 }
 
 export async function updatePerson(
   id: string,
   data: PersonInput,
-  imageFile: File | null,
-  _legacyCurrentImageUrl?: string | null
+  imageFile: File | null
 ): Promise<MutationResult> {
   try {
     await requireAdmin();
+    data = validatePerson(data);
     const existing = await prisma.person.findUnique({ where: { id }, select: { imageUrl: true } });
     const imageUrl = await resolveImageUrl(imageFile, existing?.imageUrl ?? "", "people");
     await prisma.person.update({
@@ -60,12 +65,10 @@ export async function updatePerson(
       data: { ...data, email: data.email || null, imageUrl: imageUrl || null },
     });
     if (imageFile && existing?.imageUrl !== imageUrl) await deleteImage(existing?.imageUrl);
-    revalidatePersonDependentPaths();
     revalidateSite();
     return { success: true };
   } catch (error) {
-    console.error("updatePerson failed:", error);
-    return { success: false, error: "Something went wrong. Please try again." };
+    return toErrorResult(error);
   }
 }
 
@@ -84,7 +87,6 @@ export async function deletePerson(id: string): Promise<MutationResult> {
     const existing = await prisma.person.findUnique({ where: { id }, select: { imageUrl: true } });
     await prisma.person.delete({ where: { id } });
     await deleteImage(existing?.imageUrl);
-    revalidatePersonDependentPaths();
     revalidateSite();
     return { success: true };
   } catch (error) {
@@ -94,7 +96,6 @@ export async function deletePerson(id: string): Promise<MutationResult> {
         error: "This person still leads a ministry or is credited on a sermon. Reassign those first.",
       };
     }
-    console.error("deletePerson failed:", error);
-    return { success: false, error: "Could not delete this person." };
+    return toErrorResult(error, "Could not delete this person.");
   }
 }

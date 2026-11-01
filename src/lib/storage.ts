@@ -11,10 +11,12 @@ export async function uploadImage(
   { folder = "uploads" }: UploadImageOptions = {}
 ): Promise<string> {
   const isFile = typeof File !== "undefined" && file instanceof File;
-  if (!["image/jpeg", "image/png", "image/webp"].includes(isFile ? file.type : "")) {
-    throw new Error("Unsupported image type.");
+  if (isFile) {
+    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+      throw new Error("Unsupported image type.");
+    }
+    if (file.size > 4 * 1024 * 1024) throw new Error("Image must be 4 MB or smaller.");
   }
-  if (isFile && file.size > 4 * 1024 * 1024) throw new Error("Image must be 4 MB or smaller.");
   const blob = await put(`${folder}/${filename}`, file, {
     access: "public",
     addRandomSuffix: true,

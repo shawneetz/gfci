@@ -51,7 +51,7 @@ export function EventForm({ event }: EventFormProps) {
     const resized = imageFile ? await resizeImageFile(imageFile) : null;
 
     const result = event
-      ? await updateEvent(event.id, form, resized, event.image)
+      ? await updateEvent(event.id, form, resized)
       : await createEvent(form, resized);
 
     if (result.success) {

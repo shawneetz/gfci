@@ -1,14 +1,14 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { uniqueSlug } from "@/lib/slugify";
 import { extractVideoUrl } from "@/lib/video";
 import { resolveImageUrl } from "./image";
 import { deleteImage } from "@/lib/storage";
-import type { MutationResult } from "./types";
+import { toErrorResult, type MutationResult } from "./types";
 import { requireAdmin } from "@/server/auth";
 import { revalidateSite } from "@/server/revalidate";
+import { isValidDate, optionalText, required, ValidationError } from "@/server/validation";
 
 export interface SermonInput {
   title: string;
@@ -24,14 +24,23 @@ async function slugExists(slug: string, excludeId?: string): Promise<boolean> {
   return !!existing && existing.id !== excludeId;
 }
 
-function revalidateSermonPaths() {
-  revalidatePath("/sermons");
-  revalidatePath("/sermons/[slug]", "page");
+function validateSermon(data: SermonInput): SermonInput {
+  const date = required(data.date, "Date", 10);
+  if (!isValidDate(date)) throw new ValidationError("Date must be a valid date.");
+  return {
+    title: required(data.title, "Title", 200),
+    series: required(data.series, "Series", 200),
+    date,
+    videoUrl: optionalText(data.videoUrl, "Video URL", 500),
+    summary: optionalText(data.summary, "Summary", 5000),
+    speakerId: required(data.speakerId, "Speaker", 100),
+  };
 }
 
 export async function createSermon(data: SermonInput, thumbnailFile: File | null): Promise<MutationResult> {
   try {
     await requireAdmin();
+    data = validateSermon(data);
     const slug = await uniqueSlug(data.title, (s) => slugExists(s));
     const thumbnail = await resolveImageUrl(thumbnailFile, "", "sermons");
     if (!thumbnail) return { success: false, error: "A thumbnail image is required." };
@@ -51,23 +60,21 @@ export async function createSermon(data: SermonInput, thumbnailFile: File | null
         speakerId: data.speakerId,
       },
     });
-    revalidateSermonPaths();
     revalidateSite();
     return { success: true };
   } catch (error) {
-    console.error("createSermon failed:", error);
-    return { success: false, error: "Something went wrong. Please try again." };
+    return toErrorResult(error);
   }
 }
 
 export async function updateSermon(
   id: string,
   data: SermonInput,
-  thumbnailFile: File | null,
-  _legacyCurrentThumbnail?: string
+  thumbnailFile: File | null
 ): Promise<MutationResult> {
   try {
     await requireAdmin();
+    data = validateSermon(data);
     const existing = await prisma.sermon.findUnique({ where: { id } });
     const slug =
       existing && existing.title === data.title
@@ -89,12 +96,10 @@ export async function updateSermon(
       },
     });
     if (thumbnailFile && existing?.thumbnail !== thumbnail) await deleteImage(existing?.thumbnail);
-    revalidateSermonPaths();
     revalidateSite();
     return { success: true };
   } catch (error) {
-    console.error("updateSermon failed:", error);
-    return { success: false, error: "Something went wrong. Please try again." };
+    return toErrorResult(error);
   }
 }
 
@@ -104,11 +109,9 @@ export async function deleteSermon(id: string): Promise<MutationResult> {
     const existing = await prisma.sermon.findUnique({ where: { id }, select: { thumbnail: true } });
     await prisma.sermon.delete({ where: { id } });
     await deleteImage(existing?.thumbnail);
-    revalidateSermonPaths();
     revalidateSite();
     return { success: true };
   } catch (error) {
-    console.error("deleteSermon failed:", error);
-    return { success: false, error: "Could not delete this sermon." };
+    return toErrorResult(error, "Could not delete this sermon.");
   }
 }

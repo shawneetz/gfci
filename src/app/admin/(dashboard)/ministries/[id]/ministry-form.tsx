@@ -55,7 +55,7 @@ export function MinistryForm({ ministry, people }: MinistryFormProps) {
     const resized = imageFile ? await resizeImageFile(imageFile) : null;
 
     const result = ministry
-      ? await updateMinistry(ministry.id, form, resized, ministry.image)
+      ? await updateMinistry(ministry.id, form, resized)
       : await createMinistry(form, resized);
 
     if (result.success) {

@@ -51,7 +51,7 @@ export function SermonForm({ sermon, people }: SermonFormProps) {
     const resized = thumbnailFile ? await resizeImageFile(thumbnailFile) : null;
 
     const result = sermon
-      ? await updateSermon(sermon.id, form, resized, sermon.thumbnail)
+      ? await updateSermon(sermon.id, form, resized)
       : await createSermon(form, resized);
 
     if (result.success) {

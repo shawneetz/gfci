@@ -1,9 +1,10 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import type { MutationResult } from "./types";
+import { toErrorResult, type MutationResult } from "./types";
 import { requireAdmin } from "@/server/auth";
 import { revalidateSite } from "@/server/revalidate";
+import { intInRange, required, validateIcon } from "@/server/validation";
 
 export interface ExpectationItemInput {
   icon: string;
@@ -11,28 +12,36 @@ export interface ExpectationItemInput {
   description: string;
   order: number;
 }
+function validateExpectationItem(data: ExpectationItemInput): ExpectationItemInput {
+  return {
+    icon: validateIcon(data.icon),
+    title: required(data.title, "Title", 200),
+    description: required(data.description, "Description", 5000),
+    order: intInRange(data.order, 0, 100000, "Order"),
+  };
+}
 
 export async function createExpectationItem(data: ExpectationItemInput): Promise<MutationResult> {
   try {
     await requireAdmin();
+    data = validateExpectationItem(data);
     await prisma.expectationItem.create({ data });
     revalidateSite();
     return { success: true };
   } catch (error) {
-    console.error("createExpectationItem failed:", error);
-    return { success: false, error: "Something went wrong. Please try again." };
+    return toErrorResult(error);
   }
 }
 
 export async function updateExpectationItem(id: string, data: ExpectationItemInput): Promise<MutationResult> {
   try {
     await requireAdmin();
+    data = validateExpectationItem(data);
     await prisma.expectationItem.update({ where: { id }, data });
     revalidateSite();
     return { success: true };
   } catch (error) {
-    console.error("updateExpectationItem failed:", error);
-    return { success: false, error: "Something went wrong. Please try again." };
+    return toErrorResult(error);
   }
 }
 
@@ -43,7 +52,6 @@ export async function deleteExpectationItem(id: string): Promise<MutationResult>
     revalidateSite();
     return { success: true };
   } catch (error) {
-    console.error("deleteExpectationItem failed:", error);
-    return { success: false, error: "Could not delete this item." };
+    return toErrorResult(error, "Could not delete this item.");
   }
 }

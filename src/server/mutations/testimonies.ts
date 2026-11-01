@@ -1,38 +1,46 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import type { MutationResult } from "./types";
+import { toErrorResult, type MutationResult } from "./types";
 import { requireAdmin } from "@/server/auth";
 import { revalidateSite } from "@/server/revalidate";
 import type { PrayerCategory } from "@/generated/prisma/client";
+import { required, validatePrayerCategory } from "@/server/validation";
 
 export interface TestimonyInput {
   quote: string;
   name: string;
   category: PrayerCategory;
 }
+function validateTestimony(data: TestimonyInput): TestimonyInput {
+  return {
+    quote: required(data.quote, "Quote", 5000),
+    name: required(data.name, "Name", 200),
+    category: validatePrayerCategory(data.category) as PrayerCategory,
+  };
+}
 
 export async function createTestimony(data: TestimonyInput): Promise<MutationResult> {
   try {
     await requireAdmin();
+    data = validateTestimony(data);
     await prisma.answeredPrayer.create({ data });
     revalidateSite();
     return { success: true };
   } catch (error) {
-    console.error("createTestimony failed:", error);
-    return { success: false, error: "Something went wrong. Please try again." };
+    return toErrorResult(error);
   }
 }
 
 export async function updateTestimony(id: string, data: TestimonyInput): Promise<MutationResult> {
   try {
     await requireAdmin();
+    data = validateTestimony(data);
     await prisma.answeredPrayer.update({ where: { id }, data });
     revalidateSite();
     return { success: true };
   } catch (error) {
-    console.error("updateTestimony failed:", error);
-    return { success: false, error: "Something went wrong. Please try again." };
+    return toErrorResult(error);
   }
 }
 
@@ -43,7 +51,6 @@ export async function deleteTestimony(id: string): Promise<MutationResult> {
     revalidateSite();
     return { success: true };
   } catch (error) {
-    console.error("deleteTestimony failed:", error);
-    return { success: false, error: "Could not delete this testimony." };
+    return toErrorResult(error, "Could not delete this testimony.");
   }
 }
